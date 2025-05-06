@@ -29,44 +29,6 @@ import java.security.NoSuchAlgorithmException;
  * @author tondeur-h
  */
 
-/*
-CREATE TABLE valorisations_glims (
-	"Automate" varchar(120) NULL,
-	"Date_valorisation" timestamp NULL,
-	"Institution" varchar(30) NULL,
-	"Code UF" varchar(16) NULL,
-	"Prescripteur2" varchar(120) NULL,
-	"Objet_patient" varchar(120) NULL,
-	"No Int" varchar(30) NULL,
-	"Date prvt" timestamp NULL,
-	"Type IEP" varchar(2) NULL,
-	"No IEP" varchar(16) NULL,
-	"No Ext" varchar(16) NULL,
-	"Code Cotation" varchar(8) NULL,
-	"Labo. Exec." varchar(120) NULL,
-	"Forfait Deloc" varchar(120) NULL,
-	"Non Deloc" varchar(120) NULL,
-	"Forfait non inclu" varchar(120) NULL,
-	"Inclu" varchar(120) NULL,
-	"Urgence" varchar(120) NULL,
-	"COVID" varchar(120) NULL,
-	"Non COVID" varchar(120) NULL,
-	"AMI" numeric NULL,
-	"B" numeric NULL,
-	"E" numeric NULL,
-	"HN" numeric NULL,
-	"HN_LC" numeric NULL,
-	"HN_RIHN" numeric NULL,
-	"KB" numeric NULL,
-	"PB" numeric NULL,
-	"TB" numeric NULL,
-	"Non Urgence" varchar(120) NULL,
-	uf varchar(16) NULL,
-	dateintegration timestamp DEFAULT now() NULL,
-	hashcode varchar NOT NULL,
-	CONSTRAINT valorisations_glims_pk PRIMARY KEY (hashcode)
-);
-*/
 
 public class isietl {
     //variables globales

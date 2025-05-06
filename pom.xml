@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <exec.mainClass>org.isihop.fr.jic_glims.Jic_glims</exec.mainClass>
+        <exec.mainClass>org.isihop.fr.isietl.isietl</exec.mainClass>
     </properties>
     
     <dependencies>
@@ -32,7 +32,7 @@
     <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.6.0</version>
+            <version>3.7.1</version>
 
             <configuration>
                 <descriptorRefs>
@@ -41,7 +41,7 @@
                 
                   <archive>
             <manifest>
-              <mainClass>org.isihop.fr.jic_glims.Jic_glims</mainClass>
+              <mainClass>org.isihop.fr.isietl.isietl</mainClass>
             </manifest>
           </archive>
             </configuration>
@@ -60,7 +60,7 @@
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <version>3.14.0</version>
      <configuration>
       <debug>true</debug>
      </configuration>
