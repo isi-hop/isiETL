@@ -1,0 +1,36 @@
+---
+connector: "file"
+filespath: "/home/tondeur-h/dev/isiETL/test"
+checkfiles: "true"
+destination: "/home/tondeur-h/dev/isiETL/test"
+exttype: "csv"
+
+dbdriver: "jdbc.postgresql.org"
+dblogin: "postgres"
+dbpassword: "admin"
+
+fieldsIn:
+  identifiant:
+    defaultValue: "vide"
+    name: "identifiant"
+    size: "20"
+    type: "text"
+  nom:
+    defaultValue: "noname"
+    name: "nom"
+    size: "80"
+    type: "text"
+  prenom:
+    defaultValue: "unknown"
+    name: "prenom"
+    size: "50"
+    type: "text"
+  sexe:
+    defaultValue: "M"
+    name: "sexe"
+    size: "1"
+    type: "text"
+
+
+sqlinsert: ""
+sqlupdate: ""
