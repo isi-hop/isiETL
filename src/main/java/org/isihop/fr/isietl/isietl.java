@@ -31,15 +31,13 @@ import java.util.logging.SimpleFormatter;
 
 public class isietl {
     //variables globales
-    Integrator integratorGlob=null;
+    Tools tools=null;
     
     //logs
        private static final  Logger logger = Logger.getLogger(isietl.class.getName());
     
 
-    public static void main(String[] args) {
-        isietl ietl = new isietl();
-    }
+    public static void main(String[] args) {new isietl();}
 
     /****************
      * Constructeur 
@@ -66,19 +64,16 @@ public class isietl {
     /*****************************
      * Executer du processus
      *****************************/
-    public void worker()
+    private void worker()
     {
-       tools to=new tools();  //instancier les tools
+       tools=new Tools();  //instancier les tools
                 
         //lire les properties du système isietl
-        String programName=this.getClass().getSimpleName();
-        to.lire_properties(programName);
+        String programName=this.getClass().getSimpleName(); //recuper nom du programme principal
+        tools.lire_properties(programName);
         
         //lire le fichier d'integration.
-        integratorGlob=to.lire_fichier_integration();
-        
-        //exploiter_integrator
-        to.exploit_integrator(integratorGlob); 
+        tools.lire_fichier_integration();
     }
     
 }

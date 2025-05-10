@@ -3,7 +3,7 @@ connector: "file"
 filespath: "/home/tondeur-h/dev/isiETL/test"
 checkfiles: "true"
 destination: "/home/tondeur-h/dev/isiETL/test"
-exttype: "csv"
+#exttype: "csv"
 
 dbdriver: "jdbc.postgresql.org"
 dblogin: "postgres"
