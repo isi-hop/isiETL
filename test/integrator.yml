@@ -1,14 +1,30 @@
 ---
-connector: "file"
-filespath: "/home/tondeur-h/dev/isiETL/test"
-checkfiles: "true"
-destination: "/home/tondeur-h/dev/isiETL/test"
-#exttype: "csv"
+# nom de process d'integration et sa description
+# champs optionnels
+integratorName: "MyFirst inegrator process"
+integratorDescription: "Get data from a CSV file to a DB postgresql"
 
-dbdriver: "jdbc.postgresql.org"
-dblogin: "postgres"
-dbpassword: "admin"
-
+# description du connecteur entrant
+# type file csv ou database postgresql pour l'instant'
+# pour la demo, toutes les configurations possible on été plac ici
+connectorInbound: 
+  connectortype: 
+    value: "file"
+  filespath: 
+    value : "/home/tondeur-h/dev/isiETL/test"
+  checkfiles: 
+    value: "true"
+  destination:
+    value: "/home/tondeur-h/dev/isiETL/test"
+  exttype:
+    value: "csv"
+  dbdriver:
+    value: "jdbc.postgresql.org"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+# Description des champs entrants qui vont permettre de construire le flux in
 fieldsIn:
   identifiant:
     defaultValue: "vide"
@@ -31,6 +47,40 @@ fieldsIn:
     size: "1"
     type: "text"
 
+# description du connecteur sortant vers la database postgresql
+connectorOutbound: 
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "jdbc.postgresql.org"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
 
+# description des champs de la table sortant postgresql.
+fieldsOut:
+  identifiant:
+    defaultValue: "vide"
+    name: "identifiant"
+    size: "20"
+    type: "text"
+  nom:
+    defaultValue: "noname"
+    name: "nom"
+    size: "80"
+    type: "text"
+  prenom:
+    defaultValue: "unknown"
+    name: "prenom"
+    size: "50"
+    type: "text"
+  sexe:
+    defaultValue: "M"
+    name: "sexe"
+    size: "1"
+    type: "text"
+
+# reservé pour plus tard.
 sqlinsert: ""
 sqlupdate: ""

@@ -41,7 +41,7 @@ public class FSTools {
     int numLigneEnCours=0;
     
     //logs
-    private static final  Logger logger = Logger.getLogger(Tools.class.getName());
+    private static final  Logger logger = Logger.getLogger(IntegratorTools.class.getName());
     
     
     /**************************

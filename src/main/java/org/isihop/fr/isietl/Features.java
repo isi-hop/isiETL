@@ -16,26 +16,10 @@
  */
 package org.isihop.fr.isietl;
 
-import java.util.Map;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
  *
  * @author tondeur-h
  */
-@Data
-@NoArgsConstructor
-class Integrator {
-    public String integratorName;
-    public String integratorDescription;
-    
-    public Map<String,Features> connectorInbound;
-    public Map<String,Fields> fieldsIn; 
-    
-    public Map<String,Features> connectorOutbound;
-    public Map<String,Fields> fieldsOut;
-    
-    public String sqlinsert;
-    public String sqlupdate;
+class Features {
+    public String value;
 }

@@ -31,7 +31,7 @@ import java.util.logging.SimpleFormatter;
 
 public class isietl {
     //variables globales
-    Tools tools=null;
+    IntegratorTools tools=null;
     
     //logs
        private static final  Logger logger = Logger.getLogger(isietl.class.getName());
@@ -56,7 +56,7 @@ public class isietl {
                 Logger.getLogger(isietl.class.getName()).log(Level.SEVERE, null, ioe);
             }
         
-        //au travail
+        //au travail maintenant.
         worker();
     }
 
@@ -66,11 +66,10 @@ public class isietl {
      *****************************/
     private void worker()
     {
-       tools=new Tools();  //instancier les tools
+       tools=new IntegratorTools();  //instancier les tools
                 
         //lire les properties du système isietl
-        String programName=this.getClass().getSimpleName(); //recuper nom du programme principal
-        tools.lire_properties(programName);
+        tools.lire_properties(this.getClass().getSimpleName());//recuper nom du programme principal
         
         //lire le fichier d'integration.
         tools.lire_fichier_integration();
