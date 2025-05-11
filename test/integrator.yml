@@ -10,6 +10,7 @@ integratorDescription: "Get data from a CSV file to a DB postgresql"
 connectorInbound: 
   connectortype: 
     value: "file"
+    #value: "database"
   filespath: 
     value : "/home/tondeur-h/dev/isiETL/test"
   checkfiles: 
@@ -19,11 +20,14 @@ connectorInbound:
   exttype:
     value: "csv"
   dbdriver:
-    value: "jdbc.postgresql.org"
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/mydatabase"
   dblogin:
     value: "postgres"
   dbpassword:
     value: "admin"
+
 # Description des champs entrants qui vont permettre de construire le flux in
 fieldsIn:
   identifiant:
@@ -52,7 +56,9 @@ connectorOutbound:
   connectortype:
     value: "database"
   dbdriver:
-    value: "jdbc.postgresql.org"
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/mydatabase"
   dblogin:
     value: "postgres"
   dbpassword:

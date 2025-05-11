@@ -33,17 +33,12 @@ import java.util.logging.Logger;
  */
 public class DBTools {
     
-    String dburl="";
-    String dblogin="";
-    String dbpassword="";
-    boolean deplacer=false;
-    boolean debug=false;
-    boolean purgerDataNonSolicite=false;
-    String deleteSQL="";
+    private boolean debug=false;
+    private String deleteSQL="";
     
     //database
-    Connection conn;
-    Statement stmt;
+    private Connection conn;
+    private Statement stmt;
     
     //logs
     private static final  Logger logger = Logger.getLogger(IntegratorTools.class.getName());
@@ -51,12 +46,16 @@ public class DBTools {
     /****************************
      * Connecter la DB
      * Si non possible pas de traitement
+     * @param dbdriver
+     * @param dburl
+     * @param dblogin
+     * @param dbpassword
      * @return boolean
      ****************************/
-    private boolean connect_db() {
+    public boolean connect_db(String dbdriver, String dburl, String dblogin, String dbpassword) {
         boolean isconnected=false;
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(dbdriver);
        
                 conn = DriverManager.getConnection(dburl,dblogin,dbpassword);
                 isconnected=true;
@@ -72,7 +71,7 @@ public class DBTools {
     /*********************************
      * Fermer la database si possible.
      *********************************/
-    private void close_db() {
+    public void close_db() {
         try {
             stmt.close();
             conn.close();

@@ -268,19 +268,19 @@ class IntegratorTools {
         exttype: "csv"
         */
         //lire le filespath.
-        String filespath=getInConnectorInBoundMap(integrator.connectorInbound,"filespath");
+        String filespath=getInConnectorInBoundMap(integrator.getConnectorInbound(),"filespath");
         if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "Le chemin {0} n''existe pas ou n''est pas lisible!", filespath);System.exit(4);} //chemin inexistant...
         
         //lire le chemin de destination
-        String destination=getInConnectorInBoundMap(integrator.connectorInbound,"destination");
+        String destination=getInConnectorInBoundMap(integrator.getConnectorInbound(),"destination");
         if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "Le chemin {0} n''existe pas ou n''est pas lisible!", destination);System.exit(4);} //chemin inexistant...
         
         //lire et tester un boolean
-        String checkfiles=getInConnectorInBoundMap(integrator.connectorInbound,"checkfiles");
+        String checkfiles=getInConnectorInBoundMap(integrator.getConnectorInbound(),"checkfiles");
         if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "La valeur checkfiles n''est pas définie!");System.exit(4);} 
         
         //lire l'extension.
-        String exttype=getInConnectorInBoundMap(integrator.connectorInbound,"exttype");
+        String exttype=getInConnectorInBoundMap(integrator.getConnectorInbound(),"exttype");
         ArrayList<String> lstexttype =new ArrayList<>();
         lstexttype.add("csv"); //liste des extension prise en charge actuellement.
         if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "L''extension {0} n''est pas prise en charge!", exttype);System.exit(4);} //extension no prise en charge
@@ -288,9 +288,33 @@ class IntegratorTools {
         System.out.println("Test des variables OK");
     }
 
+    
+    /*********************************
+     * Check Database Connexion...
+     * @param integrator 
+     *********************************/
     private void check_database_connector(Integrator integrator) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // verifier que la database se connecte...
+        //recuperer les éléments de connections.
+        
+        //tester la connection...
+        DBTools dbt=new DBTools();
+        String dbdriver=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dbdriver");
+        String dburl=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dburl");
+        String dblogin=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dblogin");
+        String dbpassword=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dbpassword");
+        
+        if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
+        {
+            System.out.println("connection à la database impossible!");
+            System.exit(5); //database not connected...
+        }
+        else
+        {
+            dbt.close_db();
+            System.out.println("Database Inbound OK.");
+        }
     }
 
     
