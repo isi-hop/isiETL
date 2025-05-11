@@ -104,6 +104,10 @@ class IntegratorTools {
             //detecter le type de connecteur IN       
             check_connector_inbound(integrator);
             
+            //detecter le type de connecteur OUT       
+            check_connector_outbound(integrator);
+            
+            
         } catch (Exception ex) {
             logger.log(Level.SEVERE,"Erreur parsing!", ex);
             System.exit(1); //sortie erreur 1 fichier yaml incorrect..
@@ -208,7 +212,7 @@ class IntegratorTools {
         switch (connector.toUpperCase()) 
         {
             case "FILE" -> check_file_connector(integrator);
-            case "DATABASE" -> check_database_connector(integrator);
+            case "DATABASE" -> check_database_connector_inbound(integrator);
             default -> {
                 logger.log(Level.SEVERE,"Type de connecteur Entrant inconnu ?");
                 System.out.println("Type de connecteur entrant inconnu?");
@@ -293,7 +297,7 @@ class IntegratorTools {
      * Check Database Connexion...
      * @param integrator 
      *********************************/
-    private void check_database_connector(Integrator integrator) 
+    private void check_database_connector_inbound(Integrator integrator) 
     {
         // verifier que la database se connecte...
         //recuperer les éléments de connections.
@@ -314,6 +318,35 @@ class IntegratorTools {
         {
             dbt.close_db();
             System.out.println("Database Inbound OK.");
+        }
+    }
+
+
+    /*********************************
+     * Check Database Connexion...
+     * @param integrator 
+     *********************************/
+    private void check_database_connector_outbound(Integrator integrator) 
+    {
+        // verifier que la database se connecte...
+        //recuperer les éléments de connections.
+        
+        //tester la connection...
+        DBTools dbt=new DBTools();
+        String dbdriver=getInConnectorOutBoundMap(integrator.getConnectorOutbound(), "dbdriver");
+        String dburl=getInConnectorOutBoundMap(integrator.getConnectorOutbound(), "dburl");
+        String dblogin=getInConnectorOutBoundMap(integrator.getConnectorOutbound(), "dblogin");
+        String dbpassword=getInConnectorInBoundMap(integrator.getConnectorOutbound(), "dbpassword");
+        
+        if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
+        {
+            System.out.println("connection à la database sortante impossible!");
+            System.exit(5); //database not connected...
+        }
+        else
+        {
+            dbt.close_db();
+            System.out.println("Database Outbound OK.");
         }
     }
 
@@ -356,6 +389,31 @@ class IntegratorTools {
     {
         //par defaut c'est ok.
         return ((checkfiles.toUpperCase().compareToIgnoreCase("TRUE")==0) || (checkfiles.toUpperCase().compareToIgnoreCase("FALSE")==0));
+    }
+    
+    
+    /*******************************************
+     * Verifier présence des variables
+     * obligatoire selon le type de connecteur.
+     * @param detect_connector 
+     *******************************************/
+    private void check_connector_outbound(Integrator integrator) 
+    {
+        //si non défini, arrêt
+        String connector=getInConnectorOutBoundMap(integrator.connectorOutbound,"connectortype");
+        
+        if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector Out n'est pas défini?");System.exit(2);}
+        //typage du connecteur
+        switch (connector.toUpperCase()) 
+        {
+            case "FILE" -> check_file_connector(integrator);
+            case "DATABASE" -> check_database_connector_outbound(integrator);
+            default -> {
+                logger.log(Level.SEVERE,"Type de connecteur sortant inconnu ?");
+                System.out.println("Type de connecteur sortant inconnu?");
+                System.exit(3);
+            }
+        }
     }
     
 }
