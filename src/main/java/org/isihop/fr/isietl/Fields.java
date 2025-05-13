@@ -25,7 +25,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-class Fields {
+class Fields 
+{
     public String name;
     public String type;
     public String size;

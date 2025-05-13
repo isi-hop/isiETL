@@ -26,9 +26,10 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-class Integrator {
-    public String integratorName;
-    public String integratorDescription;
+class Job 
+{
+    public String jobName;
+    public String jobDescription;
     
     public Map<String,Features> connectorInbound;
     public Map<String,Fields> fieldsIn; 

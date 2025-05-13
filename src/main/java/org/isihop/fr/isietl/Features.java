@@ -20,6 +20,7 @@ package org.isihop.fr.isietl;
  *
  * @author tondeur-h
  */
-class Features {
+class Features 
+{
     public String value;
 }

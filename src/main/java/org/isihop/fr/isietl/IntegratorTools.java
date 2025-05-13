@@ -39,7 +39,8 @@ import org.yaml.snakeyaml.constructor.Constructor;
  */
 
 
-class IntegratorTools {
+class IntegratorTools 
+{
     //variables globales
     String fileIntegratorPath="";
     boolean displayParameters=false;
@@ -92,20 +93,33 @@ class IntegratorTools {
      ************************************/
     void lire_fichier_integration() {
         InputStream inputStream=null;
-        Integrator integrator=null;
+        Job jobIntegrator=null;
         try {
             //Yaml yaml=new Yaml();
-            Yaml yaml = new Yaml(new Constructor(Integrator.class, new LoaderOptions()));
+            Yaml yaml = new Yaml(new Constructor(Job.class, new LoaderOptions()));
             inputStream = new FileInputStream(new File(fileIntegratorPath));
-            integrator = yaml.load(inputStream);
+            jobIntegrator = yaml.load(inputStream);
             
-            if (displayParameters) {display_integrator(integrator);}
+            if (displayParameters) {display_integrator(jobIntegrator);}
             
             //detecter le type de connecteur IN       
-            check_connector_inbound(integrator);
+            check_connector_inbound(jobIntegrator);
             
             //detecter le type de connecteur OUT       
-            check_connector_outbound(integrator);
+            check_connector_outbound(jobIntegrator);
+            
+            
+            //ok passe les contrôles, on va traiter le job
+            //si le job source est un fichier
+            //faut il le checker ?
+            if (checkInBoundValue(jobIntegrator,"connectortype","file"))
+            {
+                if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "checkfiles"))==true)
+                {
+                    //verifier les fichiers sources
+                }
+            }
+            //traiter l'integration...
             
             
         } catch (Exception ex) {
@@ -150,13 +164,13 @@ class IntegratorTools {
      * @param integratorGlob
      ***************************************/
     
-    public void display_integrator(Integrator integratorGlob) 
+    public void display_integrator(Job integratorGlob) 
     {      
         System.out.println("------------------JOB-------------------");
         System.out.println("-------------INFORMATIONS---------------");
-        System.out.println(integratorGlob.getIntegratorName());
+        System.out.println(integratorGlob.getJobName());
         System.out.println("\t\t---");
-        System.out.println(integratorGlob.getIntegratorDescription());
+        System.out.println(integratorGlob.getJobDescription());
         System.out.println("");
         
         System.out.println("----------CONNECTOR INBOUND-------------");
@@ -202,10 +216,10 @@ class IntegratorTools {
      * obligatoire selon le type de connecteur.
      * @param detect_connector 
      *******************************************/
-    private void check_connector_inbound(Integrator integrator) 
+    private void check_connector_inbound(Job integrator) 
     {
         //si non défini, arrêt
-        String connector=getInConnectorInBoundMap(integrator.connectorInbound,"connectortype");
+        String connector=getInConnectorInBoundMap(integrator,"connectortype");
         
         if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector In n'est pas défini?");System.exit(2);}
         //typage du connecteur
@@ -227,9 +241,9 @@ class IntegratorTools {
      * @param entrySearch
      * @return 
      *********************************************/
-    private String getInConnectorInBoundMap(Map<String, Features> connectorInbound, String entrySearch) 
+    private String getInConnectorInBoundMap(Job jobInteger, String entrySearch) 
     {
-        for (Map.Entry<String, Features> entry : connectorInbound.entrySet()) 
+        for (Map.Entry<String, Features> entry : jobInteger.getConnectorInbound().entrySet()) 
         {
             if (entry.getKey().compareToIgnoreCase(entrySearch)==0) {return entry.getValue().value;}
         }
@@ -237,6 +251,42 @@ class IntegratorTools {
             return "empty";
     }
 
+    
+    /*******************************************
+     * Verifier que la valeur de la clé corresponds
+     * a une valeur donnée
+     * @param integrator
+     * @param key
+     * @param value
+     * @return 
+     *******************************************/
+    private boolean checkInBoundValue(Job integrator,String key,String value)
+    {
+       if (getInConnectorInBoundMap(integrator,key).compareToIgnoreCase(value)==0)
+       {
+           return true;
+       }
+       return false;
+    }
+
+
+   /*******************************************
+     * Verifier que la valeur de la clé corresponds
+     * a une valeur donnée
+     * @param integrator
+     * @param key
+     * @param value
+     * @return 
+     *******************************************/
+    private boolean checkOutBoundValue(Job integrator,String key,String value)
+    {
+       if (getInConnectorOutBoundMap(integrator,key).compareToIgnoreCase(value)==0)
+       {
+           return true;
+       }
+       return false;
+    }
+    
 
     /*********************************************
      * Rechercher une entree dans la Map Outbound
@@ -244,9 +294,9 @@ class IntegratorTools {
      * @param entrySearch
      * @return 
      *********************************************/
-    private String getInConnectorOutBoundMap(Map<String, Features> connectorOutbound, String entrySearch) 
+    private String getInConnectorOutBoundMap(Job jobInteger, String entrySearch) 
     {
-        for (Map.Entry<String, Features> entry : connectorOutbound.entrySet()) 
+        for (Map.Entry<String, Features> entry : jobInteger.getConnectorOutbound().entrySet()) 
         {
             if (entry.getKey().compareToIgnoreCase(entrySearch)==0) {return entry.getValue().value;}
         }
@@ -260,7 +310,7 @@ class IntegratorTools {
      * nécessaires pour un connecteur 
      * entrant de type file.
      ************************************/
-    private void check_file_connector(Integrator integrator) 
+    private void check_file_connector(Job integrator) 
     {
         System.out.println("Connecteur type fichier...");
         /*
@@ -272,19 +322,19 @@ class IntegratorTools {
         exttype: "csv"
         */
         //lire le filespath.
-        String filespath=getInConnectorInBoundMap(integrator.getConnectorInbound(),"filespath");
+        String filespath=getInConnectorInBoundMap(integrator,"filespath");
         if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "Le chemin {0} n''existe pas ou n''est pas lisible!", filespath);System.exit(4);} //chemin inexistant...
         
         //lire le chemin de destination
-        String destination=getInConnectorInBoundMap(integrator.getConnectorInbound(),"destination");
+        String destination=getInConnectorInBoundMap(integrator,"destination");
         if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "Le chemin {0} n''existe pas ou n''est pas lisible!", destination);System.exit(4);} //chemin inexistant...
         
         //lire et tester un boolean
-        String checkfiles=getInConnectorInBoundMap(integrator.getConnectorInbound(),"checkfiles");
+        String checkfiles=getInConnectorInBoundMap(integrator,"checkfiles");
         if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "La valeur checkfiles n''est pas définie!");System.exit(4);} 
         
         //lire l'extension.
-        String exttype=getInConnectorInBoundMap(integrator.getConnectorInbound(),"exttype");
+        String exttype=getInConnectorInBoundMap(integrator,"exttype");
         ArrayList<String> lstexttype =new ArrayList<>();
         lstexttype.add("csv"); //liste des extension prise en charge actuellement.
         if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "L''extension {0} n''est pas prise en charge!", exttype);System.exit(4);} //extension no prise en charge
@@ -297,17 +347,17 @@ class IntegratorTools {
      * Check Database Connexion...
      * @param integrator 
      *********************************/
-    private void check_database_connector_inbound(Integrator integrator) 
+    private void check_database_connector_inbound(Job integrator) 
     {
         // verifier que la database se connecte...
         //recuperer les éléments de connections.
         
         //tester la connection...
         DBTools dbt=new DBTools();
-        String dbdriver=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dbdriver");
-        String dburl=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dburl");
-        String dblogin=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dblogin");
-        String dbpassword=getInConnectorInBoundMap(integrator.getConnectorInbound(), "dbpassword");
+        String dbdriver=getInConnectorInBoundMap(integrator, "dbdriver");
+        String dburl=getInConnectorInBoundMap(integrator, "dburl");
+        String dblogin=getInConnectorInBoundMap(integrator, "dblogin");
+        String dbpassword=getInConnectorInBoundMap(integrator, "dbpassword");
         
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
@@ -326,17 +376,17 @@ class IntegratorTools {
      * Check Database Connexion...
      * @param integrator 
      *********************************/
-    private void check_database_connector_outbound(Integrator integrator) 
+    private void check_database_connector_outbound(Job integrator) 
     {
         // verifier que la database se connecte...
         //recuperer les éléments de connections.
         
         //tester la connection...
         DBTools dbt=new DBTools();
-        String dbdriver=getInConnectorOutBoundMap(integrator.getConnectorOutbound(), "dbdriver");
-        String dburl=getInConnectorOutBoundMap(integrator.getConnectorOutbound(), "dburl");
-        String dblogin=getInConnectorOutBoundMap(integrator.getConnectorOutbound(), "dblogin");
-        String dbpassword=getInConnectorInBoundMap(integrator.getConnectorOutbound(), "dbpassword");
+        String dbdriver=getInConnectorOutBoundMap(integrator, "dbdriver");
+        String dburl=getInConnectorOutBoundMap(integrator, "dburl");
+        String dblogin=getInConnectorOutBoundMap(integrator, "dblogin");
+        String dbpassword=getInConnectorInBoundMap(integrator, "dbpassword");
         
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
@@ -397,10 +447,10 @@ class IntegratorTools {
      * obligatoire selon le type de connecteur.
      * @param detect_connector 
      *******************************************/
-    private void check_connector_outbound(Integrator integrator) 
+    private void check_connector_outbound(Job integrator) 
     {
         //si non défini, arrêt
-        String connector=getInConnectorOutBoundMap(integrator.connectorOutbound,"connectortype");
+        String connector=getInConnectorOutBoundMap(integrator,"connectortype");
         
         if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector Out n'est pas défini?");System.exit(2);}
         //typage du connecteur

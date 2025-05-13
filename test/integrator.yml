@@ -1,8 +1,8 @@
 ---
 # nom de process d'integration et sa description
 # champs optionnels
-integratorName: "MyFirst inegrator process"
-integratorDescription: "Get data from a CSV file to a DB postgresql"
+jobName: "MyFirst inegrator process"
+jobDescription: "Get data from a CSV file to a DB postgresql"
 
 # description du connecteur entrant
 # type file csv ou database postgresql pour l'instant'
@@ -22,7 +22,7 @@ connectorInbound:
   dbdriver:
     value: "org.postgresql.Driver"
   dburl:
-    value: "jdbc:postgresql://localhost:5432/mydatabase"
+    value: "jdbc:postgresql://localhost:5432/mydb"
   dblogin:
     value: "postgres"
   dbpassword:
@@ -58,7 +58,7 @@ connectorOutbound:
   dbdriver:
     value: "org.postgresql.Driver"
   dburl:
-    value: "jdbc:postgresql://localhost:5432/mydatabase"
+    value: "jdbc:postgresql://localhost:5432/mydb"
   dblogin:
     value: "postgres"
   dbpassword:
