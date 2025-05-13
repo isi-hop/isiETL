@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.isihop.fr.isietl;
+package org.isihop.fr.isietl.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,7 +41,7 @@ public class FSTools {
     int numLigneEnCours=0;
     
     //logs
-    private static final  Logger logger = Logger.getLogger(IntegratorTools.class.getName());
+    private static final  Logger logger = Logger.getLogger(FSTools.class.getName());
     
     
     /**************************

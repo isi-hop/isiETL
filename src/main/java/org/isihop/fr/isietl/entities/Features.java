@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.isihop.fr.isietl;
+package org.isihop.fr.isietl.entities;
 
 /**
  *
  * @author tondeur-h
  */
-class Features 
+public class Features 
 {
     public String value;
 }

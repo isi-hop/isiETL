@@ -16,6 +16,10 @@
  */
 package org.isihop.fr.isietl;
 
+import org.isihop.fr.isietl.entities.Fields;
+import org.isihop.fr.isietl.entities.Job;
+import org.isihop.fr.isietl.entities.Features;
+import org.isihop.fr.isietl.tools.DBTools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

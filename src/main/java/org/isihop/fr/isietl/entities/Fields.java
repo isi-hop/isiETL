@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.isihop.fr.isietl;
+package org.isihop.fr.isietl.entities;
 
-import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,17 +25,10 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-class Job 
+public class Fields 
 {
-    public String jobName;
-    public String jobDescription;
-    
-    public Map<String,Features> connectorInbound;
-    public Map<String,Fields> fieldsIn; 
-    
-    public Map<String,Features> connectorOutbound;
-    public Map<String,Fields> fieldsOut;
-    
-    public String sqlinsert;
-    public String sqlupdate;
+    public String name;
+    public String type;
+    public String size;
+    public String defaultValue;
 }
