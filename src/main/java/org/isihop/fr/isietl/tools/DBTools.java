@@ -31,7 +31,8 @@ import java.util.logging.Logger;
  *
  * @author tondeur-h
  */
-public class DBTools {
+public class DBTools 
+{
     
     private boolean debug=false;
     private String deleteSQL="";
@@ -52,7 +53,8 @@ public class DBTools {
      * @param dbpassword
      * @return boolean
      ****************************/
-    public boolean connect_db(String dbdriver, String dburl, String dblogin, String dbpassword) {
+    public boolean connect_db(String dbdriver, String dburl, String dblogin, String dbpassword) 
+    {
         boolean isconnected=false;
         try {
             Class.forName(dbdriver);
@@ -71,7 +73,8 @@ public class DBTools {
     /*********************************
      * Fermer la database si possible.
      *********************************/
-    public void close_db() {
+    public void close_db() 
+    {
         try {
             stmt.close();
             conn.close();
@@ -121,7 +124,8 @@ public class DBTools {
      * @param string
      * @return 
      **************************/
-    private String cvtTopgDate(String strDate) {
+    private String cvtTopgDate(String strDate) 
+    {
         return "20"+strDate.substring(6)+"-"+strDate.substring(3,5)+"-"+strDate.substring(0, 2);
     }
 }

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.isihop.fr.isietl.tools.FSTools;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -95,7 +96,8 @@ class IntegratorTools
      * fichier integrator.yml
      * @return 
      ************************************/
-    void lire_fichier_integration() {
+    void lire_fichier_integration() 
+    {
         InputStream inputStream=null;
         Job jobIntegrator=null;
         try {
@@ -121,6 +123,8 @@ class IntegratorTools
                 if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "checkfiles"))==true)
                 {
                     //verifier les fichiers sources
+                    FSTools fst=new FSTools();
+                    fst.check_files_format(jobIntegrator);
                 }
             }
             //traiter l'integration...
@@ -144,7 +148,8 @@ class IntegratorTools
      * en SHA256
      * @return 
      *****************************/
-    private String calcul_code_Hashage(String chaine) {
+    private String calcul_code_Hashage(String chaine) 
+    {
         StringBuilder hash=new StringBuilder();
         //input concaténé
         String input=chaine;
@@ -258,7 +263,7 @@ class IntegratorTools
     
     /*******************************************
      * Verifier que la valeur de la clé corresponds
-     * a une valeur donnée
+     * a une valeur donnée en paramètre
      * @param integrator
      * @param key
      * @param value
