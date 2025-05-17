@@ -501,6 +501,7 @@ class IntegratorTools
                 System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" disponible.");
             } catch (SQLException ex) 
             {
+                //ex.printStackTrace();
                 //creer la table car manquante...
                 System.out.println("Création de la table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
