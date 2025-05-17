@@ -73,7 +73,7 @@ public class isietl
         tools.lire_properties(this.getClass().getSimpleName());//recuper nom du programme principal
         
         //lire le fichier d'integration.
-        tools.lire_fichier_integration();
+        tools.lire_fichier_jobs();
     }
     
 }

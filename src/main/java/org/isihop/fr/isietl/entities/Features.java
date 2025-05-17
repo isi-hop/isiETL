@@ -16,10 +16,15 @@
  */
 package org.isihop.fr.isietl.entities;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  *
  * @author tondeur-h
  */
+@Data
+@NoArgsConstructor
 public class Features 
 {
     public String value;

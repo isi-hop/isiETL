@@ -19,6 +19,8 @@ connectorInbound:
     value: "/home/tondeur-h/dev/isiETL/test"
   exttype:
     value: "csv"
+  nbfields:
+    value: "4"
   dbdriver:
     value: "org.postgresql.Driver"
   dburl:
@@ -58,7 +60,7 @@ connectorOutbound:
   dbdriver:
     value: "org.postgresql.Driver"
   dburl:
-    value: "jdbc:postgresql://localhost:5432/mydb"
+    value: "jdbc:postgresql://localhost:5432/messagerie"
   dblogin:
     value: "postgres"
   dbpassword:

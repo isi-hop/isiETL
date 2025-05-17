@@ -39,7 +39,7 @@ public class FSTools
     //ouverture et lecture fichier
     FileReader fr;
     BufferedReader br;
-    List<String> listCsv=new ArrayList<>();
+    List<String> listFichiers=new ArrayList<>();
     int numLigneEnCours=0;
     
     //logs
@@ -59,6 +59,23 @@ public class FSTools
         }
     }
 
+    /**********************
+     * Statut de la lecture
+     * @return 
+     **********************/
+    private boolean lecture_statut() 
+    {
+        boolean statut;
+        try {
+            statut=br.ready();
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+            statut=false;
+        }
+        
+        return statut;
+    }
+    
     
     /**********************
      * Lire une ligne du CSV
@@ -107,15 +124,17 @@ public class FSTools
      * Lister tous les fichiers CSV
      * du dossier local fichiers
      ******************************/
-    private void lister_les_fichiers_csv(String csvPath) 
+    private List<String> lister_les_fichiers(String csvPath, String extension) 
     {       
         File[] filesInDirectory = new File(csvPath).listFiles();
         for(File f : filesInDirectory)
         {
             String filePath = f.getAbsolutePath();
             String fileExtenstion = filePath.substring(filePath.lastIndexOf(".") + 1,filePath.length());
-            if("csv".equals(fileExtenstion)){listCsv.add(filePath);}
-        }       
+            if(extension.equals(fileExtenstion)){listFichiers.add(filePath);}
+        }
+        
+        return listFichiers;
     }
     
     
@@ -153,15 +172,59 @@ public class FSTools
      **********************************/
     public void check_files_format(Job jobIntegrator) 
     {
-        //TODO:ICI
         //lire extension
+        String extension=jobIntegrator.getConnectorInbound().get("exttype").getValue();
         //selon extension
+        switch (extension.toUpperCase()) {
+            case "CSV":
+                System.out.println("Format CSV détecté.");
+                check_CSV(jobIntegrator);
+                break;
+            default:
+                logger.log(Level.SEVERE, "Extension inconnu!");
+                System.exit(5);
+                break;
+        }
+    }
+    
+
+    /**************************
+     * Check CSV File format
+     * @param jobIntegrator 
+     **************************/
+    private void check_CSV(Job jobIntegrator) 
+    {
+        //nombre de colonne attendues dans les fichiers CSV
+        int nbAttenduCol=Integer.parseInt(jobIntegrator.getConnectorInbound().get("nbfields").getValue(),10);
         
         //lister tous les fichiers
-        
-        //pour chaque fichier, tester le format qui correspond à l'extension.
+        //pour chaque fichier, tester le format qui correspond à l'extension.        
+        for (String fichier:lister_les_fichiers(jobIntegrator.getConnectorInbound().get("filespath").getValue(),"csv"))
+        {
+            //verifier
+            //doit avoir autant de colonne que défini séparé par des ; uniquement     
+            ouvrir_fichier(fichier);
+            
+            //check chaque ligne...
+            while (lecture_statut())
+            {
+                int nbcol=lecture_ligne().split(";").length;
                 
-      
+                if (nbcol!=nbAttenduCol) 
+                {
+                    logger.log(Level.SEVERE, "ERREUR : Le fichier {0} n''est pas conforme \u00e0 la ligne N\u00b0 {1}", new Object[]{fichier, numLigneEnCours});
+                    System.exit(6);
+                }
+            }
+            
+            fermer_fichier();
+            System.out.println("Fichier "+fichier+" : PASS");
+        }
+        
+        System.out.println("Fin du checking des fichiers.");
     }
+    
+    
+
     
 }

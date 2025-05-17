@@ -96,7 +96,7 @@ class IntegratorTools
      * fichier integrator.yml
      * @return 
      ************************************/
-    void lire_fichier_integration() 
+    void lire_fichier_jobs() 
     {
         InputStream inputStream=null;
         Job jobIntegrator=null;
@@ -123,12 +123,14 @@ class IntegratorTools
                 if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "checkfiles"))==true)
                 {
                     //verifier les fichiers sources
+                    System.out.println("Check fichiers inbound...");
                     FSTools fst=new FSTools();
                     fst.check_files_format(jobIntegrator);
                 }
             }
-            //traiter l'integration...
             
+            //traiter l'integration...
+            traiter_integration(jobIntegrator);
             
         } catch (Exception ex) {
             logger.log(Level.SEVERE,"Erreur parsing!", ex);
@@ -252,12 +254,9 @@ class IntegratorTools
      *********************************************/
     private String getInConnectorInBoundMap(Job jobInteger, String entrySearch) 
     {
-        for (Map.Entry<String, Features> entry : jobInteger.getConnectorInbound().entrySet()) 
-        {
-            if (entry.getKey().compareToIgnoreCase(entrySearch)==0) {return entry.getValue().value;}
-        }
-            //par defaut
-            return "empty";
+        String valeur;
+        try {valeur=jobInteger.getConnectorInbound().get(entrySearch).getValue();} catch (Exception e) {valeur="";}        
+        return valeur;
     }
 
     
@@ -271,11 +270,7 @@ class IntegratorTools
      *******************************************/
     private boolean checkInBoundValue(Job integrator,String key,String value)
     {
-       if (getInConnectorInBoundMap(integrator,key).compareToIgnoreCase(value)==0)
-       {
-           return true;
-       }
-       return false;
+       return getInConnectorInBoundMap(integrator,key).compareToIgnoreCase(value)==0;
     }
 
 
@@ -289,11 +284,7 @@ class IntegratorTools
      *******************************************/
     private boolean checkOutBoundValue(Job integrator,String key,String value)
     {
-       if (getInConnectorOutBoundMap(integrator,key).compareToIgnoreCase(value)==0)
-       {
-           return true;
-       }
-       return false;
+       return getInConnectorOutBoundMap(integrator,key).compareToIgnoreCase(value)==0;
     }
     
 
@@ -305,12 +296,9 @@ class IntegratorTools
      *********************************************/
     private String getInConnectorOutBoundMap(Job jobInteger, String entrySearch) 
     {
-        for (Map.Entry<String, Features> entry : jobInteger.getConnectorOutbound().entrySet()) 
-        {
-            if (entry.getKey().compareToIgnoreCase(entrySearch)==0) {return entry.getValue().value;}
-        }
-            //par defaut
-            return "empty";
+        String valeur;
+        try {valeur=jobInteger.getConnectorOutbound().get(entrySearch).getValue();} catch (Exception e) {valeur="";}        
+        return valeur;
     }
 
     
@@ -321,7 +309,7 @@ class IntegratorTools
      ************************************/
     private void check_file_connector(Job integrator) 
     {
-        System.out.println("Connecteur type fichier...");
+        System.out.println("Connecteur InBound, type fichier...");
         /*
         doit contenir les 4 paramètres suivants...
         correctement enregistré et avec une valeur corrrecte...
@@ -348,6 +336,7 @@ class IntegratorTools
         lstexttype.add("csv"); //liste des extension prise en charge actuellement.
         if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "L''extension {0} n''est pas prise en charge!", exttype);System.exit(4);} //extension no prise en charge
         
+        System.out.println("Test du connecteur fichier OK");
         System.out.println("Test des variables OK");
     }
 
@@ -473,6 +462,14 @@ class IntegratorTools
                 System.exit(3);
             }
         }
+    }
+
+    /**********************************************
+     * TRaiter l'intégration des données
+     * @param jobIntegrator 
+     **********************************************/
+    private void traiter_integration(Job jobIntegrator) {
+        //TODO: Traitement de l'intégration des données
     }
     
 }
