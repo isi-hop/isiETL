@@ -34,23 +34,34 @@ import java.util.logging.Logger;
 public class DBTools 
 {
     
-    private boolean debug=false;
-    private String deleteSQL="";
+    private final boolean debug=false;
+    private final String deleteSQL="";
+    
+    //logs
+    private static final  Logger logger = Logger.getLogger(DBTools.class.getName());
     
     //database
     private Connection conn;
     private Statement stmt;
 
-    public Connection getConn() {
+    /****************************
+     * Getter pour Connection DB
+     * @return 
+     ****************************/
+    public Connection getConn() 
+    {
         return conn;
     }
 
-    public Statement getStmt() {
+    /****************************
+     * Getter pour Statement
+     * @return 
+     ****************************/
+    public Statement getStmt() 
+    {
         return stmt;
     }
     
-    //logs
-    private static final  Logger logger = Logger.getLogger(DBTools.class.getName());
     
     /***********************************
      * Connecter la DB
@@ -126,6 +137,7 @@ public class DBTools
         }
     }
 
+    
     /***************************
      * Convertir date
      * JJ/MM/AA => AAAA-MM-JJ

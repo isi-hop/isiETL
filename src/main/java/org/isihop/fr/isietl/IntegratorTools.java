@@ -50,8 +50,8 @@ import org.yaml.snakeyaml.constructor.Constructor;
 class IntegratorTools 
 {
     //variables globales
-    String fileIntegratorPath="";
-    boolean displayParameters=false;
+    private String fileIntegratorPath="";
+    private boolean displayParameters=false;
     
     //logs
        private static final  Logger logger = Logger.getLogger(IntegratorTools.class.getName());
@@ -99,10 +99,10 @@ class IntegratorTools
      * fichier integrator.yml
      * @return 
      ************************************/
-    void lire_fichier_jobs() 
+    public void lire_fichier_jobs() 
     {
         InputStream inputStream=null;
-        Job jobIntegrator=null;
+        Job jobIntegrator;
         try {
             //Yaml yaml=new Yaml();
             Yaml yaml = new Yaml(new Constructor(Job.class, new LoaderOptions()));
@@ -148,6 +148,7 @@ class IntegratorTools
         //return integrator;
     }
 
+    
     /*****************************
      * Calculer un code de hashage 
      * en SHA256
@@ -415,6 +416,7 @@ class IntegratorTools
         return false;
     }
 
+    
     /***********************************
      * Tester la valeur d'une chaine
      * dans une liste
@@ -430,6 +432,7 @@ class IntegratorTools
         //par defaut
         return false;
     }
+    
     
     /**********************************
      * Tester validité du boolean
@@ -467,6 +470,7 @@ class IntegratorTools
         }
     }
 
+    
     /**********************************************
      * TRaiter l'intégration des données
      * @param jobIntegrator 
@@ -474,9 +478,6 @@ class IntegratorTools
     private void traiter_integration(Job jobIntegrator) 
     {
         try {
-            //TODO: Traitement de l'intégration des données
-            ResultSet rs;
-            
             //se connecter à la database_outbound
             DBTools dbt=new DBTools();
             dbt.connect_db(
@@ -490,18 +491,21 @@ class IntegratorTools
             String sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
             
             try{
-                rs=dbt.getStmt().executeQuery(sql);
+                ResultSet rs=dbt.getStmt().executeQuery(sql);
                 System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" disponible.");
             } catch (SQLException ex) 
             {
                 //creer la table car manquante...
                 System.out.println("Création de la table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
-                //TODO : sql=creer_create_Table(jobIntegrator);
+                //TODO: creer_create_Table(jobIntegrator);
                 //sql=creer_create_Table(jobIntegrator);
+                
                 dbt.getStmt().executeUpdate(sql);
             }
                         
             //construire le template de la requête UPSERT
+            //TODO: creer_create_Template_UPSERT(jobIntegrator);
+            //sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
             
             //traiter les fichiers
             FSTools fst=new FSTools();
@@ -512,20 +516,37 @@ class IntegratorTools
                 while(fst.lecture_statut())
                 {
                     String[] col=fst.lecture_ligne().split(";");
-                    //TODO : replace templace UPSERT
                     
-                    //TODO : UPSERT_DATA
+                    String hashCode=calcul_code_Hashage(concatenate_col(col));
+                    //TODO: replace_template_UPSERT_Value();
+                    //sql=replace_template_UPSERT_Value(sqlTemplate);
+                    
+                    //UPSERT_DATA
+                    dbt.getStmt().executeUpdate(sql);
                 }
                 
                 fst.fermer_fichier();
             }
             
-
             //se deconnecter de la database outobound
             dbt.close_db();
         } catch (SQLException ex) {
             Logger.getLogger(IntegratorTools.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
+    }
+
+    
+    /************************
+     * Concatene un tableau
+     * de chaine
+     * @param col
+     * @return 
+     ************************/
+    private String concatenate_col(String[] col) 
+    {
+        String resultat="";
+       for (String c:col) {resultat=resultat+col;}
+       return resultat;
     }
     
 }

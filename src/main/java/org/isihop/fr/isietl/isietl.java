@@ -32,7 +32,7 @@ import java.util.logging.SimpleFormatter;
 public class isietl 
 {
     //variables globales
-    IntegratorTools tools=null;
+    IntegratorTools tools;
     
     //logs
        private static final  Logger logger = Logger.getLogger(isietl.class.getName());

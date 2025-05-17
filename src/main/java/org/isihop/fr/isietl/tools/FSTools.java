@@ -37,10 +37,10 @@ public class FSTools
 {
     
     //ouverture et lecture fichier
-    FileReader fr;
-    BufferedReader br;
-    List<String> listFichiers=new ArrayList<>();
-    int numLigneEnCours=0;
+    private FileReader fr;
+    private BufferedReader br;
+    private final List<String> listFichiers=new ArrayList<>();
+    private int numLigneEnCours=0;
     
     //logs
     private static final  Logger logger = Logger.getLogger(FSTools.class.getName());
@@ -59,10 +59,10 @@ public class FSTools
         }
     }
 
-    /**********************
+    /***********************
      * Statut de la lecture
      * @return 
-     **********************/
+     ***********************/
     public boolean lecture_statut() 
     {
         boolean statut;
@@ -123,6 +123,9 @@ public class FSTools
     /******************************
      * Lister tous les fichiers CSV
      * du dossier local fichiers
+     * @param csvPath
+     * @param extension
+     * @return 
      ******************************/
     public List<String> lister_les_fichiers(String csvPath, String extension) 
     {       
@@ -151,8 +154,9 @@ public class FSTools
     
      
     /*****************************
-     * déplacer le fichier tra ité
-     * @param cheminFichier 
+     * déplacer le fichier tra ité 
+     * @param cheminFichierSrc
+     * @param cheminFichierDest
      *****************************/
     public void deplacer_fichier(String cheminFichierSrc, String cheminFichierDest) 
     {
@@ -164,6 +168,7 @@ public class FSTools
         }
     }
 
+    
     /**********************************
      * Controle le format des fichiers
      * selon l'extension fournie et
@@ -176,14 +181,15 @@ public class FSTools
         String extension=jobIntegrator.getConnectorInbound().get("exttype").getValue();
         //selon extension
         switch (extension.toUpperCase()) {
-            case "CSV":
+            case "CSV" -> 
+            {
                 System.out.println("Format CSV détecté.");
                 check_CSV(jobIntegrator);
-                break;
-            default:
+            }
+            default -> {
                 logger.log(Level.SEVERE, "Extension inconnu!");
                 System.exit(5);
-                break;
+            }
         }
     }
     
