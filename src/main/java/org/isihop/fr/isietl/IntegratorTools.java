@@ -50,7 +50,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 class IntegratorTools 
 {
     //variables globales
-    private String fileIntegratorPath="";
+    private String fileIntegratorPath="integrator.yml";
     private boolean displayParameters=false;
     
     //logs
@@ -84,9 +84,10 @@ class IntegratorTools
             }
         } catch (FileNotFoundException ex) {
             logger.log(Level.SEVERE, ex.getMessage());
+            fileIntegratorPath=currentPath+"/integrator.yml";
         } finally {
             try {
-                is.close();
+                if (is!=null) is.close();
             } catch (IOException ex) {
                 logger.log(Level.SEVERE, ex.getMessage());
             }
@@ -104,7 +105,8 @@ class IntegratorTools
         InputStream inputStream=null;
         Job jobIntegrator;
         try {
-            //Yaml yaml=new Yaml();
+            //lecture du YAML
+            System.out.println("Lecture du fichier job : "+fileIntegratorPath);
             Yaml yaml = new Yaml(new Constructor(Job.class, new LoaderOptions()));
             inputStream = new FileInputStream(new File(fileIntegratorPath));
             jobIntegrator = yaml.load(inputStream);
@@ -134,9 +136,11 @@ class IntegratorTools
             
             //traiter l'integration...
             traiter_integration(jobIntegrator);
+            System.out.println("Fin des jobs...");
             
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE,"Erreur parsing!", ex);
+            
+        } catch (FileNotFoundException ex) {
+            logger.log(Level.SEVERE,"Erreur parsing!, Fichier Job non trouvé!", ex);
             System.exit(1); //sortie erreur 1 fichier yaml incorrect..
         } finally {
             try {
@@ -479,18 +483,20 @@ class IntegratorTools
     {
         try {
             //se connecter à la database_outbound
+            System.out.println("Connection DataBase OutBound.");
             DBTools dbt=new DBTools();
             dbt.connect_db(
                     getInConnectorOutBoundMap(jobIntegrator, "dbdriver"),
                     getInConnectorOutBoundMap(jobIntegrator, "dburl"),
                     getInConnectorOutBoundMap(jobIntegrator, "dblogin"),
                     getInConnectorOutBoundMap(jobIntegrator, "dbpassword"));
-            
+            System.out.println("Connection DataBase OutBound : PASS");
             
             //tester présence de la table sinon la construire
             String sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
             
             try{
+                System.out.println("Controle disponibilité table OutBound");
                 ResultSet rs=dbt.getStmt().executeQuery(sql);
                 System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" disponible.");
             } catch (SQLException ex) 
@@ -502,31 +508,37 @@ class IntegratorTools
                 sql=creer_create_Table(jobIntegrator);
                 
                 dbt.getStmt().executeUpdate(sql);
+                System.out.println("Creation de la table : PASS");
             }
                         
             //construire le template de la requête UPSERT
-            //TODO: creer_create_Template_UPSERT(jobIntegrator);
-            //sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
+            System.out.println("Préparation du template UPSERT");
+            String sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
             
             //traiter les fichiers
+            int nbLignes;
             FSTools fst=new FSTools();
             List<String> lstfile=fst.lister_les_fichiers(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
             for (String fichier:lstfile)
             {
+                System.out.println("Début du job d'intégration du fichier : "+fichier);
+                nbLignes=1;
                 fst.ouvrir_fichier(fichier);
                 while(fst.lecture_statut())
                 {
                     String[] col=fst.lecture_ligne().split(";");
                     
                     String hashCode=calcul_code_Hashage(concatenate_col(col));
-                    //TODO: replace_template_UPSERT_Value();
-                    //sql=replace_template_UPSERT_Value(sqlTemplate);
+                    
+                    sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator);
                     
                     //UPSERT_DATA
                     dbt.getStmt().executeUpdate(sql);
+                    nbLignes++;
                 }
-                
                 fst.fermer_fichier();
+                System.out.println("Traitement de "+nbLignes+" lignes.");
+                System.out.println("Fin du job d'intégration du fichier : "+fichier);
             }
             
             //se deconnecter de la database outobound
@@ -568,19 +580,73 @@ class IntegratorTools
             //si varchar présent et taille >0 => varchar(x)
             if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
             {
-                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType()+"("+entry.getValue().getSize()+"),";
+                sqlCreateTable=sqlCreateTable+entry.getKey().toLowerCase()+" "+entry.getValue().getType().toLowerCase()+"("+entry.getValue().getSize()+"),";
             }
             else
             {
-                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType()+",";
+                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType().toLowerCase()+",";
             } 
         }
         //ajouter le hascode
-        sqlCreateTable=sqlCreateTable+"hashcode varchar)";
+        sqlCreateTable=sqlCreateTable+"hashcode varchar,";
+        
+        //ajouter la contraite
+        sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
+
         
         return sqlCreateTable;
     }
-    
+
+    /********************************
+     * Creer le template de l'UPSERT
+     * @param jobIntegrator
+     * @return 
+     ********************************/
+    private String creer_create_Template_UPSERT(Job jobIntegrator) {
+        String template="";
+        
+        template="INSERT INTO "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" (";
+        
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+            {template=template+entry.getKey().toLowerCase()+",";}
+        
+        template=template+"hashcode) VALUES(";
+        
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {template=template+"'%"+entry.getKey().toLowerCase()+"%',";}
+        template=template+"'%hashcode%'";
+        
+        template=template+") ON CONFLICT(hashcode) DO UPDATE SET ";
+        
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {template=template+entry.getKey().toLowerCase()+"='%"+entry.getKey().toLowerCase()+"%',";}
+        
+        return template.substring(0, template.length()-1); //retirer la dernière virgule
+    }
+
+    /******************************
+     * Implementer la requete
+     * @param sqlTemplate
+     * @return 
+     ******************************/
+    private String replace_template_UPSERT_Value(String sqlTemplate,String hashCode,String[] col, Job jobIntegrator) 
+    {
+        String sqlReplace=sqlTemplate;
+        //chercher le nom de la valeur
+        String champ="";
+        int num=0;
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {
+            champ="%"+entry.getKey().toLowerCase()+"%";
+            sqlReplace=sqlReplace.replaceAll(champ, col[num]);
+            num++;
+        }
+        
+        //remplacer le hashcode
+        sqlReplace=sqlReplace.replaceAll("%hashcode%", hashCode);
+        
+        return sqlReplace;
+    }
     
     
 }

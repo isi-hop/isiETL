@@ -88,7 +88,7 @@ fieldsOut:
   sexe:
     defaultValue: "M"
     name: "sexe"
-    size: "1"
+    size: "10"
     type: "varchar"
 
 # reservé pour plus tard.

@@ -69,7 +69,8 @@ public class isietl
     {
        tools=new IntegratorTools();  //instancier les tools
                 
-        //lire les properties du système isietl
+        //lire les properties du système isietl si present
+        //sinon affecte des valeurs par defaut
         tools.lire_properties(this.getClass().getSimpleName());//recuper nom du programme principal
         
         //lire le fichier d'integration.
