@@ -60,7 +60,7 @@ connectorOutbound:
   dbdriver:
     value: "org.postgresql.Driver"
   dburl:
-    value: "jdbc:postgresql://localhost:5432/messagerie"
+    value: "jdbc:postgresql://localhost:5432/mydb"
   dblogin:
     value: "postgres"
   dbpassword:
@@ -74,22 +74,22 @@ fieldsOut:
     defaultValue: "vide"
     name: "identifiant"
     size: "20"
-    type: "text"
+    type: "varchar"
   nom:
     defaultValue: "noname"
     name: "nom"
     size: "80"
-    type: "text"
+    type: "varchar"
   prenom:
     defaultValue: "unknown"
     name: "prenom"
     size: "50"
-    type: "text"
+    type: "varchar"
   sexe:
     defaultValue: "M"
     name: "sexe"
     size: "1"
-    type: "text"
+    type: "varchar"
 
 # reservé pour plus tard.
 sqlinsert: ""

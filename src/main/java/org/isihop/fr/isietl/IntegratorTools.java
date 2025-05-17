@@ -497,8 +497,9 @@ class IntegratorTools
             {
                 //creer la table car manquante...
                 System.out.println("Création de la table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
-                //TODO: creer_create_Table(jobIntegrator);
-                //sql=creer_create_Table(jobIntegrator);
+                
+                //creer_create_Table(jobIntegrator);
+                sql=creer_create_Table(jobIntegrator);
                 
                 dbt.getStmt().executeUpdate(sql);
             }
@@ -548,5 +549,38 @@ class IntegratorTools
        for (String c:col) {resultat=resultat+col;}
        return resultat;
     }
+
+    /*****************************************
+     * Creer la table automatique a partir des
+     * donnees de descriptions qui se trouvent
+     * dans la description "fieldsOut"
+     * @param jobIntegrator
+     * @return 
+     ****************************************/
+    private String creer_create_Table(Job jobIntegrator) 
+    {
+        String sqlCreateTable="";
+        
+        String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
+        sqlCreateTable="CREATE TABLE " + NomTable+" (";
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {
+            //si varchar présent et taille >0 => varchar(x)
+            if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
+            {
+                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType()+"("+entry.getValue().getSize()+"),";
+            }
+            else
+            {
+                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType()+",";
+            } 
+        }
+        //ajouter le hascode
+        sqlCreateTable=sqlCreateTable+"hashcode varchar)";
+        
+        return sqlCreateTable;
+    }
+    
+    
     
 }
