@@ -27,7 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -468,8 +471,61 @@ class IntegratorTools
      * TRaiter l'intégration des données
      * @param jobIntegrator 
      **********************************************/
-    private void traiter_integration(Job jobIntegrator) {
-        //TODO: Traitement de l'intégration des données
+    private void traiter_integration(Job jobIntegrator) 
+    {
+        try {
+            //TODO: Traitement de l'intégration des données
+            ResultSet rs;
+            
+            //se connecter à la database_outbound
+            DBTools dbt=new DBTools();
+            dbt.connect_db(
+                    getInConnectorOutBoundMap(jobIntegrator, "dbdriver"),
+                    getInConnectorOutBoundMap(jobIntegrator, "dburl"),
+                    getInConnectorOutBoundMap(jobIntegrator, "dblogin"),
+                    getInConnectorOutBoundMap(jobIntegrator, "dbpassword"));
+            
+            
+            //tester présence de la table sinon la construire
+            String sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
+            
+            try{
+                rs=dbt.getStmt().executeQuery(sql);
+                System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" disponible.");
+            } catch (SQLException ex) 
+            {
+                //creer la table car manquante...
+                System.out.println("Création de la table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                //TODO : sql=creer_create_Table(jobIntegrator);
+                //sql=creer_create_Table(jobIntegrator);
+                dbt.getStmt().executeUpdate(sql);
+            }
+                        
+            //construire le template de la requête UPSERT
+            
+            //traiter les fichiers
+            FSTools fst=new FSTools();
+            List<String> lstfile=fst.lister_les_fichiers(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
+            for (String fichier:lstfile)
+            {
+                fst.ouvrir_fichier(fichier);
+                while(fst.lecture_statut())
+                {
+                    String[] col=fst.lecture_ligne().split(";");
+                    //TODO : replace templace UPSERT
+                    
+                    //TODO : UPSERT_DATA
+                }
+                
+                fst.fermer_fichier();
+            }
+            
+
+            //se deconnecter de la database outobound
+            dbt.close_db();
+        } catch (SQLException ex) {
+            Logger.getLogger(IntegratorTools.class.getName()).log(Level.SEVERE, ex.getMessage());
+        }
     }
     
 }

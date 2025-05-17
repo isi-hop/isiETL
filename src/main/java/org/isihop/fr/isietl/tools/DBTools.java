@@ -40,11 +40,19 @@ public class DBTools
     //database
     private Connection conn;
     private Statement stmt;
+
+    public Connection getConn() {
+        return conn;
+    }
+
+    public Statement getStmt() {
+        return stmt;
+    }
     
     //logs
     private static final  Logger logger = Logger.getLogger(DBTools.class.getName());
     
-    /****************************
+    /***********************************
      * Connecter la DB
      * Si non possible pas de traitement
      * @param dbdriver
@@ -52,7 +60,7 @@ public class DBTools
      * @param dblogin
      * @param dbpassword
      * @return boolean
-     ****************************/
+     **********************************/
     public boolean connect_db(String dbdriver, String dburl, String dblogin, String dbpassword) 
     {
         boolean isconnected=false;

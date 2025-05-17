@@ -49,7 +49,7 @@ public class FSTools
     /**************************
      * Fermer le fichier source
      **************************/
-    private void fermer_fichier() 
+    public void fermer_fichier() 
     {
         try {
             br.close();
@@ -63,7 +63,7 @@ public class FSTools
      * Statut de la lecture
      * @return 
      **********************/
-    private boolean lecture_statut() 
+    public boolean lecture_statut() 
     {
         boolean statut;
         try {
@@ -81,7 +81,7 @@ public class FSTools
      * Lire une ligne du CSV
      * @return 
      **********************/
-    private String lecture_ligne() 
+    public String lecture_ligne() 
     {
         String ligne="";
         try {
@@ -102,7 +102,7 @@ public class FSTools
      * @param csvPath
      * @return 
      **********************/
-    private boolean ouvrir_fichier(String csvPath) 
+    public boolean ouvrir_fichier(String csvPath) 
     {
         boolean okfile=false;
         try {
@@ -124,7 +124,7 @@ public class FSTools
      * Lister tous les fichiers CSV
      * du dossier local fichiers
      ******************************/
-    private List<String> lister_les_fichiers(String csvPath, String extension) 
+    public List<String> lister_les_fichiers(String csvPath, String extension) 
     {       
         File[] filesInDirectory = new File(csvPath).listFiles();
         for(File f : filesInDirectory)
@@ -142,7 +142,7 @@ public class FSTools
      * Supprimer le fichier traité.
      * @param cheminFichier 
      *****************************/
-    private void supprimer_fichier(String cheminFichier) 
+    public void supprimer_fichier(String cheminFichier) 
     {
         File f=new File(cheminFichier);
         f.delete();
@@ -154,7 +154,7 @@ public class FSTools
      * déplacer le fichier tra ité
      * @param cheminFichier 
      *****************************/
-    private void deplacer_fichier(String cheminFichierSrc, String cheminFichierDest) 
+    public void deplacer_fichier(String cheminFichierSrc, String cheminFichierDest) 
     {
         try {            
             Files.move(Paths.get(cheminFichierSrc), Paths.get(cheminFichierDest),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -223,8 +223,5 @@ public class FSTools
         
         System.out.println("Fin du checking des fichiers.");
     }
-    
-    
-
     
 }

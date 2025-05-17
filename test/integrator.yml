@@ -65,6 +65,8 @@ connectorOutbound:
     value: "postgres"
   dbpassword:
     value: "admin"
+  targetTable:
+    value: "tabletest"
 
 # description des champs de la table sortant postgresql.
 fieldsOut:
