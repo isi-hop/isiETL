@@ -43,7 +43,7 @@ public class FSTools
     private int numLigneEnCours=0;
     
     //logs
-    public Logger logger;
+    public final Logger logger;
     
     /**********************
      * Constructeur
