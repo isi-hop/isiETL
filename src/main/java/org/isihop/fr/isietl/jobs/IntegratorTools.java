@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.isihop.fr.isietl;
+package org.isihop.fr.isietl.jobs;
 
 import org.isihop.fr.isietl.entities.Fields;
 import org.isihop.fr.isietl.entities.Job;
 import org.isihop.fr.isietl.entities.Features;
-import org.isihop.fr.isietl.tools.DBTools;
+import org.isihop.fr.isietl.connectors.DBTools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,10 +32,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.isihop.fr.isietl.tools.FSTools;
+import org.isihop.fr.isietl.connectors.FSTools;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -47,66 +46,38 @@ import org.yaml.snakeyaml.constructor.Constructor;
  */
 
 
-class IntegratorTools 
+public class IntegratorTools 
 {
     //variables globales
-    private String fileIntegratorPath="integrator.yml";
-    private boolean displayParameters=false;
+    private String fileIntegratorPath;
+    private boolean displayParameters;
     
     //logs
-       private static final  Logger logger = Logger.getLogger(IntegratorTools.class.getName());
+    private Logger logger;
+
        
-    /*********************************
-     * Lire les properties du fichier
-     * properties local.
-     * @param programName
-     *********************************/
-    public void lire_properties(String programName)
-    {
-        //recuperer le chemin local et le nom de l'application
-        //le fichier properties doit comporter le même
-        //nom que l'application.
-        String currentPath=System.getProperty("user.dir");
-        FileInputStream is=null;
-        
-        try {
-            is = new FileInputStream(currentPath+"/"+programName+".properties");
-            Properties p=new Properties();
-            try {
-                //charger le fichier properties
-                p.load(is);
-                //lecture des variables
-                fileIntegratorPath=p.getProperty("fileintegratorpath", currentPath+"/integrator.yml"); //par defaut le chemin de l'appli
-                displayParameters=Boolean.parseBoolean(p.getProperty("displayparameters","false"));
-                
-            } catch (IOException ex) {
-                logger.log(Level.SEVERE, ex.getMessage());
-            }
-        } catch (FileNotFoundException ex) {
-            logger.log(Level.SEVERE, ex.getMessage());
-            fileIntegratorPath=currentPath+"/integrator.yml";
-        } finally {
-            try {
-                if (is!=null) is.close();
-            } catch (IOException ex) {
-                logger.log(Level.SEVERE, ex.getMessage());
-            }
-        }
-    }
-    
-    
     /************************************
      * lecture et controle du
      * fichier integrator.yml
-     * @return 
+     * @param fileymlpath
+     * @param dp
+     * @param logs
      ************************************/
-    public void lire_fichier_jobs() 
+    public void lire_fichier_jobs(String fileymlpath, boolean dp,Logger logs) 
     {
+        //réassocier les paramètre en loca
+        fileIntegratorPath=fileymlpath;
+        displayParameters=dp;
+        logger=logs;
+        
+        
         InputStream inputStream=null;
         Job jobIntegrator;
         try {
             //lecture du YAML
             System.out.println("Lecture du fichier job : "+fileIntegratorPath);
+            logger.log(Level.INFO, "Lecture du fichier job : {0}", fileIntegratorPath);
+            
             Yaml yaml = new Yaml(new Constructor(Job.class, new LoaderOptions()));
             inputStream = new FileInputStream(new File(fileIntegratorPath));
             jobIntegrator = yaml.load(inputStream);
@@ -129,7 +100,9 @@ class IntegratorTools
                 {
                     //verifier les fichiers sources
                     System.out.println("Check fichiers inbound...");
-                    FSTools fst=new FSTools();
+                    logger.log(Level.INFO,"Check fichiers inbound...");
+                    
+                    FSTools fst=new FSTools(logger);
                     fst.check_files_format(jobIntegrator);
                 }
             }
@@ -137,16 +110,18 @@ class IntegratorTools
             //traiter l'integration...
             traiter_integration(jobIntegrator);
             System.out.println("Fin des jobs...");
-            
+            logger.log(Level.INFO,"Fin des jobs...");
             
         } catch (FileNotFoundException ex) {
-            logger.log(Level.SEVERE,"Erreur parsing!, Fichier Job non trouvé!", ex);
+            System.out.println("Erreur parsing!, Fichier Job non trouvé!");
+            System.out.println(ex.getMessage());
+            logger.log(Level.SEVERE,"Erreur parsing!, Fichier Job non trouvé!", ex.getMessage());
             System.exit(1); //sortie erreur 1 fichier yaml incorrect..
         } finally {
             try {
                 inputStream.close();
             } catch (IOException ex) {
-               logger.log(Level.SEVERE, null, ex);
+               logger.log(Level.SEVERE, ex.getMessage());
             }
         }
         //return integrator;
@@ -254,6 +229,7 @@ class IntegratorTools
         }
     }
     
+    
     /*********************************************
      * Rechercher une entree dans la Map Inbound
      * @param connectorInbound
@@ -318,6 +294,7 @@ class IntegratorTools
     private void check_file_connector(Job integrator) 
     {
         System.out.println("Connecteur InBound, type fichier...");
+        logger.log(Level.INFO,"Connecteur InBound, type fichier...");
         /*
         doit contenir les 4 paramètres suivants...
         correctement enregistré et avec une valeur corrrecte...
@@ -346,6 +323,8 @@ class IntegratorTools
         
         System.out.println("Test du connecteur fichier OK");
         System.out.println("Test des variables OK");
+        logger.log(Level.INFO,"Test du connecteur fichier OK");
+        logger.log(Level.INFO,"Test des variables OK");
     }
 
     
@@ -359,7 +338,7 @@ class IntegratorTools
         //recuperer les éléments de connections.
         
         //tester la connection...
-        DBTools dbt=new DBTools();
+        DBTools dbt=new DBTools(logger);
         String dbdriver=getInConnectorInBoundMap(integrator, "dbdriver");
         String dburl=getInConnectorInBoundMap(integrator, "dburl");
         String dblogin=getInConnectorInBoundMap(integrator, "dblogin");
@@ -368,12 +347,14 @@ class IntegratorTools
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
             System.out.println("connection à la database impossible!");
+            logger.log(Level.SEVERE,"connection à la database impossible!");
             System.exit(5); //database not connected...
         }
         else
         {
             dbt.close_db();
             System.out.println("Database Inbound OK.");
+            logger.log(Level.INFO,"Database Inbound OK.");
         }
     }
 
@@ -388,7 +369,7 @@ class IntegratorTools
         //recuperer les éléments de connections.
         
         //tester la connection...
-        DBTools dbt=new DBTools();
+        DBTools dbt=new DBTools(logger);
         String dbdriver=getInConnectorOutBoundMap(integrator, "dbdriver");
         String dburl=getInConnectorOutBoundMap(integrator, "dburl");
         String dblogin=getInConnectorOutBoundMap(integrator, "dblogin");
@@ -397,12 +378,14 @@ class IntegratorTools
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
             System.out.println("connection à la database sortante impossible!");
+            logger.log(Level.SEVERE,"connection à la database sortante impossible!");
             System.exit(5); //database not connected...
         }
         else
         {
             dbt.close_db();
             System.out.println("Database Outbound OK.");
+            logger.log(Level.INFO,"Database Outbound OK.");
         }
     }
 
@@ -484,45 +467,58 @@ class IntegratorTools
         try {
             //se connecter à la database_outbound
             System.out.println("Connection DataBase OutBound.");
-            DBTools dbt=new DBTools();
+            logger.log(Level.INFO,"Connection DataBase OutBound.");
+            
+            DBTools dbt=new DBTools(logger);
             dbt.connect_db(
                     getInConnectorOutBoundMap(jobIntegrator, "dbdriver"),
                     getInConnectorOutBoundMap(jobIntegrator, "dburl"),
                     getInConnectorOutBoundMap(jobIntegrator, "dblogin"),
                     getInConnectorOutBoundMap(jobIntegrator, "dbpassword"));
             System.out.println("Connection DataBase OutBound : PASS");
+            logger.log(Level.INFO,"Connection DataBase OutBound : PASS");
             
             //tester présence de la table sinon la construire
             String sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
             
             try{
                 System.out.println("Controle disponibilité table OutBound");
+                logger.log(Level.INFO,"Controle disponibilité table OutBound");
+                
                 ResultSet rs=dbt.getStmt().executeQuery(sql);
                 System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" disponible.");
+                logger.log(Level.INFO, "Table {0} disponible.", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                
             } catch (SQLException ex) 
             {
                 //ex.printStackTrace();
                 //creer la table car manquante...
                 System.out.println("Création de la table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                logger.log(Level.INFO, "Cr\u00e9ation de la table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
                 //creer_create_Table(jobIntegrator);
                 sql=creer_create_Table(jobIntegrator);
                 
                 dbt.getStmt().executeUpdate(sql);
                 System.out.println("Creation de la table : PASS");
+                logger.log(Level.INFO,"Creation de la table : PASS");
             }
                         
             //construire le template de la requête UPSERT
             System.out.println("Préparation du template UPSERT");
+            logger.log(Level.INFO,"Préparation du template UPSERT");
+            
             String sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
             
             //traiter les fichiers
             int nbLignes;
-            FSTools fst=new FSTools();
+            FSTools fst=new FSTools(logger);
             List<String> lstfile=fst.lister_les_fichiers(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
             for (String fichier:lstfile)
             {
                 System.out.println("Début du job d'intégration du fichier : "+fichier);
+                logger.log(Level.INFO, "D\u00e9but du job d''int\u00e9gration du fichier : {0}", fichier);
+                
                 nbLignes=1;
                 fst.ouvrir_fichier(fichier);
                 while(fst.lecture_statut())
@@ -540,12 +536,14 @@ class IntegratorTools
                 fst.fermer_fichier();
                 System.out.println("Traitement de "+nbLignes+" lignes.");
                 System.out.println("Fin du job d'intégration du fichier : "+fichier);
+                logger.log(Level.INFO, "Traitement de {0} lignes.", nbLignes);
+                logger.log(Level.INFO, "Fin du job d''int\u00e9gration du fichier : {0}", fichier);
             }
             
             //se deconnecter de la database outobound
             dbt.close_db();
         } catch (SQLException ex) {
-            Logger.getLogger(IntegratorTools.class.getName()).log(Level.SEVERE, ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage());
         }
     }
 
@@ -563,6 +561,7 @@ class IntegratorTools
        return resultat;
     }
 
+    
     /*****************************************
      * Creer la table automatique a partir des
      * donnees de descriptions qui se trouvent
@@ -598,6 +597,7 @@ class IntegratorTools
         return sqlCreateTable;
     }
 
+    
     /********************************
      * Creer le template de l'UPSERT
      * @param jobIntegrator
@@ -625,6 +625,7 @@ class IntegratorTools
         return template.substring(0, template.length()-1); //retirer la dernière virgule
     }
 
+    
     /******************************
      * Implementer la requete
      * @param sqlTemplate
@@ -648,6 +649,5 @@ class IntegratorTools
         
         return sqlReplace;
     }
-    
-    
+  
 }

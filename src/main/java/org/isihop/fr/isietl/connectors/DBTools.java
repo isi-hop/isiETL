@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.isihop.fr.isietl.tools;
+package org.isihop.fr.isietl.connectors;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -38,12 +38,23 @@ public class DBTools
     private final String deleteSQL="";
     
     //logs
-    private static final  Logger logger = Logger.getLogger(DBTools.class.getName());
+    private Logger logger;
     
     //database
     private Connection conn;
     private Statement stmt;
 
+    
+    /**************************
+     * Constructeur
+     * @param logs 
+     **************************/
+    public DBTools(Logger logs) 
+    {
+        logger=logs;
+    }
+
+    
     /****************************
      * Getter pour Connection DB
      * @return 

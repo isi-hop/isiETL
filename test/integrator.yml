@@ -31,6 +31,7 @@ connectorInbound:
     value: "admin"
 
 # Description des champs entrants qui vont permettre de construire le flux in
+# utile que si c'est une base de données en connect(eur entrant.'
 fieldsIn:
   identifiant:
     defaultValue: "vide"
