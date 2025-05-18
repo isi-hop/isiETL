@@ -1,0 +1,31 @@
+Mettre une version a l'ETL
+Version paire => developpement
+version impair => stable
+---
+Contruire une documentation README.MD
+---
+Format d'entrée a ajouter
+XML, HTML, json, Excel
+Databases (pgsql,mysql,mariadb,h2sql,javaDderby,sqlserver,oracle, Access, )
+---
+Transformer les données d’entrées et adapter au format destination
+Date, boolean, entier, chaines, flottant (selon db de destination)
+---
+Option pour ignorer les lignes défectueuses d'un fichier
+en oposition avec l'option checkfile.
+---
+Traitement des fichiers entrant en mode Batch
+=> plusieurs lignes lues, traitement en mémoire
+=> baisser le nombre d'accés disque.
+---
+ajouter d'autres base de données de destinations.
+(mysql, mariadb,sqlserver,oracle,javaderby,h2sql)
+---
+Option qui autorise les doublons (pas de contrôles via hashcode)
+---
+Remplacement par valeur une par defaut si champ vide (option)
+---
+Mapping des données entre entrée et sortie (fieldsIn & FieldsOut)
+---
+Post Traitement via requête dédié (option, uniquement si définie)
+Doit pointer vers un fichiers de scripts SQL qui sera éxécuté en fin d'intégration
