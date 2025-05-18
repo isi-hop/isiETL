@@ -42,6 +42,9 @@ import java.util.logging.SimpleFormatter;
 
 public class isietl 
 {
+    //VERSION
+    private final String VERSION="0.1-202505";
+    
     //logs
     private static final  Logger logger = Logger.getLogger(isietl.class.getName());
     
@@ -70,6 +73,9 @@ public class isietl
             } catch (IOException ioe) {
                 Logger.getLogger(isietl.class.getName()).log(Level.SEVERE, null, ioe);
             }
+        
+        //afficher l'ent^te de version.
+        afficher_version();
         
         //au travail maintenant.
         worker(args);
@@ -194,6 +200,21 @@ public class isietl
             CLIOK=true;
         }        
         return CLIOK;
+    }
+    
+    
+    /*********************************
+     * Version de l'application
+     *********************************/
+    private void afficher_version() 
+    {
+        System.out.println("------------------------------------------------");
+        System.out.println(isietl.class.getSimpleName().toUpperCase()+": Version "+VERSION);
+        System.out.println("Copyright (c) TONDEUR Hervé (2025/05)");
+        System.out.println("licence GNU GPLv3");
+        System.out.println("https://github.com/isi-hop");
+        System.out.println("------------------------------------------------");
+        System.out.println("");
     }
     
 }
