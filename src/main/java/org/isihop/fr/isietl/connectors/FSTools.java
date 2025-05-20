@@ -173,7 +173,7 @@ public class FSTools
             Files.move(Paths.get(cheminFichierSrc), Paths.get(cheminFichierDest),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, ex.getMessage());
-            logger.log(Level.SEVERE, "Erreur de d\u00e9placement du fichier source : {0}", cheminFichierSrc);
+            logger.log(Level.SEVERE, "Error moving source file : {0}", cheminFichierSrc);
         }
     }
 
@@ -192,11 +192,11 @@ public class FSTools
         switch (extension.toUpperCase()) {
             case "CSV" -> 
             {
-                System.out.println("Format CSV détecté.");
+                System.out.println("CSV format detected.");
                 check_CSV(jobIntegrator);
             }
             default -> {
-                logger.log(Level.SEVERE, "Extension inconnu!");
+                logger.log(Level.SEVERE, "Unknown extension!");
                 System.exit(5);
             }
         }
@@ -227,16 +227,16 @@ public class FSTools
                 
                 if (nbcol!=nbAttenduCol) 
                 {
-                    logger.log(Level.SEVERE, "ERREUR : Le fichier {0} n''est pas conforme \u00e0 la ligne N\u00b0 {1}", new Object[]{fichier, numLigneEnCours});
+                    logger.log(Level.SEVERE, "ERROR : File {0} does not conform to line N\u00b0 {1}", new Object[]{fichier, numLigneEnCours});
                     System.exit(6);
                 }
             }
             
             fermer_fichier();
-            System.out.println("Fichier "+fichier+" : PASS");
+            System.out.println("File "+fichier+" : PASS");
         }
         
-        System.out.println("Fin du checking des fichiers.");
+        System.out.println("End of file control");
     }
     
 }

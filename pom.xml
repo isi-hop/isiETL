@@ -1,28 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   
     <modelVersion>4.0.0</modelVersion>
+    
     <groupId>org.isihop.fr</groupId>
     <artifactId>isiETL</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>org.isihop.fr.isietl.isietl</exec.mainClass>
+        <maven.compiler.release>21</maven.compiler.release>
     </properties>
+    
+    <description>
+        EN:
+        This package is a Java program with a low memory footprint, intended to be used as a small data integrator, 
+        more commonly known as an ETL (Extract Transform Load) tool, which can be useful for setting up 
+        a lightweight ETL project. Its objective is to be as simple as possible to configure and to retain the 
+        power of a quality ETL service for the relational database ecosystem.
+        Its ambition in this area is to be as complete as possible. 
+        
+        FR:
+        Ce package est un programme Java à faible empreinte mémoire, destiné a être utilisé comme un petit intégrateur 
+        de données, plus communément appelé outil ETL (Extract Transform Load), celui ci peut être utile pour mettre 
+        en place un projet léger ETL. Son objectif est d'être aussi simple que possible à paramétrer et de conserver 
+        la puissance d'un service ETL de qualité pour l'écosystème de bases de données relationnelles.
+        Il a pour ambition dans ce domaine d'être le plus complet possible.
+    </description>
+    <scm>
+        <url>https://github.com/isi-hop/isiETL</url>
+        <tag>0.1</tag>
+    </scm>
+    <organization>
+        <name>ISIHOP: TONDEUR Hervé</name>
+        <url>https://github.com/isi-hop</url>
+    </organization>
+    <inceptionYear>2025</inceptionYear>
+    <licenses>
+        <license>
+            <name>GPL-V3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.fr.html#license-text</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <id>tondeur-h</id>
+            <name>TONDEUR Hervé</name>
+            <organization>ISIHOP</organization>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>France/Paris</timezone>
+        </developer>
+    </developers>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.12.0</version>
+            <version>1.14.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.4</version>
+            <version>42.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -41,7 +87,6 @@
             <artifactId>commons-cli</artifactId>
             <version>1.9.0</version>
         </dependency>
-
     </dependencies>
     
     <build>

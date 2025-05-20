@@ -38,7 +38,7 @@ public class DBTools
     private final String deleteSQL="";
     
     //logs
-    private Logger logger;
+    private final Logger logger;
     
     //database
     private Connection conn;

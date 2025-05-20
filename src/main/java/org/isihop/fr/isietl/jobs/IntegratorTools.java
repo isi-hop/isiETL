@@ -75,8 +75,8 @@ public class IntegratorTools
         Job jobIntegrator;
         try {
             //lecture du YAML
-            System.out.println("Lecture du fichier job : "+fileIntegratorPath);
-            logger.log(Level.INFO, "Lecture du fichier job : {0}", fileIntegratorPath);
+            System.out.println("Reading the job file : "+fileIntegratorPath);
+            logger.log(Level.INFO, "Reading the job file : {0}", fileIntegratorPath);
             
             Yaml yaml = new Yaml(new Constructor(Job.class, new LoaderOptions()));
             inputStream = new FileInputStream(new File(fileIntegratorPath));
@@ -99,8 +99,8 @@ public class IntegratorTools
                 if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "checkfiles"))==true)
                 {
                     //verifier les fichiers sources
-                    System.out.println("Check fichiers inbound...");
-                    logger.log(Level.INFO,"Check fichiers inbound...");
+                    System.out.println("Check inbound file...");
+                    logger.log(Level.INFO,"Check inbound file...");
                     
                     FSTools fst=new FSTools(logger);
                     fst.check_files_format(jobIntegrator);
@@ -109,13 +109,13 @@ public class IntegratorTools
             
             //traiter l'integration...
             traiter_integration(jobIntegrator);
-            System.out.println("Fin des jobs...");
-            logger.log(Level.INFO,"Fin des jobs...");
+            System.out.println("End of jobs...");
+            logger.log(Level.INFO,"End of jobs...");
             
         } catch (FileNotFoundException ex) {
-            System.out.println("Erreur parsing!, Fichier Job non trouvé!");
+            System.out.println("Parsing Error!, Job file not found!");
             System.out.println(ex.getMessage());
-            logger.log(Level.SEVERE,"Erreur parsing!, Fichier Job non trouvé!", ex.getMessage());
+            logger.log(Level.SEVERE,"Parsing Error!, Job file not found!", ex.getMessage());
             System.exit(1); //sortie erreur 1 fichier yaml incorrect..
         } finally {
             try {
@@ -215,15 +215,15 @@ public class IntegratorTools
         //si non défini, arrêt
         String connector=getInConnectorInBoundMap(integrator,"connectortype");
         
-        if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector In n'est pas défini?");System.exit(2);}
+        if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector In, is not defined?");System.exit(2);}
         //typage du connecteur
         switch (connector.toUpperCase()) 
         {
             case "FILE" -> check_file_connector(integrator);
             case "DATABASE" -> check_database_connector_inbound(integrator);
             default -> {
-                logger.log(Level.SEVERE,"Type de connecteur Entrant inconnu ?");
-                System.out.println("Type de connecteur entrant inconnu?");
+                logger.log(Level.SEVERE,"Incoming connector type is unknown !");
+                System.out.println("Incoming connector type is unknown !");
                 System.exit(3);
             }
         }
@@ -293,8 +293,8 @@ public class IntegratorTools
      ************************************/
     private void check_file_connector(Job integrator) 
     {
-        System.out.println("Connecteur InBound, type fichier...");
-        logger.log(Level.INFO,"Connecteur InBound, type fichier...");
+        System.out.println("InBound connector, is a file type...");
+        logger.log(Level.INFO,"InBound connector, is a file type...");
         /*
         doit contenir les 4 paramètres suivants...
         correctement enregistré et avec une valeur corrrecte...
@@ -305,26 +305,26 @@ public class IntegratorTools
         */
         //lire le filespath.
         String filespath=getInConnectorInBoundMap(integrator,"filespath");
-        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "Le chemin {0} n''existe pas ou n''est pas lisible!", filespath);System.exit(4);} //chemin inexistant...
+        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does'nt existe or is not readable!", filespath);System.exit(4);} //chemin inexistant...
         
         //lire le chemin de destination
         String destination=getInConnectorInBoundMap(integrator,"destination");
-        if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "Le chemin {0} n''existe pas ou n''est pas lisible!", destination);System.exit(4);} //chemin inexistant...
+        if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "The path {0} does'nt existe or is not readable!", destination);System.exit(4);} //chemin inexistant...
         
         //lire et tester un boolean
         String checkfiles=getInConnectorInBoundMap(integrator,"checkfiles");
-        if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "La valeur checkfiles n''est pas définie!");System.exit(4);} 
+        if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "The variable 'checkfiles' is not defined!");System.exit(4);} 
         
         //lire l'extension.
         String exttype=getInConnectorInBoundMap(integrator,"exttype");
         ArrayList<String> lstexttype =new ArrayList<>();
         lstexttype.add("csv"); //liste des extension prise en charge actuellement.
-        if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "L''extension {0} n''est pas prise en charge!", exttype);System.exit(4);} //extension no prise en charge
+        if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "the extension {0} is not supported!", exttype);System.exit(4);} //extension no prise en charge
         
-        System.out.println("Test du connecteur fichier OK");
-        System.out.println("Test des variables OK");
-        logger.log(Level.INFO,"Test du connecteur fichier OK");
-        logger.log(Level.INFO,"Test des variables OK");
+        System.out.println("Test file connector OK");
+        System.out.println("Test variables OK");
+        logger.log(Level.INFO,"Test file connector OK");
+        logger.log(Level.INFO,"Test variables OK");
     }
 
     
@@ -346,8 +346,8 @@ public class IntegratorTools
         
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
-            System.out.println("connection à la database impossible!");
-            logger.log(Level.SEVERE,"connection à la database impossible!");
+            System.out.println("Unable to connect to database!");
+            logger.log(Level.SEVERE,"Unable to connect to database!");
             System.exit(5); //database not connected...
         }
         else
@@ -378,7 +378,7 @@ public class IntegratorTools
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
             System.out.println("connection à la database sortante impossible!");
-            logger.log(Level.SEVERE,"connection à la database sortante impossible!");
+            logger.log(Level.SEVERE,"Unable to connect to the outgoing database!");
             System.exit(5); //database not connected...
         }
         else
@@ -443,15 +443,15 @@ public class IntegratorTools
         //si non défini, arrêt
         String connector=getInConnectorOutBoundMap(integrator,"connectortype");
         
-        if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector Out n'est pas défini?");System.exit(2);}
+        if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector Out is not define !");System.exit(2);}
         //typage du connecteur
         switch (connector.toUpperCase()) 
         {
             case "FILE" -> check_file_connector(integrator);
             case "DATABASE" -> check_database_connector_outbound(integrator);
             default -> {
-                logger.log(Level.SEVERE,"Type de connecteur sortant inconnu ?");
-                System.out.println("Type de connecteur sortant inconnu?");
+                logger.log(Level.SEVERE,"Outgoing connector type is unknown ?");
+                System.out.println("Outgoing connector type is unknown ?");
                 System.exit(3);
             }
         }
@@ -500,13 +500,13 @@ public class IntegratorTools
                 sql=creer_create_Table(jobIntegrator);
                 
                 dbt.getStmt().executeUpdate(sql);
-                System.out.println("Creation de la table : PASS");
-                logger.log(Level.INFO,"Creation de la table : PASS");
+                System.out.println("Table Create : PASS");
+                logger.log(Level.INFO,"Table Create : PASS");
             }
                         
             //construire le template de la requête UPSERT
-            System.out.println("Préparation du template UPSERT");
-            logger.log(Level.INFO,"Préparation du template UPSERT");
+            System.out.println("Preparing the UPSERT template");
+            logger.log(Level.INFO,"Preparing the UPSERT template");
             
             String sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
             
@@ -516,8 +516,8 @@ public class IntegratorTools
             List<String> lstfile=fst.lister_les_fichiers(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
             for (String fichier:lstfile)
             {
-                System.out.println("Début du job d'intégration du fichier : "+fichier);
-                logger.log(Level.INFO, "D\u00e9but du job d''int\u00e9gration du fichier : {0}", fichier);
+                System.out.println("Start of integration job from : "+fichier);
+                logger.log(Level.INFO, "Start of integration job from : {0}", fichier);
                 
                 nbLignes=1;
                 fst.ouvrir_fichier(fichier);
@@ -534,10 +534,10 @@ public class IntegratorTools
                     nbLignes++;
                 }
                 fst.fermer_fichier();
-                System.out.println("Traitement de "+nbLignes+" lignes.");
-                System.out.println("Fin du job d'intégration du fichier : "+fichier);
-                logger.log(Level.INFO, "Traitement de {0} lignes.", nbLignes);
-                logger.log(Level.INFO, "Fin du job d''int\u00e9gration du fichier : {0}", fichier);
+                System.out.println(nbLignes+" line(s) processing.");
+                System.out.println("End of integration job from : "+fichier);
+                logger.log(Level.INFO, "{0} line(s) processing.",nbLignes);
+                logger.log(Level.INFO, "End of integration job from : {0}", fichier);
             }
             
             //se deconnecter de la database outobound
@@ -557,7 +557,7 @@ public class IntegratorTools
     private String concatenate_col(String[] col) 
     {
         String resultat="";
-       for (String c:col) {resultat=resultat+col;}
+       for (String c:col) {resultat=resultat+c;}
        return resultat;
     }
 
@@ -571,7 +571,7 @@ public class IntegratorTools
      ****************************************/
     private String creer_create_Table(Job jobIntegrator) 
     {
-        String sqlCreateTable="";
+        String sqlCreateTable;
         
         String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
         sqlCreateTable="CREATE TABLE " + NomTable+" (";
@@ -604,7 +604,7 @@ public class IntegratorTools
      * @return 
      ********************************/
     private String creer_create_Template_UPSERT(Job jobIntegrator) {
-        String template="";
+        String template;
         
         template="INSERT INTO "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" (";
         

@@ -37,6 +37,12 @@ import java.util.logging.SimpleFormatter;
 /**
  *
  * @author tondeur-h
+ * 
+ * NOTES:
+ * =====
+ * User log messages are in English only.
+ * Internal comments are in French and/or English.
+ * Sorry purists!
  */
 
 
@@ -51,46 +57,54 @@ public class isietl
     //variables globales
     private String fileIntegratorPath="integrator.yml";
     private boolean displayParameters=false;
+    private String programName;
 
+    /****************************
+     * Main entry point
+     * just call the constructor
+     * @param args 
+     ****************************/
     public static void main(String[] args) {new isietl(args);}
 
     
     /****************
-     * Constructeur 
+     * Constructor 
      * @param args
      ****************/
     public isietl(String[] args) 
     {   
+        //Get short program Name
+        programName=getClass().getSimpleName();
         
-        //mise en place des logs isietl basé sur logback dans l'ensemble des services
+        //initialize logs files, only one name for all services
         try 
             {
                 logger.setUseParentHandlers(false);
-                FileHandler fh = new FileHandler("isietl%g.log", 0, 1, true);
+                FileHandler fh = new FileHandler(programName+"%g.log", 0, 1, true);
                 fh.setLevel(Level.ALL);
                 fh.setFormatter(new SimpleFormatter());
                 logger.addHandler(fh);
             } catch (IOException ioe) {
-                Logger.getLogger(isietl.class.getName()).log(Level.SEVERE, null, ioe);
+                Logger.getLogger(programName).log(Level.SEVERE, "Error logs initializer!", ioe.getMessage());
             }
         
-        //afficher l'ent^te de version.
+        //Show version header
         afficher_version();
         
-        //au travail maintenant.
+        //At work now!
         worker(args);
     }
 
     
     /*********************************
-     * Executer du processus des jobs
+     * Job expander and run job
      *********************************/
     private void worker(String[] args)
     {
         //lire les paramètres de la CLI en priorité
         //sinon lire les properties du système isietl si present dans le dossier du jar
-        //sinon affecte des valeurs par defaut path du fichier job dossier du prog, nom integrator.xml, display=false
-        lire_properties(this.getClass().getSimpleName(),args);//recuper nom du programme principal
+        //sinon affecte des valeurs par defaut path du fichier job =>dossier du prog+integrator.xml, display=false
+        lire_properties(args);//get args list for testing CLI parameters
         
         //lire le fichier d'integration.
         new IntegratorTools().lire_fichier_jobs(fileIntegratorPath,displayParameters,logger);
@@ -103,10 +117,9 @@ public class isietl
      * sont pas définis, si args et 
      * properties non définis alors valeurs
      * par defaut.
-     * @param programName
      * @param args
      ******************************************/
-    public void lire_properties(String programName, String[] args)
+    public void lire_properties(String[] args)
     {
         //si nombre d'arguments supértieur à Zero
         //tester si contient le path du job 
@@ -128,18 +141,22 @@ public class isietl
                     displayParameters=Boolean.parseBoolean(p.getProperty("displayparameters","false"));
                 } catch (IOException ex) {
                     logger.log(Level.SEVERE, ex.getMessage());
+                    //si erreur de lecture on arde les valeurs par défaut.
                 }
-            } catch (FileNotFoundException ex) {
+            } catch (FileNotFoundException ex) 
+            {
                 logger.log(Level.SEVERE, ex.getMessage());
                 fileIntegratorPath=currentPath+"/integrator.yml"; //définition par defaut
             } finally 
             {
                 try {if (is!=null){is.close();}} catch (IOException ex) {logger.log(Level.SEVERE, ex.getMessage());}
             }
-                logger.log(Level.INFO, "Parametre CLI, fileintegratorpath={0}", fileIntegratorPath);
-                logger.log(Level.INFO, "Parametre CLI, displayparameters={0}", displayParameters);
+                //un peut de journalisation
+                logger.log(Level.INFO, "CLI Parameter, fileintegratorpath={0}", fileIntegratorPath);
+                logger.log(Level.INFO, "CLI Parameter, displayparameters={0}", displayParameters);
         }
     }
+    
     
     /***************************************
      * Analyser la CLI pour utilisation des
@@ -153,7 +170,7 @@ public class isietl
         if(args.length==0) {return CLIOK;}
         else
         {
-            //creer les arguments.
+            //creer les arguments court et long
             Option displayparameters = Option.builder()
                                         .longOpt("displayparameters")
                                         .option("dp")
@@ -173,11 +190,12 @@ public class isietl
                     .build();
             Options options = new Options();
 
+            //ajout des options 
             options.addOption(displayparameters);
             options.addOption(fip);
             options.addOption(help);
             
-            //creation du parser
+            //creation du parser CLI
             CommandLineParser parser = new DefaultParser();
             CommandLine line ;
             try 
@@ -186,8 +204,8 @@ public class isietl
             }
             catch (ParseException exp) 
             {
-                System.err.println("Erreur de parse : " + exp.getMessage());
-                logger.log(Level.SEVERE, "Erreur de parse : {0}", exp.getMessage());
+                System.err.println("CLI Parse Error : " + exp.getMessage());
+                logger.log(Level.SEVERE, "CLI Parse error : {0}", exp.getMessage());
                 return CLIOK;
             }
             
@@ -209,9 +227,9 @@ public class isietl
     private void afficher_version() 
     {
         System.out.println("------------------------------------------------");
-        System.out.println(isietl.class.getSimpleName().toUpperCase()+": Version "+VERSION);
+        System.out.println(programName.toUpperCase()+": Version "+VERSION);
         System.out.println("Copyright (c) TONDEUR Hervé (2025/05)");
-        System.out.println("licence GNU GPLv3");
+        System.out.println("licence GNU GPLv3 : https://www.gnu.org/licenses/gpl-3.0.fr.html#license-text");
         System.out.println("https://github.com/isi-hop");
         System.out.println("------------------------------------------------");
         System.out.println("");
