@@ -1,13 +1,11 @@
-Heading	
+Heading
 # H1
 ## H2
 ### H3
-
-Bold
-
+BOLD  
 **bold text**
 
-Italic	
+Italic  
 *italicized text*
 
 Blockquote	
@@ -26,23 +24,25 @@ Unordered List
 Code	
 `code`
 
-Horizontal Rule	
----
+Horizontal Rule  
+---  
+<hr>  
 
 Link	
 [title](https://www.example.com)
 
-Image	
+Image  
 ![alt text](image.jpg)
 
-Table	
-| Syntax    | Description |
-| --------- | ----------- |
-| Header    | Title       |
-| Paragraph | Text        |
+Table  
+| Syntax    | Description |  
+| --------- | ----------- |  
+| Header    | Title       |  
+| Paragraph | Text        |  
 
 Fenced Code Block	
-```
+
+```json
 {
   "firstName": "John",
   "lastName": "Smith",
