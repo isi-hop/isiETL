@@ -174,19 +174,19 @@ public class isietl
             Option displayparameters = Option.builder()
                                         .longOpt("displayparameters")
                                         .option("dp")
-                                        .desc("Affiche les paramètres du fichier Jobs")
+                                        .desc("Displays the parameters of the YAML 'JOB' file.")
                                         .build();
             Option fip = Option.builder("fileintegratorpath")
-                             .argName("fichier")
+                             .argName("file")
                              .longOpt("fileintegratorpath")
                              .option("fip")
                              .hasArg()
-                             .desc("Chemin du fichier jobs")
+                             .desc("Path of je 'JOB' file")
                              .build();
             Option help= Option.builder("help")
                     .longOpt("help")
                     .option("h")
-                    .desc("Aide sur isiEtl")
+                    .desc("Help on isiEtl")
                     .build();
             Options options = new Options();
 
