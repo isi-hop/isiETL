@@ -161,10 +161,17 @@ public class IntegratorTools
     public void display_integrator(Job integratorGlob) 
     {      
         System.out.println("------------------JOB-------------------");
-        System.out.println("-------------INFORMATIONS---------------");
+        System.out.println("-----------------HEADER-----------------");
+        System.out.println("Job Name :");
         System.out.println(integratorGlob.getJobName());
-        System.out.println("\t\t---");
+        System.out.println("Job description :");
         System.out.println(integratorGlob.getJobDescription());
+        System.out.println("Job Date Time :");
+        System.out.println(integratorGlob.getJobDateTime());
+        System.out.println("--- Batch Mode :");
+        System.out.println("BatchMode="+integratorGlob.getJobBatchMode());
+        System.out.println("BatchSize="+integratorGlob.getJobBatchSize());
+        
         System.out.println("");
         
         System.out.println("----------CONNECTOR INBOUND-------------");
@@ -177,7 +184,6 @@ public class IntegratorTools
         System.out.println("---------------FIELDS IN---------------");
         for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsIn().entrySet()) 
         {   System.out.println(entry.getKey());
-            System.out.println("\tName="+entry.getValue().getName());
             System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
             System.out.println("\tType="+entry.getValue().getType());
             System.out.println("\tSize="+entry.getValue().getSize());
@@ -195,13 +201,20 @@ public class IntegratorTools
         System.out.println("---------------FIELDS OUT--------------");
         for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsOut().entrySet()) 
         {   System.out.println(entry.getKey());
-            System.out.println("\tName="+entry.getValue().getName());
             System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
             System.out.println("\tType="+entry.getValue().getType());
             System.out.println("\tSize="+entry.getValue().getSize());
             System.out.println("");
         }
 
+        System.out.println("-------------POSTPROCESSING------------");
+        String SQLPP=integratorGlob.getSQLPostProcessing().isEmpty()?"not defined":integratorGlob.getSQLPostProcessing();
+        System.out.println("SQLPostProcessing="+SQLPP);
+        String DSLPP=integratorGlob.getDSLPostProcessing().isEmpty()?"not defined":integratorGlob.getDSLPostProcessing();
+        System.out.println("DSLPostProcessing="+DSLPP);
+        System.out.println("---------------------------------------");
+        System.out.println("");
+        System.out.println("");
     }
     
        
@@ -305,15 +318,15 @@ public class IntegratorTools
         */
         //lire le filespath.
         String filespath=getInConnectorInBoundMap(integrator,"filespath");
-        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does'nt existe or is not readable!", filespath);System.exit(4);} //chemin inexistant...
+        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", filespath);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
         
         //lire le chemin de destination
         String destination=getInConnectorInBoundMap(integrator,"destination");
-        if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "The path {0} does'nt existe or is not readable!", destination);System.exit(4);} //chemin inexistant...
+        if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", destination);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
         
         //lire et tester un boolean
         String checkfiles=getInConnectorInBoundMap(integrator,"checkfiles");
-        if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "The variable 'checkfiles' is not defined!");System.exit(4);} 
+        if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "The variable ''checkfiles'' is not defined!");System.exit(4);} 
         
         //lire l'extension.
         String exttype=getInConnectorInBoundMap(integrator,"exttype");
@@ -377,7 +390,7 @@ public class IntegratorTools
         
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
-            System.out.println("connection à la database sortante impossible!");
+            System.out.println("Unable to connect to outgoing database !");
             logger.log(Level.SEVERE,"Unable to connect to the outgoing database!");
             System.exit(5); //database not connected...
         }
@@ -635,7 +648,7 @@ public class IntegratorTools
     {
         String sqlReplace=sqlTemplate;
         //chercher le nom de la valeur
-        String champ="";
+        String champ;
         int num=0;
         for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
         {

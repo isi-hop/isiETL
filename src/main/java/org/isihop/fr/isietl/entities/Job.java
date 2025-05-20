@@ -30,6 +30,9 @@ public class Job
 {
     public String jobName;
     public String jobDescription;
+    public String jobDateTime; 
+    public String jobBatchMode;
+    public String jobBatchSize;
     
     public Map<String,Features> connectorInbound;
     public Map<String,Fields> fieldsIn; 
@@ -37,6 +40,6 @@ public class Job
     public Map<String,Features> connectorOutbound;
     public Map<String,Fields> fieldsOut;
     
-    public String sqlinsert;
-    public String sqlupdate;
+    public String SQLPostProcessing;
+    public String DSLPostProcessing;
 }

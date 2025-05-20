@@ -2,6 +2,9 @@ Mettre une version a l'ETL : PASS
 Version paire => developpement
 version impair => stable
 ---
+Passer les logs en anglais : PASS
+Garder les commentaires internes en francais
+---
 Contruire une documentation README.MD
 ---
 Format d'entrée a ajouter
@@ -16,19 +19,23 @@ Remplacement par valeur une par defaut si champ vide (option)
 Mapping des données entre entrée et sortie (fieldsIn & FieldsOut)
 ---
 Option pour ignorer les lignes défectueuses d'un fichier
-en oposition avec l'option checkfile.
+en oposition avec l'option checkfile. (connectorOutbound.ignoreErrors.value=(true/false))
 ---
 Traitement des fichiers entrant en mode Batch
 => plusieurs lignes lues, traitement en mémoire
 => baisser le nombre d'accés disque.
----
 Traitement de l'integration database en mode Batch
+jobBatchMode=(true/false)
+jobBatchSize(integer)
 ---
 ajouter d'autres base de données de destinations.
 (mysql, mariadb,sqlserver,oracle,javaderby,h2sql)
 ---
 Option qui autorise les doublons (pas de contrôles via hashcode)
+(connectorOutbound.ignoreDuplicates.value=(true/false))
 ---
 Post Traitement via requête dédié (option, uniquement si définie)
 Doit pointer vers un fichiers de scripts SQL qui sera éxécuté en fin d'intégration
-Post traitement via script Java DSL
+(SQLPostProcessing=filePath)
+---
+Post traitement via script Java DSL potentiellement (DSLPostProcessing=filePath)

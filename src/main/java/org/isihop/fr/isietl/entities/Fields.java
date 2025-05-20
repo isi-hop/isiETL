@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Fields 
 {
-    public String name;
     public String type;
     public String size;
     public String defaultValue;

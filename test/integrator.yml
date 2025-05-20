@@ -1,26 +1,36 @@
 ---
 # nom de process d'integration et sa description
-# champs optionnels
-jobName: "MyFirst inegrator process"
+# champs optionnels pour décrire le JOB
+#-------------HEADER---------------
+jobName: "MyFirst integrator process"
 jobDescription: "Get data from a CSV file to a DB postgresql"
+jobDateTime: "2025-05-20 12:00:00"
+jobBatchMode: "false"
+jobBatchSize: "20"
+#----------------------------------
 
 # description du connecteur entrant
 # type file csv ou database postgresql pour l'instant'
-# pour la demo, toutes les configurations possible on été plac ici
+# pour la demo, toutes les configurations possible on été placé ici
+#------------INBOUND CONNECTOR-----------
 connectorInbound: 
   connectortype: 
     value: "file"
-    #value: "database"
   filespath: 
-    value : "/home/tondeur-h/dev/isiETL/test"
+    value : "c:/users/herve/documents/netbeansprojects/isietl/test"
   checkfiles: 
     value: "true"
   destination:
-    value: "/home/tondeur-h/dev/isiETL/test"
+    value: "c:/users/herve/documents/netbeansprojects/isietl/test/"
   exttype:
-    value: "csv"
+    value: "csv"    
+#commun a tous les type de connecteur InBound
   nbfields:
     value: "4"
+    
+#seulement pour le type database inBound
+  #connectortype: 
+    #value: "database"
   dbdriver:
     value: "org.postgresql.Driver"
   dburl:
@@ -31,29 +41,27 @@ connectorInbound:
     value: "admin"
 
 # Description des champs entrants qui vont permettre de construire le flux in
-# utile que si c'est une base de données en connect(eur entrant.'
+# utile que si c'est une base de données en connecteur entrant.
 fieldsIn:
   identifiant:
-    defaultValue: "vide"
-    name: "identifiant"
+    defaultValue: ""
     size: "20"
     type: "text"
   nom:
     defaultValue: "noname"
-    name: "nom"
     size: "80"
     type: "text"
   prenom:
     defaultValue: "unknown"
-    name: "prenom"
     size: "50"
     type: "text"
   sexe:
-    defaultValue: "M"
-    name: "sexe"
-    size: "1"
+    defaultValue: "Male"
+    size: "10"
     type: "text"
+#----------------------------------------
 
+#------------OUTBOUND CONNECTOR----------
 # description du connecteur sortant vers la database postgresql
 connectorOutbound: 
   connectortype:
@@ -67,31 +75,41 @@ connectorOutbound:
   dbpassword:
     value: "admin"
   targetTable:
-    value: "tabletest"
+    value: "tabletest"    
+  #valeur commune aux connecteurs outBound
+  #prend false ou true
+  ignoreErrors: 
+    value: "false"
+  #ignorer les doublons (true/false)
+  ignoreDuplicates:
+    value: "false"
 
 # description des champs de la table sortant postgresql.
 fieldsOut:
   identifiant:
     defaultValue: "vide"
-    name: "identifiant"
     size: "20"
     type: "varchar"
   nom:
     defaultValue: "noname"
-    name: "nom"
     size: "80"
     type: "varchar"
   prenom:
     defaultValue: "unknown"
-    name: "prenom"
     size: "50"
     type: "varchar"
   sexe:
     defaultValue: "M"
-    name: "sexe"
     size: "10"
     type: "varchar"
+#-------------------------------------
 
-# reservé pour plus tard.
-sqlinsert: ""
-sqlupdate: ""
+#-----------POSTPROCESSING------------
+# Script sql qui pointe vers un fichier SQL valide
+# permet d'eéxécuter en post processing ces requêtes.
+SQLPostProcessing: ""
+
+# Script DSL Java qui pointe vers un fichier script java valide
+# permet d'eéxécuter en post processing ce script.
+DSLPostProcessing: ""
+#-------------------------------------
