@@ -17,11 +17,14 @@
  
 # nom de process d'integration et sa description
 # champs optionnels pour décrire le JOB
+
 #-------------HEADER---------------
 jobName: "MyFirst integrator process"
 jobDescription: "Get data from a CSV file to a DB postgresql"
 jobDateTime: "2025-05-20 12:00:00"
+#this 2 parameters works together
 jobBatchMode: "false"
+#size defaut to 1 if not defined, must be GT 0, if not value is 1
 jobBatchSize: "20"
 #----------------------------------
 
@@ -29,14 +32,15 @@ jobBatchSize: "20"
 # type file csv ou database postgresql pour l'instant'
 # pour la demo, toutes les configurations possible on été placé ici
 #------------INBOUND CONNECTOR-----------
-connectorInbound: 
+connectorInbound:
+  #must be ""file"" or ""database""
   connectortype: 
     value: "file"
   filespath: 
     value : "c:/users/herve/documents/netbeansprojects/isietl/test"
   checkfiles: 
     value: "true"
-  destination:
+  backupdestinationpath:
     value: "c:/users/herve/documents/netbeansprojects/isietl/test/"
   exttype:
     value: "csv"    
