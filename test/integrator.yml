@@ -63,20 +63,20 @@ connectorInbound:
 # Description des champs entrants qui vont permettre de construire le flux in
 # utile que si c'est une base de données en connecteur entrant.
 fieldsIn:
-  identifiant:
+  id:
     defaultValue: ""
     size: "20"
-    type: "text"
-  nom:
-    defaultValue: "noname"
+    type: "integer"
+  colname1:
+    defaultValue: ""
     size: "80"
     type: "text"
-  prenom:
-    defaultValue: "unknown"
+  colname2:
+    defaultValue: "none"
     size: "50"
     type: "text"
-  sexe:
-    defaultValue: "Male"
+  colname3:
+    defaultValue: "col3"
     size: "10"
     type: "text"
 #----------------------------------------
@@ -106,30 +106,36 @@ connectorOutbound:
 
 # description des champs de la table sortant postgresql.
 fieldsOut:
-  identifiant:
-    defaultValue: "vide"
+  id:
+    defaultValue: ""
     size: "20"
-    type: "varchar"
-  nom:
-    defaultValue: "noname"
+    type: "int4"
+  column1:
+    defaultValue: "col1"
     size: "80"
     type: "varchar"
-  prenom:
-    defaultValue: "unknown"
+  column2:
+    defaultValue: "col2"
     size: "50"
     type: "varchar"
-  sexe:
-    defaultValue: "M"
+  column3:
+    defaultValue: "col3"
     size: "10"
     type: "varchar"
 #-------------------------------------
 
+#-----------FMT PROCESSING------------
+# Script DSL qui permet d'éxécuter en 
+# per processing les actions de 
+# Filtrage, Mapping, Trnsformation
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+
 #-----------POSTPROCESSING------------
 # Script sql qui pointe vers un fichier SQL valide
-# permet d'eéxécuter en post processing ces requêtes.
+# permet d'eéxécuter en post processing ces requêtes
+# si destination est une BDD
 SQLPostProcessing: ""
-
-# Script DSL Java qui pointe vers un fichier script java valide
-# permet d'eéxécuter en post processing ce script.
-DSLPostProcessing: ""
 #-------------------------------------

@@ -207,11 +207,20 @@ public class IntegratorTools
             System.out.println("");
         }
 
+        System.out.println("-------------FMT PROCESSING------------");
+        String FPS=integratorGlob.getFilteringScript().isEmpty()?"not defined":integratorGlob.getFilteringScript();
+        System.out.println("SQLPostProcessing="+FPS);
+        String MPS=integratorGlob.getMappingScript().isEmpty()?"not defined":integratorGlob.getMappingScript();
+        System.out.println("SQLPostProcessing="+MPS);
+        String TPS=integratorGlob.getTransformerScript().isEmpty()?"not defined":integratorGlob.getTransformerScript();
+        System.out.println("SQLPostProcessing="+TPS);
+        System.out.println("---------------------------------------");
+        System.out.println("");
+
+        
         System.out.println("-------------POSTPROCESSING------------");
         String SQLPP=integratorGlob.getSQLPostProcessing().isEmpty()?"not defined":integratorGlob.getSQLPostProcessing();
         System.out.println("SQLPostProcessing="+SQLPP);
-        String DSLPP=integratorGlob.getDSLPostProcessing().isEmpty()?"not defined":integratorGlob.getDSLPostProcessing();
-        System.out.println("DSLPostProcessing="+DSLPP);
         System.out.println("---------------------------------------");
         System.out.println("");
         System.out.println("");

@@ -41,5 +41,8 @@ public class Job
     public Map<String,Fields> fieldsOut;
     
     public String SQLPostProcessing;
-    public String DSLPostProcessing;
+    
+    public String filteringScript;
+    public String mappingScript;
+    public String transformerScript;
 }
