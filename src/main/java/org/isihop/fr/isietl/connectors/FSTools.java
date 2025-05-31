@@ -105,14 +105,13 @@ public class FSTools
     }
 
     
-        /**********************
+    /**********************
      * Lire une ligne du CSV
-     * @param nbLignes
-     * @return 
+     * @param nbLignes 
      **********************/
     public void passer_entete(int nbLignes) 
     {
-        String ligne="";
+        String ligne;
         try {
             for(int nbl=0;nbl<=nbLignes;nbl++)
             {

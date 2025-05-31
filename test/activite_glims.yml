@@ -63,25 +63,6 @@ connectorInbound:
   dbpassword:
     value: "admin"
 
-# Description des champs entrants qui vont permettre de construire le flux in
-# utile que si c'est une base de données en connecteur entrant.
-fieldsIn:
-  id:
-    defaultValue: ""
-    size: "20"
-    type: "integer"
-  colname1:
-    defaultValue: ""
-    size: "80"
-    type: "text"
-  colname2:
-    defaultValue: "none"
-    size: "50"
-    type: "text"
-  colname3:
-    defaultValue: "col3"
-    size: "10"
-    type: "text"
 #----------------------------------------
 
 #------------OUTBOUND CONNECTOR----------
@@ -105,27 +86,28 @@ connectorOutbound:
     value: "false"
   #ignorer les doublons (true/false)
   ignoreDuplicates:
-    value: "false"
+    value: "true"
 
 # description des champs de la table sortant postgresql.
 #CREATE TABLE public.activite_glims (
-#	dossier varchar(120) NULL,
-#	patient varchar(120) NULL,
-#	uf varchar(120) NULL,
-#	lib_uf varchar(120) NULL,
-#	prescripteur varchar(120) NULL,
-#	date_dossier_full varchar(120) NULL,
-#	date_dossier_short varchar(120) NULL,
-#	annee varchar(120) NULL,
-#	mois varchar(120) NULL,
-#	code_acte varchar(120) NULL,
-#	mnemonic varchar(120) NULL,
-#	spec varchar(120) NULL,
-#	description varchar(1024) NULL,
-#	valeur int4 NULL,
-#	lettre varchar(120) NULL,
-#	departement varchar(120) NULL,
-#	type_visite varchar(120) NULL
+#	dossier varchar(120),
+#	patient varchar(120),
+#	uf varchar(120),
+#	lib_uf varchar(120),
+#	prescripteur varchar(120),
+#	date_dossier_full varchar(120),
+#	date_dossier_short varchar(120),
+#	annee varchar(120),
+#	mois varchar(120),
+#	code_acte varchar(120),
+#	mnemonic varchar(120),
+#	spec varchar(120),
+#	description varchar(1024),
+#	valeur int4,
+#	lettre varchar(120),
+#	departement varchar(120),
+#	type_visite varchar(120),
+#       hascode varchar
 #);
 fieldsOut:
   dossier:
@@ -212,5 +194,5 @@ transformerScript: ""
 # Script sql qui pointe vers un fichier SQL valide
 # permet d'eéxécuter en post processing ces requêtes
 # si destination est une BDD
-SQLPostProcessing: ""
+SQLPostProcessing: "/home/tondeur-h/dev/isiETL/test/glims/postprocessing_activete_glims.scr"
 #-------------------------------------

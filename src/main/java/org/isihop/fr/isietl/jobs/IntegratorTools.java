@@ -185,14 +185,14 @@ public class IntegratorTools
         }
         System.out.println("");
 
-        System.out.println("---------------FIELDS IN---------------");
-        for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsIn().entrySet()) 
-        {   System.out.println(entry.getKey());
-            System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
-            System.out.println("\tType="+entry.getValue().getType());
-            System.out.println("\tSize="+entry.getValue().getSize());
-            System.out.println("");
-        }
+//        System.out.println("---------------FIELDS IN---------------");
+//        for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsIn().entrySet()) 
+//        {   System.out.println(entry.getKey());
+//            System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
+//            System.out.println("\tType="+entry.getValue().getType());
+//            System.out.println("\tSize="+entry.getValue().getSize());
+//            System.out.println("");
+//        }
 
         
         System.out.println("---------CONNECTOR OUTBOUND------------");
@@ -573,6 +573,16 @@ public class IntegratorTools
                 System.out.println("End of integration job from : "+fichier);
                 logger.log(Level.INFO, "{0} line(s) processed in " + dureeIntegration(),nbLignes);
                 logger.log(Level.INFO, "End of integration job from : {0}", fichier);
+                
+                //postTraitement SQL sur la bhase de données
+                if (dbt.SQLPostProcessing(jobIntegrator.getSQLPostProcessing()))
+                {
+                    System.out.println("End of Post Processing SQL with no Errors");
+                }
+                else
+                {
+                    System.out.println("End of Post Processing SQL with some Errors");
+                }
             }
                         
             //se deconnecter de la database outobound

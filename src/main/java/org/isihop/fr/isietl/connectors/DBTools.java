@@ -159,4 +159,45 @@ public class DBTools
     {
         return "20"+strDate.substring(6)+"-"+strDate.substring(3,5)+"-"+strDate.substring(0, 2);
     }
+
+    /***********************************
+     * Post Processing SQL
+     * @param SQLPostProcessing
+     * @param inConnectorOutBoundMap
+     * @return 
+     ***********************************/
+    public boolean SQLPostProcessing(String SQLPostProcessing) 
+    {
+        String sql="";    
+        boolean finalise=false;
+        try {
+            //Construction de la requête...
+            System.out.println("Begin of SQL Post Processing");
+            logger.log(Level.INFO, "Begin of SQL Post Processing");
+            stmt=conn.createStatement();
+            BufferedReader brsql=new BufferedReader(new FileReader(SQLPostProcessing));
+            while (brsql.ready())
+            {
+                sql=brsql.readLine();
+                System.out.println("Running : "+sql);
+                logger.log(Level.INFO, "Running : {0}", sql);
+                stmt.executeUpdate(sql);
+            }
+            System.out.println("End of SQL Post Processing");
+            logger.log(Level.INFO, "End of SQL Post Processing");
+            finalise=true; //tout est ok
+        } catch (SQLException ex) 
+        {
+             System.out.println("( KO : "+sql);
+             logger.log(Level.SEVERE, "( KO : {0}", sql);
+             logger.log(Level.SEVERE, "{0} ---- {1}", new Object[]{ex.getMessage(), ex.getSQLState()});
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+        return finalise;
+    }
 }

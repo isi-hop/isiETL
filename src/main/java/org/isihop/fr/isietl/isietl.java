@@ -276,9 +276,9 @@ public class isietl
                                         # You should have received a copy of the GNU General Public License
                                         # along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         #
-                                                         # nom de process d'integration et sa description
+                                        # nom de process d'integration et sa description
                                         # champs optionnels pour décrire le JOB
-                                                         #-------------HEADER---------------
+                                        #-------------HEADER---------------
                                         jobName: "MyFirst integrator process"
                                         jobDescription: "Get data from a CSV file to a DB postgresql"
                                         jobDateTime: "2025-05-20 12:00:00"
@@ -317,27 +317,9 @@ public class isietl
                                             value: "postgres"
                                           dbpassword:
                                             value: "admin"
-                                                         # Description des champs entrants qui vont permettre de construire le flux in
-                                        # utile que si c'est une base de données en connecteur entrant.
-                                        fieldsIn:
-                                          id:
-                                            defaultValue: ""
-                                            size: "20"
-                                            type: "integer"
-                                          colname1:
-                                            defaultValue: ""
-                                            size: "80"
-                                            type: "text"
-                                          colname2:
-                                            defaultValue: "none"
-                                            size: "50"
-                                            type: "text"
-                                          colname3:
-                                            defaultValue: "col3"
-                                            size: "10"
-                                            type: "text"
+
                                         #----------------------------------------
-                                                         #------------OUTBOUND CONNECTOR----------
+                                        #------------OUTBOUND CONNECTOR----------
                                         # description du connecteur sortant vers la database postgresql
                                         connectorOutbound:
                                           connectortype:
@@ -359,7 +341,7 @@ public class isietl
                                           #ignorer les doublons (true/false)
                                           ignoreDuplicates:
                                             value: "false"
-                                                         # description des champs de la table sortant postgresql.
+                                        # description des champs de la table sortant postgresql.
                                         fieldsOut:
                                           id:
                                             defaultValue: ""
@@ -378,7 +360,7 @@ public class isietl
                                             size: "10"
                                             type: "varchar"
                                         #-------------------------------------
-                                                         #-----------FMT PROCESSING------------
+                                        #-----------FMT PROCESSING------------
                                         # Script DSL qui permet d'éxécuter en
                                         # per processing les actions de
                                         # Filtrage, Mapping, Trnsformation
@@ -386,7 +368,7 @@ public class isietl
                                         mappingScript: ""
                                         transformerScript: ""
                                         #-------------------------------------
-                                                         #-----------POSTPROCESSING------------
+                                        #-----------POSTPROCESSING------------
                                         # Script sql qui pointe vers un fichier SQL valide
                                         # permet d'eéxécuter en post processing ces requêtes
                                         # si destination est une BDD
