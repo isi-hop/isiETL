@@ -51,6 +51,8 @@ public class IntegratorTools
     //variables globales
     private String fileIntegratorPath;
     private boolean displayParameters;
+    private long startIntegrationTime;
+    private long endIntegrationTime;
     
     //logs
     private Logger logger;
@@ -108,9 +110,11 @@ public class IntegratorTools
             }
             
             //traiter l'integration...
+            //---------------le job se fait ici-------------------
             traiter_integration(jobIntegrator);
             System.out.println("End of jobs...");
             logger.log(Level.INFO,"End of jobs...");
+            //----------------------------------------------------
             
         } catch (FileNotFoundException ex) {
             System.out.println("Parsing Error!, Job file not found!");
@@ -330,7 +334,7 @@ public class IntegratorTools
         if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", filespath);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
         
         //lire le chemin de destination
-        String destination=getInConnectorInBoundMap(integrator,"destination");
+        String destination=getInConnectorInBoundMap(integrator,"backupdestinationpath");
         if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", destination);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
         
         //lire et tester un boolean
@@ -532,6 +536,9 @@ public class IntegratorTools
             
             String sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
             
+            //debut du calcul de traitement
+            startIntegrationTime = System.nanoTime();
+            
             //traiter les fichiers
             int nbLignes;
             FSTools fst=new FSTools(logger);
@@ -543,6 +550,7 @@ public class IntegratorTools
                 
                 nbLignes=1;
                 fst.ouvrir_fichier(fichier);
+                fst.passer_entete(Integer.parseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),10));
                 while(fst.lecture_statut())
                 {
                     String[] col=fst.lecture_ligne().split(";");
@@ -556,19 +564,46 @@ public class IntegratorTools
                     nbLignes++;
                 }
                 fst.fermer_fichier();
-                System.out.println(nbLignes+" line(s) processing.");
+                
+                //marquer la fin de l'integration
+                endIntegrationTime = System.nanoTime();
+
+                
+                System.out.println(nbLignes+" line(s) processed in " + dureeIntegration());
                 System.out.println("End of integration job from : "+fichier);
-                logger.log(Level.INFO, "{0} line(s) processing.",nbLignes);
+                logger.log(Level.INFO, "{0} line(s) processed in " + dureeIntegration(),nbLignes);
                 logger.log(Level.INFO, "End of integration job from : {0}", fichier);
             }
-            
+                        
             //se deconnecter de la database outobound
             dbt.close_db();
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             logger.log(Level.SEVERE, ex.getMessage());
         }
     }
 
+    /*****************************
+     * Convertir en chaine une durée
+     * @return 
+     *****************************/
+    private String dureeIntegration()
+    {
+        // Calcul de la durée en nanosecondes
+        long durationNano = endIntegrationTime - startIntegrationTime;
+        long durationMillis = durationNano / 1_000_000;
+
+        // Conversion en minutes, secondes et millisecondes
+        long minutes = durationMillis / (60 * 1000);
+        long seconds = (durationMillis / 1000) % 60;
+        long millis = durationMillis % 1000;
+
+        return "Execution duration : " +
+                           minutes + " minute(s), " +
+                           seconds + " second(s), " +
+                           millis + " millisecond(s)";
+    }
+    
     
     /************************
      * Concatene un tableau
@@ -662,12 +697,13 @@ public class IntegratorTools
         for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
         {
             champ="%"+entry.getKey().toLowerCase()+"%";
-            sqlReplace=sqlReplace.replaceAll(champ, col[num]);
+            sqlReplace=sqlReplace.replaceAll(champ, col[num].replaceAll("'", "''"));
             num++;
         }
         
         //remplacer le hashcode
         sqlReplace=sqlReplace.replaceAll("%hashcode%", hashCode);
+        
         
         return sqlReplace;
     }

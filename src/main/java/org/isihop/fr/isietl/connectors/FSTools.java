@@ -105,6 +105,26 @@ public class FSTools
     }
 
     
+        /**********************
+     * Lire une ligne du CSV
+     * @param nbLignes
+     * @return 
+     **********************/
+    public void passer_entete(int nbLignes) 
+    {
+        String ligne="";
+        try {
+            for(int nbl=0;nbl<=nbLignes;nbl++)
+            {
+                ligne=br.readLine();
+                logger.log(Level.INFO, "Ignore header : {0}", ligne);
+                numLigneEnCours++;
+            }
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+    }
+    
     /*********************
      * Ouvrir fichier csv
      * prépa lecture
