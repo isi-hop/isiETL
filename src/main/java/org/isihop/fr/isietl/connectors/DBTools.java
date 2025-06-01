@@ -114,41 +114,6 @@ public class DBTools
     }
     
     
-    /*******************************
-     * purger des lignes inutiles 
-     *******************************/
-    public void purger_donnees_non_solicites() 
-    {            
-        String sql="";
-        
-        try {
-            //Construction de la requête...
-            if (debug==true) {System.out.println("Début du traitement de la purge des données non solicitées!");}
-            logger.log(Level.INFO, "Début du traitement de la purge des données non solicitées!");
-            stmt=conn.createStatement();
-            BufferedReader brsql=new BufferedReader(new FileReader(deleteSQL));
-            while (brsql.ready())
-            {
-                sql=brsql.readLine();
-                if (debug==true) {System.out.println("Traitement de : "+sql);}
-                logger.log(Level.INFO, "Traitement de : {0}", sql);
-                stmt.executeUpdate(sql);
-            }
-            if (debug==true) {System.out.println("Fin du traitement de la purge des données non solicitées!");}
-            logger.log(Level.INFO, "Fin du traitement de la purge des données non solicitées!");
-        } catch (SQLException ex) 
-        {
-             if (debug==true) {System.out.println("( KO : "+sql);}
-             logger.log(Level.SEVERE, "( KO : {0}", sql);
-             logger.log(Level.SEVERE, "{0} ---- {1}", new Object[]{ex.getMessage(), ex.getSQLState()});
-        } catch (FileNotFoundException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
-    }
-
-    
     /***************************
      * Convertir date
      * JJ/MM/AA => AAAA-MM-JJ
@@ -182,6 +147,7 @@ public class DBTools
                 System.out.println("Running : "+sql);
                 logger.log(Level.INFO, "Running : {0}", sql);
                 stmt.executeUpdate(sql);
+                conn.commit(); //force commit
             }
             System.out.println("End of SQL Post Processing");
             logger.log(Level.INFO, "End of SQL Post Processing");

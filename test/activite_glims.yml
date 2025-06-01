@@ -21,11 +21,9 @@
 #-------------HEADER---------------
 jobName: "ACTIVITE GLIMS"
 jobDescription: "Get data from a CSV file to a DB postgresql"
-jobDateTime: "2025-05-20 12:00:00"
-#this 2 parameters works together
-jobBatchMode: "false"
+jobDateTime: "2025-05-31 12:00:00"
 #size defaut to 1 if not defined, must be GT 0, if not value is 1
-jobBatchSize: "20"
+jobBatchSize: "200"
 #----------------------------------
 
 # description du connecteur entrant
@@ -40,8 +38,10 @@ connectorInbound:
     value : "/home/tondeur-h/dev/isiETL/test/glims"
   checkfiles: 
     value: "true"
+  suppressfile:
+    value: "false"
   backupdestinationpath:
-    value: "/home/tondeur-h/dev/isiETL/test/glims"
+    value: "/home/tondeur-h/dev/isiETL/test/glims/bak"
   exttype:
     value: "csv"    
 #commun a tous les type de connecteur InBound

@@ -111,7 +111,7 @@ public class IntegratorTools
             
             //traiter l'integration...
             //---------------le job se fait ici-------------------
-            traiter_integration(jobIntegrator);
+            traiter_integration_file_to_db(jobIntegrator);
             System.out.println("End of jobs...");
             logger.log(Level.INFO,"End of jobs...");
             //----------------------------------------------------
@@ -172,8 +172,7 @@ public class IntegratorTools
         System.out.println(integratorGlob.getJobDescription());
         System.out.println("Job Date Time :");
         System.out.println(integratorGlob.getJobDateTime());
-        System.out.println("--- Batch Mode :");
-        System.out.println("BatchMode="+integratorGlob.getJobBatchMode());
+        System.out.println("--- Batch Size Mode :");
         System.out.println("BatchSize="+integratorGlob.getJobBatchSize());
         
         System.out.println("");
@@ -213,11 +212,11 @@ public class IntegratorTools
 
         System.out.println("-------------FMT PROCESSING------------");
         String FPS=integratorGlob.getFilteringScript().isEmpty()?"not defined":integratorGlob.getFilteringScript();
-        System.out.println("SQLPostProcessing="+FPS);
+        System.out.println("filteringScript="+FPS);
         String MPS=integratorGlob.getMappingScript().isEmpty()?"not defined":integratorGlob.getMappingScript();
-        System.out.println("SQLPostProcessing="+MPS);
+        System.out.println("mappingScript="+MPS);
         String TPS=integratorGlob.getTransformerScript().isEmpty()?"not defined":integratorGlob.getTransformerScript();
-        System.out.println("SQLPostProcessing="+TPS);
+        System.out.println("transformerScript="+TPS);
         System.out.println("---------------------------------------");
         System.out.println("");
 
@@ -488,7 +487,7 @@ public class IntegratorTools
      * TRaiter l'intégration des données
      * @param jobIntegrator 
      **********************************************/
-    private void traiter_integration(Job jobIntegrator) 
+    private void traiter_integration_file_to_db(Job jobIntegrator) 
     {
         try {
             //se connecter à la database_outbound
@@ -508,19 +507,19 @@ public class IntegratorTools
             String sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
             
             try{
-                System.out.println("Controle disponibilité table OutBound");
-                logger.log(Level.INFO,"Controle disponibilité table OutBound");
+                System.out.println("Check table OutBound availability");
+                logger.log(Level.INFO,"Check table OutBound availability");
                 
                 ResultSet rs=dbt.getStmt().executeQuery(sql);
-                System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" disponible.");
-                logger.log(Level.INFO, "Table {0} disponible.", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" available.");
+                logger.log(Level.INFO, "Table {0} available.", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
             } catch (SQLException ex) 
             {
                 //ex.printStackTrace();
                 //creer la table car manquante...
-                System.out.println("Création de la table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
-                logger.log(Level.INFO, "Cr\u00e9ation de la table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                System.out.println("Creation of the table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                logger.log(Level.INFO, "Creation of the table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
                 //creer_create_Table(jobIntegrator);
                 sql=creer_create_Table(jobIntegrator);
@@ -539,10 +538,15 @@ public class IntegratorTools
             //debut du calcul de traitement
             startIntegrationTime = System.nanoTime();
             
-            //traiter les fichiers
+            //traiter les fichiers en entrée
+            dbt.getConn().setAutoCommit(false);
+            int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
+            
             int nbLignes;
+            
             FSTools fst=new FSTools(logger);
             List<String> lstfile=fst.lister_les_fichiers(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
+            
             for (String fichier:lstfile)
             {
                 System.out.println("Start of integration job from : "+fichier);
@@ -550,7 +554,7 @@ public class IntegratorTools
                 
                 nbLignes=1;
                 fst.ouvrir_fichier(fichier);
-                fst.passer_entete(Integer.parseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),10));
+                fst.passer_entete(safeParseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),0));
                 while(fst.lecture_statut())
                 {
                     String[] col=fst.lecture_ligne().split(";");
@@ -561,18 +565,43 @@ public class IntegratorTools
                     
                     //UPSERT_DATA
                     dbt.getStmt().executeUpdate(sql);
-                    nbLignes++;
+                    
+                    nbLignes++; //nombre lignes traitées
+                    
+                    //forcer l'écriture et décharge le tampon du Batch
+                    if (nbLignes % batchSize == 0) {dbt.getStmt().executeBatch();dbt.getStmt().clearBatch();}
                 }
                 fst.fermer_fichier();
+                
+                //finaliser les dernier enregistrement et faire un commit.
+                dbt.getStmt().executeBatch(); //dernnier exce sur le batch
+                dbt.getConn().commit(); //dernier commit pour les données du batch
                 
                 //marquer la fin de l'integration
                 endIntegrationTime = System.nanoTime();
 
-                
+                //un peut de log pour l'utilisateur
                 System.out.println(nbLignes+" line(s) processed in " + dureeIntegration());
                 System.out.println("End of integration job from : "+fichier);
                 logger.log(Level.INFO, "{0} line(s) processed in " + dureeIntegration(),nbLignes);
                 logger.log(Level.INFO, "End of integration job from : {0}", fichier);
+                
+                //deplacement du fichier en backup
+                if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "suppressfile")))
+                {
+                    //supprimer le fichier
+                    System.out.println("Suppress file : " +fichier);
+                    logger.log(Level.INFO, "Suppress file : {0}", fichier);
+                    fst.supprimer_fichier(fichier);
+                }
+                else
+                {
+                    //deplacer le fichier vers le dossier backup...
+                    System.out.println("Backup file : " +fichier);
+                    logger.log(Level.INFO, "Backup file : {0}", fichier);
+                    String fichierDst=getInConnectorInBoundMap(jobIntegrator, "backupdestinationpath")+"/"+new File(fichier).getName();
+                    fst.deplacer_fichier(fichier,fichierDst) ;
+                }
                 
                 //postTraitement SQL sur la bhase de données
                 if (dbt.SQLPostProcessing(jobIntegrator.getSQLPostProcessing()))
@@ -593,6 +622,9 @@ public class IntegratorTools
         }
     }
 
+    
+    
+    
     /*****************************
      * Convertir en chaine une durée
      * @return 
@@ -612,6 +644,29 @@ public class IntegratorTools
                            minutes + " minute(s), " +
                            seconds + " second(s), " +
                            millis + " millisecond(s)";
+    }
+    
+    /************************************
+     *  Safe Parse Integer
+     * @param str
+     * @return 
+     ************************************/
+    private int safeParseInt(String str,int defaultValue) 
+    {
+        if (str == null) {return defaultValue;}
+        try {return Integer.parseInt(str,10);} catch (NumberFormatException e) {return defaultValue;}
+    }
+
+
+    /************************************
+     *  Safe Parse Boolean
+     * @param str
+     * @return 
+     ************************************/
+    private boolean safeParseBool(String str,boolean defaultValue) 
+    {
+        if (str == null) {return defaultValue;}
+        try {return Boolean.parseBoolean(str);} catch (NumberFormatException e) {return defaultValue;}
     }
     
     

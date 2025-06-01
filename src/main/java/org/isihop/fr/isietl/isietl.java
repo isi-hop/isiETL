@@ -282,12 +282,10 @@ public class isietl
                                         jobName: "MyFirst integrator process"
                                         jobDescription: "Get data from a CSV file to a DB postgresql"
                                         jobDateTime: "2025-05-20 12:00:00"
-                                        #this 2 parameters works together
-                                        jobBatchMode: "false"
                                         #size defaut to 1 if not defined, must be GT 0, if not value is 1
                                         jobBatchSize: "20"
                                         #----------------------------------
-                                                         # description du connecteur entrant
+                                        # description du connecteur entrant
                                         # type file csv ou database postgresql pour l'instant'
                                         # pour la demo, toutes les configurations possible on été placé ici
                                         #------------INBOUND CONNECTOR-----------
@@ -306,7 +304,7 @@ public class isietl
                                         #commun a tous les type de connecteur InBound
                                           nbfields:
                                             value: "4"
-                                                         #seulement pour le type database inBound
+                                        #seulement pour le type database inBound
                                           #connectortype:
                                             #value: "database"
                                           dbdriver:
