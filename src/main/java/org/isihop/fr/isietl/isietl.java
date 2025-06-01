@@ -41,7 +41,7 @@ import java.util.logging.SimpleFormatter;
  * 
  * NOTES:
  * =====
- * User log messages are in English only.
+ * User logs messages are in English only.
  * Internal comments are in French and/or English.
  * Sorry purists!
  */
@@ -77,6 +77,7 @@ public class isietl
     {   
         //Get short program Name
         programName=getClass().getSimpleName();
+        //current application Path
         currentPath=System.getProperty("user.dir");
         
         //initialize logs files, only one name for all services
@@ -92,7 +93,7 @@ public class isietl
             }
         
         //Show version header
-        afficher_version();
+        print_version();
         
         //At work now!
         worker(args);
@@ -107,7 +108,7 @@ public class isietl
         //lire les paramètres de la CLI en priorité
         //sinon lire les properties du système isietl si present dans le dossier du jar
         //sinon affecte des valeurs par defaut path du fichier job =>dossier du prog+integrator.xml, display=false
-        lire_properties(args);//get args list for testing CLI parameters
+        read_properties(args);//get args list for testing CLI parameters
         
         //lire le fichier d'integration.
         new IntegratorTools().lire_fichier_jobs(fileIntegratorPath,displayParameters,logger);
@@ -122,11 +123,11 @@ public class isietl
      * par defaut.
      * @param args
      ******************************************/
-    public void lire_properties(String[] args)
+    public void read_properties(String[] args)
     {
         //si nombre d'arguments supértieur à Zero
         //tester si contient le path du job 
-        if (!analyse_cli_args(args))
+        if (!parse_cli_args(args))
         {
             //recuperer le chemin local et le nom de l'application
             //le fichier properties doit comporter le même
@@ -141,7 +142,8 @@ public class isietl
                     //lecture des variables à définir...
                     fileIntegratorPath=p.getProperty("fileintegratorpath", currentPath+"/integrator.yml"); //par defaut le chemin de l'appli
                     displayParameters=Boolean.parseBoolean(p.getProperty("displayparameters","false"));
-                } catch (IOException ex) {
+                } catch (IOException ex) 
+                {
                     logger.log(Level.SEVERE, ex.getMessage());
                     //si erreur de lecture on arde les valeurs par défaut.
                 }
@@ -166,7 +168,7 @@ public class isietl
      * @param args
      * @return 
      **************************************/
-    private boolean analyse_cli_args(String[] args) 
+    private boolean parse_cli_args(String[] args) 
     {
         boolean CLIOK=false;
         if(args.length==0) {return CLIOK;}
@@ -176,7 +178,7 @@ public class isietl
             Option jobstemplate = Option.builder()
                                         .longOpt("jobstemplate")
                                         .option("jt")
-                                        .desc("create a job YML template.")
+                                        .desc("create a new job file YML template.")
                                         .build();
             Option displayparameters = Option.builder()
                                         .longOpt("displayparameters")
@@ -220,7 +222,7 @@ public class isietl
             //analyse des arguments
             if (line.hasOption(jobstemplate)) 
             {
-                imprimer_template();
+                print_template();
                 System.exit(0);
             }
             if (line.hasOption(help)) 
@@ -244,7 +246,7 @@ public class isietl
     /*********************************
      * Version de l'application
      *********************************/
-    private void afficher_version() 
+    private void print_version() 
     {
         System.out.println("------------------------------------------------");
         System.out.println(programName.toUpperCase()+": Version "+VERSION);
@@ -255,7 +257,7 @@ public class isietl
         System.out.println("");
     }
     
-    private void imprimer_template()
+    private void print_template()
     {
         PrintWriter pr=null;
         try {
