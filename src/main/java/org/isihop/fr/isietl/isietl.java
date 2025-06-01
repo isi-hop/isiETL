@@ -235,8 +235,8 @@ public class isietl
                 fileIntegratorPath = line.getOptionValue("fileintegratorpath");
             }
             displayParameters = line.hasOption(displayparameters);
-            logger.log(Level.INFO, "Parametre CLI, fileintegratorpath={0}", fileIntegratorPath);
-            logger.log(Level.INFO, "Parametre CLI, displayparameters={0}", displayParameters);
+            logger.log(Level.INFO, "Parameter CLI, fileintegratorpath={0}", fileIntegratorPath);
+            logger.log(Level.INFO, "Parameter CLI, displayparameters={0}", displayParameters);
             CLIOK=true;
         }        
         return CLIOK;

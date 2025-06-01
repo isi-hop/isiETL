@@ -564,7 +564,8 @@ public class IntegratorTools
                     sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator);
                     
                     //UPSERT_DATA
-                    dbt.getStmt().executeUpdate(sql);
+                    //dbt.getStmt().executeUpdate(sql);
+                    dbt.getStmt().addBatch(sql);
                     
                     nbLignes++; //nombre lignes traitées
                     
