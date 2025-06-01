@@ -34,9 +34,6 @@ import java.util.logging.Logger;
 public class DBTools 
 {
     
-    private final boolean debug=false;
-    private final String deleteSQL="";
-    
     //logs
     private final Logger logger;
     

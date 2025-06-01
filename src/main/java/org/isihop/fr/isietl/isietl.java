@@ -111,7 +111,7 @@ public class isietl
         read_properties(args);//get args list for testing CLI parameters
         
         //lire le fichier d'integration.
-        new IntegratorTools().lire_fichier_jobs(fileIntegratorPath,displayParameters,logger);
+        new IntegratorTools().read_job_file(fileIntegratorPath,displayParameters,logger);
     }
     
     

@@ -65,7 +65,7 @@ public class IntegratorTools
      * @param dp
      * @param logs
      ************************************/
-    public void lire_fichier_jobs(String fileymlpath, boolean dp,Logger logs) 
+    public void read_job_file(String fileymlpath, boolean dp,Logger logs) 
     {
         //réassocier les paramètre en loca
         fileIntegratorPath=fileymlpath;
@@ -111,7 +111,7 @@ public class IntegratorTools
             
             //traiter l'integration...
             //---------------le job se fait ici-------------------
-            traiter_integration_file_to_db(jobIntegrator);
+            process_integration_file_to_db(jobIntegrator);
             System.out.println("End of jobs...");
             logger.log(Level.INFO,"End of jobs...");
             //----------------------------------------------------
@@ -137,7 +137,7 @@ public class IntegratorTools
      * en SHA256
      * @return 
      *****************************/
-    private String calcul_code_Hashage(String chaine) 
+    private String hash_code_calculate(String chaine) 
     {
         StringBuilder hash=new StringBuilder();
         //input concaténé
@@ -487,7 +487,7 @@ public class IntegratorTools
      * TRaiter l'intégration des données
      * @param jobIntegrator 
      **********************************************/
-    private void traiter_integration_file_to_db(Job jobIntegrator) 
+    private void process_integration_file_to_db(Job jobIntegrator) 
     {
         try {
             //se connecter à la database_outbound
@@ -522,7 +522,7 @@ public class IntegratorTools
                 logger.log(Level.INFO, "Creation of the table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
                 //creer_create_Table(jobIntegrator);
-                sql=creer_create_Table(jobIntegrator);
+                sql=create_destination_table(jobIntegrator);
                 
                 dbt.getStmt().executeUpdate(sql);
                 System.out.println("Table Create : PASS");
@@ -533,7 +533,7 @@ public class IntegratorTools
             System.out.println("Preparing the UPSERT template");
             logger.log(Level.INFO,"Preparing the UPSERT template");
             
-            String sqlTemplate=creer_create_Template_UPSERT(jobIntegrator);
+            String sqlTemplate=create_template_UPSERT(jobIntegrator);
             
             //debut du calcul de traitement
             startIntegrationTime = System.nanoTime();
@@ -545,7 +545,7 @@ public class IntegratorTools
             int nbLignes;
             
             FSTools fst=new FSTools(logger);
-            List<String> lstfile=fst.lister_les_fichiers(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
+            List<String> lstfile=fst.list_files_in_path_with_ext(getInConnectorInBoundMap(jobIntegrator, "filespath"), getInConnectorInBoundMap(jobIntegrator, "exttype"));
             
             for (String fichier:lstfile)
             {
@@ -553,13 +553,13 @@ public class IntegratorTools
                 logger.log(Level.INFO, "Start of integration job from : {0}", fichier);
                 
                 nbLignes=1;
-                fst.ouvrir_fichier(fichier);
-                fst.passer_entete(safeParseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),0));
-                while(fst.lecture_statut())
+                fst.open_file(fichier);
+                fst.skip_header(safeParseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),0));
+                while(fst.get_read_file_status())
                 {
-                    String[] col=fst.lecture_ligne().split(";");
+                    String[] col=fst.read_line().split(";");
                     
-                    String hashCode=calcul_code_Hashage(concatenate_col(col));
+                    String hashCode=hash_code_calculate(concatenate_col(col));
                     
                     sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator);
                     
@@ -571,7 +571,7 @@ public class IntegratorTools
                     //forcer l'écriture et décharge le tampon du Batch
                     if (nbLignes % batchSize == 0) {dbt.getStmt().executeBatch();dbt.getStmt().clearBatch();}
                 }
-                fst.fermer_fichier();
+                fst.close_file();
                 
                 //finaliser les dernier enregistrement et faire un commit.
                 dbt.getStmt().executeBatch(); //dernnier exce sur le batch
@@ -581,18 +581,18 @@ public class IntegratorTools
                 endIntegrationTime = System.nanoTime();
 
                 //un peut de log pour l'utilisateur
-                System.out.println(nbLignes+" line(s) processed in " + dureeIntegration());
+                System.out.println(nbLignes+" line(s) processed in " + integration_duration());
                 System.out.println("End of integration job from : "+fichier);
-                logger.log(Level.INFO, "{0} line(s) processed in " + dureeIntegration(),nbLignes);
+                logger.log(Level.INFO, "{0} line(s) processed in " + integration_duration(),nbLignes);
                 logger.log(Level.INFO, "End of integration job from : {0}", fichier);
                 
                 //deplacement du fichier en backup
-                if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "suppressfile")))
+                if (safeParseBool(getInConnectorInBoundMap(jobIntegrator, "suppressfile"),false))
                 {
                     //supprimer le fichier
                     System.out.println("Suppress file : " +fichier);
                     logger.log(Level.INFO, "Suppress file : {0}", fichier);
-                    fst.supprimer_fichier(fichier);
+                    fst.delete_file(fichier);
                 }
                 else
                 {
@@ -600,7 +600,7 @@ public class IntegratorTools
                     System.out.println("Backup file : " +fichier);
                     logger.log(Level.INFO, "Backup file : {0}", fichier);
                     String fichierDst=getInConnectorInBoundMap(jobIntegrator, "backupdestinationpath")+"/"+new File(fichier).getName();
-                    fst.deplacer_fichier(fichier,fichierDst) ;
+                    fst.move_file_from_to(fichier,fichierDst) ;
                 }
                 
                 //postTraitement SQL sur la bhase de données
@@ -621,15 +621,13 @@ public class IntegratorTools
             logger.log(Level.SEVERE, ex.getMessage());
         }
     }
-
-    
     
     
     /*****************************
      * Convertir en chaine une durée
      * @return 
      *****************************/
-    private String dureeIntegration()
+    private String integration_duration()
     {
         // Calcul de la durée en nanosecondes
         long durationNano = endIntegrationTime - startIntegrationTime;
@@ -646,6 +644,7 @@ public class IntegratorTools
                            millis + " millisecond(s)";
     }
     
+    
     /************************************
      *  Safe Parse Integer
      * @param str
@@ -654,7 +653,10 @@ public class IntegratorTools
     private int safeParseInt(String str,int defaultValue) 
     {
         if (str == null) {return defaultValue;}
-        try {return Integer.parseInt(str,10);} catch (NumberFormatException e) {return defaultValue;}
+        try {
+            //doit etre positif ou = à zero
+            if (Integer.parseInt(str,10)>=0) {return Integer.parseInt(str,10);} else {return defaultValue;}
+        } catch (NumberFormatException e) {return defaultValue;}
     }
 
 
@@ -691,7 +693,7 @@ public class IntegratorTools
      * @param jobIntegrator
      * @return 
      ****************************************/
-    private String creer_create_Table(Job jobIntegrator) 
+    private String create_destination_table(Job jobIntegrator) 
     {
         String sqlCreateTable;
         
@@ -725,7 +727,7 @@ public class IntegratorTools
      * @param jobIntegrator
      * @return 
      ********************************/
-    private String creer_create_Template_UPSERT(Job jobIntegrator) {
+    private String create_template_UPSERT(Job jobIntegrator) {
         String template;
         
         template="INSERT INTO "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" (";

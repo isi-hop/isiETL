@@ -58,7 +58,7 @@ public class FSTools
     /**************************
      * Fermer le fichier source
      **************************/
-    public void fermer_fichier() 
+    public void close_file() 
     {
         try {
             br.close();
@@ -72,7 +72,7 @@ public class FSTools
      * Statut de la lecture
      * @return 
      ***********************/
-    public boolean lecture_statut() 
+    public boolean get_read_file_status() 
     {
         boolean statut;
         try {
@@ -90,7 +90,7 @@ public class FSTools
      * Lire une ligne du CSV
      * @return 
      **********************/
-    public String lecture_ligne() 
+    public String read_line() 
     {
         String ligne="";
         try {
@@ -109,7 +109,7 @@ public class FSTools
      * Lire une ligne du CSV
      * @param nbLignes 
      **********************/
-    public void passer_entete(int nbLignes) 
+    public void skip_header(int nbLignes) 
     {
         String ligne;
         try {
@@ -130,7 +130,7 @@ public class FSTools
      * @param csvPath
      * @return 
      **********************/
-    public boolean ouvrir_fichier(String csvPath) 
+    public boolean open_file(String csvPath) 
     {
         boolean okfile=false;
         try {
@@ -155,7 +155,7 @@ public class FSTools
      * @param extension
      * @return 
      ******************************/
-    public List<String> lister_les_fichiers(String csvPath, String extension) 
+    public List<String> list_files_in_path_with_ext(String csvPath, String extension) 
     {       
         File[] filesInDirectory = new File(csvPath).listFiles();
         for(File f : filesInDirectory)
@@ -173,7 +173,7 @@ public class FSTools
      * Supprimer le fichier traité.
      * @param cheminFichier 
      *****************************/
-    public void supprimer_fichier(String cheminFichier) 
+    public void delete_file(String cheminFichier) 
     {
         File f=new File(cheminFichier);
         f.delete();
@@ -186,7 +186,7 @@ public class FSTools
      * @param cheminFichierSrc
      * @param cheminFichierDest
      *****************************/
-    public void deplacer_fichier(String cheminFichierSrc, String cheminFichierDest) 
+    public void move_file_from_to(String cheminFichierSrc, String cheminFichierDest) 
     {
         try {            
             Files.move(Paths.get(cheminFichierSrc), Paths.get(cheminFichierDest),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -233,16 +233,16 @@ public class FSTools
         
         //lister tous les fichiers
         //pour chaque fichier, tester le format qui correspond à l'extension.        
-        for (String fichier:lister_les_fichiers(jobIntegrator.getConnectorInbound().get("filespath").getValue(),"csv"))
+        for (String fichier:list_files_in_path_with_ext(jobIntegrator.getConnectorInbound().get("filespath").getValue(),"csv"))
         {
             //verifier
             //doit avoir autant de colonne que défini séparé par des ; uniquement     
-            ouvrir_fichier(fichier);
+            open_file(fichier);
             
             //check chaque ligne...
-            while (lecture_statut())
+            while (get_read_file_status())
             {
-                int nbcol=lecture_ligne().split(";").length;
+                int nbcol=read_line().split(";").length;
                 
                 if (nbcol!=nbAttenduCol) 
                 {
@@ -251,7 +251,7 @@ public class FSTools
                 }
             }
             
-            fermer_fichier();
+            close_file();
             System.out.println("File "+fichier+" : PASS");
         }
         
