@@ -174,6 +174,7 @@ public class IntegratorTools
         System.out.println(integratorGlob.getJobDateTime());
         System.out.println("--- Batch Size Mode :");
         System.out.println("BatchSize="+integratorGlob.getJobBatchSize());
+        System.out.println("ForceIntermediateCommit="+integratorGlob.getForceIntermediateCommit());
         
         System.out.println("");
         
@@ -570,7 +571,12 @@ public class IntegratorTools
                     nbLignes++; //nombre lignes traitées
                     
                     //forcer l'écriture et décharge le tampon du Batch
-                    if (nbLignes % batchSize == 0) {dbt.getStmt().executeBatch();dbt.getStmt().clearBatch();}
+                    if (nbLignes % batchSize == 0) 
+                    {
+                        dbt.getStmt().executeBatch();
+                        if (safeParseBool(jobIntegrator.getForceIntermediateCommit(), true)) {dbt.getConn().commit();} //intermediate commit...;
+                        dbt.getStmt().clearBatch();
+                    }
                 }
                 fst.close_file();
                 

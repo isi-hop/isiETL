@@ -24,6 +24,7 @@ jobDescription: "Get data from a CSV file to a DB postgresql"
 jobDateTime: "2025-05-31 12:00:00"
 #size defaut to 1 if not defined, must be GT 0, if not value is 1
 jobBatchSize: "200"
+forceintermediatecommit: "true"
 #----------------------------------
 
 # description du connecteur entrant
@@ -46,7 +47,7 @@ connectorInbound:
     value: "csv"    
 #commun a tous les type de connecteur InBound
   nbfields:
-    value: "17"
+    value: "22"
 #sauter l'entete... Nb de lignes'
   jumpheader:
     value: "1"
@@ -114,9 +115,25 @@ fieldsOut:
     defaultValue: ""
     size: "120"
     type: "varchar"
+  statutdossier:
+    defaultValue: ""
+    size: "12"
+    type: "varchar"
+  statutfactu:
+    defaultValue: ""
+    size: "12"
+    type: "varchar"
   patient:
     defaultValue: ""
     size: "120"
+    type: "varchar"
+  ipp:
+    defaultValue: ""
+    size: "50"
+    type: "varchar"
+  iep:
+    defaultValue: ""
+    size: "50"
     type: "varchar"
   uf:
     defaultValue: ""
@@ -178,7 +195,10 @@ fieldsOut:
     defaultValue: ""
     size: "120"
     type: "varchar"
-
+  enregistreur:
+    defaultValue: ""
+    size: "120"
+    type: "varchar"
 #-------------------------------------
 
 #-----------FMT PROCESSING------------
@@ -194,5 +214,5 @@ transformerScript: ""
 # Script sql qui pointe vers un fichier SQL valide
 # permet d'eéxécuter en post processing ces requêtes
 # si destination est une BDD
-SQLPostProcessing: "/home/tondeur-h/dev/isiETL/test/glims/postprocessing_activete_glims.scr"
+SQLPostProcessing: "/home/tondeur-h/dev/isiETL/test/glims/postprocessing_activite_glims.scr"
 #-------------------------------------

@@ -113,7 +113,7 @@ public class FSTools
     {
         String ligne;
         try {
-            for(int nbl=0;nbl<=nbLignes;nbl++)
+            for(int nbl=1;nbl<=nbLignes;nbl++)
             {
                 ligne=br.readLine();
                 logger.log(Level.INFO, "Ignore header : {0}", ligne);

@@ -33,6 +33,7 @@ public class Job
     public String jobDateTime; 
     public String jobBatchMode;
     public String jobBatchSize;
+    public String forceIntermediateCommit;
     
     public Map<String,Features> connectorInbound;
     //public Map<String,Fields> fieldsIn; 
