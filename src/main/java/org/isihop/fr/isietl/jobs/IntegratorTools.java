@@ -98,7 +98,7 @@ public class IntegratorTools
             //faut il le checker ?
             if (checkInBoundValue(jobIntegrator,"connectortype","file"))
             {
-                if (Boolean.parseBoolean(getInConnectorInBoundMap(jobIntegrator, "checkfiles"))==true)
+                if (safeParseBool(getInConnectorInBoundMap(jobIntegrator, "checkfiles"),false)==true)
                 {
                     //verifier les fichiers sources
                     System.out.println("Check inbound file...");

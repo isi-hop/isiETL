@@ -228,17 +228,19 @@ public class FSTools
      **************************/
     private void check_CSV(Job jobIntegrator) 
     {
+        boolean hasError=false; //has error in file Flag
+        
         //nombre de colonne attendues dans les fichiers CSV
-        int nbAttenduCol=Integer.parseInt(jobIntegrator.getConnectorInbound().get("nbfields").getValue(),10);
+        int nbAttenduCol=safeParseInt(jobIntegrator.getConnectorInbound().get("nbfields").getValue(),1);
         
         //lister tous les fichiers
         //pour chaque fichier, tester le format qui correspond à l'extension.        
         for (String fichier:list_files_in_path_with_ext(jobIntegrator.getConnectorInbound().get("filespath").getValue(),"csv"))
         {
-            //verifier
+            //check
             //doit avoir autant de colonne que défini séparé par des ; uniquement     
             open_file(fichier);
-            
+
             //check chaque ligne...
             while (get_read_file_status())
             {
@@ -246,16 +248,47 @@ public class FSTools
                 
                 if (nbcol!=nbAttenduCol) 
                 {
-                    logger.log(Level.SEVERE, "ERROR : File {0} does not conform to line N\u00b0 {1}", new Object[]{fichier, numLigneEnCours});
-                    System.exit(6);
+                    logger.log(Level.SEVERE, "ERROR : File {0} does not conform in line N\u00b0 {1}", new Object[]{fichier, numLigneEnCours});
+                    hasError=true;
                 }
             }
             
             close_file();
-            System.out.println("File "+fichier+" : PASS");
+            
+            //ok with this file...
+            System.out.println("Check "+numLigneEnCours+" Lines => File "+fichier+" is CHECK");
+            logger.log(Level.INFO, "Check {0} Lines => File {1} is CHECK", new Object[]{numLigneEnCours, fichier});
+            //next please...
         }
         
-        System.out.println("End of file control");
+            //check errors
+            if (!hasError)
+            {
+                System.out.println("End of file control, all files are ok");
+                logger.log(Level.INFO, "End of file control, all files are ok");
+            }
+            else
+            {
+                //stop pipeline processing
+                System.out.println("The process stopped with some error in files!");
+                logger.log(Level.INFO, "The process stopped with some error in files!");
+                System.exit(6);                
+            }
+    }
+    
+    
+    /************************************
+     *  Safe Parse Integer
+     * @param str
+     * @return 
+     ************************************/
+    private int safeParseInt(String str,int defaultValue) 
+    {
+        if (str == null) {return defaultValue;}
+        try {
+            //doit etre positif ou = à zero
+            if (Integer.parseInt(str,10)>=0) {return Integer.parseInt(str,10);} else {return defaultValue;}
+        } catch (NumberFormatException e) {return defaultValue;}
     }
     
 }

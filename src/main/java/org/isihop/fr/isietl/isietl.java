@@ -55,7 +55,7 @@ public class isietl
     //logs
     private static final  Logger logger = Logger.getLogger(isietl.class.getName());
     
-    //variables globales
+    //Global definition variables
     private String fileIntegratorPath="integrator.yml";
     private boolean displayParameters=false;
     private String programName;

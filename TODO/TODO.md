@@ -4,12 +4,9 @@
 >version impair => stable
 <hr>
 
-**Passer les logs en anglais**  
-
->Garder les commentaires internes en francais  
-<hr>
 
 **Contruire une documentation README.MD**
+>En cours
 <hr>
 
 **Format d'entrée a ajouter**  
