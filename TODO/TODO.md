@@ -4,6 +4,14 @@
 >version impair => stable
 <hr>
 
+**Option CheckOnly**  
+>Test uniquement la validité du fichier CSV  
+>pas de traitement ensuite  
+
+**Construire un tutoriel**  
+> Dans le dossier tutorial  
+> construire unexemple simple et disdactique 
+> documenter en MD  
 
 **Contruire une documentation README.MD**
 >En cours
