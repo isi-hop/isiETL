@@ -184,16 +184,6 @@ public class IntegratorTools
             System.out.println(entry.getKey()+"="+entry.getValue().value);
         }
         System.out.println("");
-
-//        System.out.println("---------------FIELDS IN---------------");
-//        for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsIn().entrySet()) 
-//        {   System.out.println(entry.getKey());
-//            System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
-//            System.out.println("\tType="+entry.getValue().getType());
-//            System.out.println("\tSize="+entry.getValue().getSize());
-//            System.out.println("");
-//        }
-
         
         System.out.println("---------CONNECTOR OUTBOUND------------");
         for (Map.Entry<String, Features> entry : integratorGlob.getConnectorOutbound().entrySet()) 
@@ -399,7 +389,7 @@ public class IntegratorTools
         String dbdriver=getInConnectorOutBoundMap(integrator, "dbdriver");
         String dburl=getInConnectorOutBoundMap(integrator, "dburl");
         String dblogin=getInConnectorOutBoundMap(integrator, "dblogin");
-        String dbpassword=getInConnectorInBoundMap(integrator, "dbpassword");
+        String dbpassword=getInConnectorOutBoundMap(integrator, "dbpassword");
         
         if (!dbt.connect_db(dbdriver, dburl, dblogin, dbpassword))
         {
