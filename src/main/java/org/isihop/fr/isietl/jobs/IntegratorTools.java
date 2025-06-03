@@ -543,12 +543,18 @@ public class IntegratorTools
                 System.out.println("Start of integration job from : "+fichier);
                 logger.log(Level.INFO, "Start of integration job from : {0}", fichier);
                 
-                nbLignes=1;
+                nbLignes=1;                
                 fst.open_file(fichier);
+                int maxLines=fst.get_Nb_Lines_In_This_File(fichier); //count nb of lines in this file...
+                
                 fst.skip_header(safeParseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),0));
                 while(fst.get_read_file_status())
                 {
                     String[] col=fst.read_line().split(";");
+                    
+                    //TODO: transform processing...
+                    
+                    //TODO: filter processing...
                     
                     String hashCode=hash_code_calculate(concatenate_col(col));
                     
@@ -564,8 +570,9 @@ public class IntegratorTools
                     if (nbLignes % batchSize == 0) 
                     {
                         dbt.getStmt().executeBatch();
-                        if (safeParseBool(jobIntegrator.getForceIntermediateCommit(), true)) {dbt.getConn().commit();} //intermediate commit...;
+                        if (safeParseBool(jobIntegrator.getForceIntermediateCommit(), true)) {dbt.getConn().commit();System.out.println("Batch Commited...");} //intermediate commit...;
                         dbt.getStmt().clearBatch();
+                        System.out.println(nbLignes+"/"+maxLines+" Lines processed...");
                     }
                 }
                 fst.close_file();

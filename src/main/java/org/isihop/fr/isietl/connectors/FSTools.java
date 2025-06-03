@@ -290,5 +290,32 @@ public class FSTools
             if (Integer.parseInt(str,10)>=0) {return Integer.parseInt(str,10);} else {return defaultValue;}
         } catch (NumberFormatException e) {return defaultValue;}
     }
+
+    /***********************************
+     * Count the Nb of lines in current file
+     * @return 
+     ***********************************/    
+    public int get_Nb_Lines_In_This_File(String csvPath) 
+    {
+        BufferedReader reader = null;
+        int lines = 0;
+        try {
+            reader = new BufferedReader(new FileReader(csvPath));
+            while (reader.readLine() != null) lines++;
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, ex.getMessage());
+            }
+        }
+        
+        return lines;
+    }
     
 }
