@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.5 Chrome/134.0.6998.205 Electron/35.3.0 Safari/537.36" version="27.0.5" pages="2">
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9" pages="2">
   <diagram name="Schèma_Global" id="vv0vqMFKTt0ozWe6aofz">
-    <mxGraphModel dx="1042" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1189" dy="1032" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -120,13 +120,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="hyoDHbhCKNFFwaJ086cp-42" value="CSV&lt;div&gt;XML&lt;/div&gt;&lt;div&gt;JSON&lt;/div&gt;&lt;div&gt;YAML&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-          <mxGeometry x="1029" y="727" width="60" height="60" as="geometry" />
+        <mxCell id="hyoDHbhCKNFFwaJ086cp-42" value="CSV" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="1029" y="727" width="60" height="33" as="geometry" />
         </mxCell>
         <mxCell id="hyoDHbhCKNFFwaJ086cp-43" value="PostGresQL&lt;div&gt;Mysql/MariaDB&lt;/div&gt;&lt;div&gt;Oracle&lt;/div&gt;&lt;div&gt;SQLServer&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="820" y="480" width="100" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="hyoDHbhCKNFFwaJ086cp-44" value="CSV&lt;div&gt;XML&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+        <mxCell id="hyoDHbhCKNFFwaJ086cp-44" value="CSV" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
           <mxGeometry x="38" y="195" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="hyoDHbhCKNFFwaJ086cp-45" value="PostGresQL&lt;div&gt;Mysql/MariaDB&lt;/div&gt;&lt;div&gt;Oracle&lt;/div&gt;&lt;div&gt;SQLServer&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">

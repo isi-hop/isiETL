@@ -1,6 +1,7 @@
 # isiETL
 
-*A free open source and light Extract Transform Load (ETL) tool*  
+> **_A free, open source, lightweight extract, transform, and load (ETL) tool that offers a low memory and CPU footprint while remaining fast._**
+  
 
 **License**  
 GPLV3
@@ -8,7 +9,7 @@ GPLV3
 <br> 
 
 **Author**  
-TONDEUR Hervé (ISIHOP)
+TONDEUR Hervé (ISIHOP - Lab Open Source)
 [https://github.com/isi-hop](https://github.com/isi-hop)   
 
 **Description**  
@@ -49,9 +50,149 @@ You must therefore start by building a job file in Yaml. To do this, you can use
 - Transformation action, allowing you to transform your values ​​before integration.  
 - Post-processing action, allowing you to run queries on the table after integration is complete (raw SQL is supported and allows DML actions (INSERT, UPDATE, DELETE).  
 
+😃️ _You will find on this diagram below the sequencing of the flows of the IsiETL application._  
+
+![](./img_readme/isiETL-Schema_Global.png)  
+
 //TODO
 
 ### Create a job file  
+
+Ideally, to create a job, you should use a template file dedicated to this activity and with the variable names correctly predefined.  
+
+You can obtain this template file by running IsiETL with the "-jt" option or the long "--jobtemplate" option. This dumps a YAML-formatted template file named "integrator_template.yml" into your program's local folder.  
+
+_Below is what the template file contains_  
+
+``` yaml   
+# Copyright (C) 2025 tondeur-h
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Integration process name and description
+# Optional fields to describe the job
+#-------------HEADER---------------
+jobName: "MyFirst integrator process"
+jobDescription: "Get data from a CSV file to a DB postgresql"
+jobDateTime: "2025-05-20 12:00:00"
+
+#size defaut to 1 if not defined, must be GT 0, if not value is 1
+jobBatchSize: "200"
+forceIntermediateCommit: "true"
+                            
+#----------------------------------
+# Description of the incoming connector
+# Type: CSV file or PostgreSQL database for now
+# For the template, all possible configurations have been placed here
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  #must be "file" or "database" see below
+  connectortype:
+    value: "file"
+  filespath:
+    value : "/home/herve/isietl/template"
+  checkfiles:
+    value: "true"
+  backupdestinationpath:
+    value: "/home/herve/isietl/template"
+  exttype:
+    value: "csv"
+
+#common to all types of InBound connector
+  nbfields:
+    value: "4"
+  jumpheader:
+    value: "1"
+
+#only for inBound database type
+  #connectortype:
+    #value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/mydb"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+#----------------------------------------
+                            
+#------------OUTBOUND CONNECTOR----------
+# description of the outgoing connector to the postgresql database
+connectorOutbound:
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/mydb"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+                            
+  targetTable:
+    value: "tabletest"
+                            
+  #common value for outBound connectors
+  #must be false or true
+  ignoreErrors:
+    value: "false"
+  #ignore duplicates (true/false)
+  ignoreDuplicates:
+    value: "false"
+                            
+# Description of the fields in the outgoing postgresql table.
+fieldsOut:
+  id:
+    defaultValue: ""
+    size: "20"
+    type: "int4"
+  column1:
+    defaultValue: "col1"
+    size: "80"
+    type: "varchar"
+  column2:
+    defaultValue: "col2"
+    size: "50"
+    type: "varchar"
+  column3:
+    defaultValue: "col3"
+    size: "10"
+    type: "varchar"
+#-------------------------------------
+                            
+#-----------FMT PROCESSING------------
+# DSL script that allows you to execute
+# per-processing actions such as
+# Filtering, Mapping, and Transformation
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+                            
+#-----------POSTPROCESSING------------
+# SQL script that points to a valid SQL file
+# Allows these queries to be executed post-processed
+# If the destination is a database
+SQLPostProcessing: ""
+#-------------------------------------
+
+``` 
+
+And now you can adjust your settings.  
+
 //TODO  
 
 **How to run?**  

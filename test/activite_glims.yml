@@ -24,7 +24,7 @@ jobDescription: "Get data from a CSV file to a DB postgresql"
 jobDateTime: "2025-05-31 12:00:00"
 #size defaut to 1 if not defined, must be GT 0, if not value is 1
 jobBatchSize: "200"
-forceintermediatecommit: "true"
+forceIntermediateCommit: "true"
 #----------------------------------
 
 # description du connecteur entrant

@@ -278,35 +278,42 @@ public class isietl
                                         # You should have received a copy of the GNU General Public License
                                         # along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         #
-                                        # nom de process d'integration et sa description
-                                        # champs optionnels pour décrire le JOB
+                                        # Integration process name and description
+                                        # Optional fields to describe the job
                                         #-------------HEADER---------------
                                         jobName: "MyFirst integrator process"
                                         jobDescription: "Get data from a CSV file to a DB postgresql"
                                         jobDateTime: "2025-05-20 12:00:00"
+
                                         #size defaut to 1 if not defined, must be GT 0, if not value is 1
-                                        jobBatchSize: "20"
+                                        jobBatchSize: "200"
+                                        forceIntermediateCommit: "true"
+                            
                                         #----------------------------------
-                                        # description du connecteur entrant
-                                        # type file csv ou database postgresql pour l'instant'
-                                        # pour la demo, toutes les configurations possible on été placé ici
+                                        # Description of the incoming connector
+                                        # Type: CSV file or PostgreSQL database for now
+                                        # For the template, all possible configurations have been placed here
                                         #------------INBOUND CONNECTOR-----------
                                         connectorInbound:
-                                          #must be ""file"" or ""database""
+                                          #must be "file" or "database" see below
                                           connectortype:
                                             value: "file"
                                           filespath:
-                                            value : "c:/users/herve/documents/netbeansprojects/isietl/test"
+                                            value : "/home/herve/isietl/template"
                                           checkfiles:
                                             value: "true"
                                           backupdestinationpath:
-                                            value: "c:/users/herve/documents/netbeansprojects/isietl/test/"
+                                            value: "/home/herve/isietl/template"
                                           exttype:
                                             value: "csv"
-                                        #commun a tous les type de connecteur InBound
+
+                                        #common to all types of InBound connector
                                           nbfields:
                                             value: "4"
-                                        #seulement pour le type database inBound
+                                          jumpheader:
+                                            value: "1"
+
+                                        #only for inBound database type
                                           #connectortype:
                                             #value: "database"
                                           dbdriver:
@@ -317,10 +324,10 @@ public class isietl
                                             value: "postgres"
                                           dbpassword:
                                             value: "admin"
-
                                         #----------------------------------------
+                            
                                         #------------OUTBOUND CONNECTOR----------
-                                        # description du connecteur sortant vers la database postgresql
+                                        # description of the outgoing connector to the postgresql database
                                         connectorOutbound:
                                           connectortype:
                                             value: "database"
@@ -332,16 +339,19 @@ public class isietl
                                             value: "postgres"
                                           dbpassword:
                                             value: "admin"
+                            
                                           targetTable:
                                             value: "tabletest"
-                                          #valeur commune aux connecteurs outBound
-                                          #prend false ou true
+                            
+                                          #common value for outBound connectors
+                                          #must be false or true
                                           ignoreErrors:
                                             value: "false"
-                                          #ignorer les doublons (true/false)
+                                          #ignore duplicates (true/false)
                                           ignoreDuplicates:
                                             value: "false"
-                                        # description des champs de la table sortant postgresql.
+                            
+                                        # Description of the fields in the outgoing postgresql table.
                                         fieldsOut:
                                           id:
                                             defaultValue: ""
@@ -360,18 +370,20 @@ public class isietl
                                             size: "10"
                                             type: "varchar"
                                         #-------------------------------------
+                            
                                         #-----------FMT PROCESSING------------
-                                        # Script DSL qui permet d'éxécuter en
-                                        # per processing les actions de
-                                        # Filtrage, Mapping, Trnsformation
+                                        # DSL script that allows you to execute
+                                        # per-processing actions such as
+                                        # Filtering, Mapping, and Transformation
                                         filteringScript: ""
                                         mappingScript: ""
                                         transformerScript: ""
                                         #-------------------------------------
+                            
                                         #-----------POSTPROCESSING------------
-                                        # Script sql qui pointe vers un fichier SQL valide
-                                        # permet d'eéxécuter en post processing ces requêtes
-                                        # si destination est une BDD
+                                        # SQL script that points to a valid SQL file
+                                        # Allows these queries to be executed post-processed
+                                        # If the destination is a database
                                         SQLPostProcessing: ""
                                         #-------------------------------------
                                         """;
