@@ -1,7 +1,9 @@
-Heading
-# H1
-## H2
-### H3
+Heading  
+
+# H1  
+## H2  
+### H3  
+
 BOLD  
 **bold text**
 
@@ -9,17 +11,20 @@ Italic
 *italicized text*
 
 Blockquote	
-> blockquote
 
-Ordered List	
-1. First item
-2. Second item
-3. Third item
+> blockquote  
+
+Ordered List
+	
+1. First item  
+2. Second item  
+3. Third item  
 
 Unordered List	
-- First item
-- Second item
-- Third item
+
+- First item  
+- Second item  
+- Third item  
 
 Code	
 `code`
@@ -35,10 +40,12 @@ Image
 ![alt text](image.jpg)
 
 Table  
-| Syntax    | Description |  
-| --------- | ----------- |  
-| Header    | Title       |  
-| Paragraph | Text        |  
+
+|Aligné à gauche| Centré      |Aligné à droite|
+|:--------------|:-----------:| -------------:|
+|Aligné à gauche| ce texte    |Aligné à droite|
+|Aligné à gauche| est         |Aligné à droite|
+|Aligné à gauche| centré      |Aligné à droite| 
 
 Fenced Code Block	
 
