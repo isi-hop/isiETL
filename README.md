@@ -15,14 +15,15 @@ TONDEUR Hervé (ISIHOP - Lab Open Source)
 [https://github.com/isi-hop](https://github.com/isi-hop)   
 
 **Description**  
-**ENGLISH:**  
+
+**🇺🇲️ ENGLISH**  
     This package is a Java program with a low memory footprint, intended to be used as a small data integrator, 
     more commonly known as an ETL (Extract Transform Load) tool, which can be useful for setting up 
     a lightweight ETL project. Its objective is to be as simple as possible to configure and to retain the 
     power of a quality ETL service for the relational database ecosystem.
     Its ambition in this area is to be as complete as possible. 
         
-**FRANCAIS:**  
+**🇫🇷️ FRANCAIS**  
     Ce package est un programme Java à faible empreinte mémoire, destiné a être utilisé comme un petit intégrateur 
     de données, plus communément appelé outil ETL (Extract Transform Load), celui ci peut être utile pour mettre 
     en place un projet léger ETL. Son objectif est d'être aussi simple que possible à paramétrer et de conserver 
@@ -57,13 +58,13 @@ You must therefore start by building a job file in Yaml. To do this, you can use
 
 ![](./img_readme/isiETL-Schema_Global.png)  
 
-//TODO
+✍️ Under Construction    
 
 ### Create a job file  
 
 Ideally, to create a job, you should use a template file dedicated to this activity and with the variable names correctly predefined.  
 
-You can obtain this template file by running IsiETL with the `-jt` option or the long `--jobtemplate` option. This dumps a YAML-formatted template file named "integrator_template.yml" into your program's local folder.  
+You can obtain this template file by running IsiETL with the `-jt` option or the long `--jobtemplate` option. This dumps a YAML-formatted template file named `integrator_template.yml` into your program's local folder.  
 
 _Below is what the template file contains_  
 
@@ -196,7 +197,26 @@ SQLPostProcessing: ""
 
 And now you can adjust your settings.  
 
-//TODO  
+👉️Let's go there to list these different blocks of variables.👈️  
+
+**_Les variables d'entêtes_**  
+`jobName: "just an explicit name to describe the job"`  
+The joBName variable expects a string that allows you to give a name to the job. This variable is not used in the job, but is mandatory.  
+
+`jobDescription: "Get data from a CSV file to a DB postgresql"`   
+The jobDescription variable expects a long description of your job.
+
+`jobDateTime: "2025-05-20 12:00:00"`  
+The JobDate variable allows you to date your job. Here again, this variable is there for information purposes to force you to date your job.  
+
+`jobBatchSize: "200"`  
+The jobBatchSize variable allows you to adjust the number of insert/update rows supported in batch mode. Batch mode allows you to be more efficient in writing data to your database by reducing the number of time-consuming disk writes. It is important to choose this variable carefully. You must have a size greater than 0. If you want to monitor the integration in real time, you can use a low value [1-15], the higher the value the more you will gain in speed, but the commits will be spaced out, therefore potentially a loss of data in the event of a crash.  
+
+`forceIntermediateCommit: "true"`  
+The forceIntermediateCommit variable is coupled with the jobBatchSize variable, which can be set to true or false. If the value is true, a commit is performed every "jobBatchSize" number of lines. If you specify false for this variable, only a commit at the end of the integration is performed, which will allow you to exploit the integrated data.  
+
+
+✍️ Under Construction    
 
 **How to run?**  
 
@@ -216,10 +236,17 @@ The execution options are read in the following order:
 type option `--help` or `-h` to get help from CLI.   
 
 ```shell
-Usage: isiEtl
- -dp,--displayparameters            Displays the parameters of the YAML
-                                    'JOB' file.
+------------------------------------------------
+ISIETL: Version 0.1-202505
+Copyright (c) TONDEUR Hervé (2025/05)
+licence GNU GPLv3 : https://www.gnu.org/licenses/gpl-3.0.fr.html#license-text
+https://github.com/isi-hop
+------------------------------------------------
+
+usage: isiEtl
+ -dp,--displayparameters            Displays the parameters of the YAML 'JOB' file.
  -fip,--fileintegratorpath <file>   Path of je 'JOB' file
  -h,--help                          Help on isiEtl
+ -jt,--jobstemplate                 create a new job file YML template.
 ```  
 
