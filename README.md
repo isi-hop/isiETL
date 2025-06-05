@@ -1,11 +1,13 @@
 # isiETL
 
-> **_A free, open source, lightweight extract, transform, and load (ETL) tool that offers a low memory and CPU footprint while remaining fast._**
+**_A free, open source, lightweight extract, transform, and load (ETL) tool that offers a low memory and CPU footprint while remaining fast._**
   
 
 **License**  
 GPLV3
 [License GPLV3](https://www.gnu.org/licenses/gpl-3.0.fr.html#license-text)  
+
+see: [Local license Markdown file LICENSE.md ...](./LICENSE.md)  
 <br> 
 
 **Author**  
@@ -34,7 +36,7 @@ TONDEUR Hervé (ISIHOP - Lab Open Source)
 **What can we do ?**  
 
  IsiETL is based on reading a job description file. This description file must be written in YAML format and given any name you like (note that the default name for this file is integrator.yml if you want it to be automatically found by the current Job Runner).  
-You must therefore start by building a job file in Yaml. To do this, you can use IsiETL and its option (-jt / --jobstemplate),this option allows you to generate a template file in your application's local folder for running an IsiETL job. All you have to do is fill it in correctly with values ​​representing your file and database elements.  
+You must therefore start by building a job file in Yaml. To do this, you can use IsiETL and its option (`-jt` / `--jobstemplate`),this option allows you to generate a template file in your application's local folder for running an IsiETL job. All you have to do is fill it in correctly with values ​​representing your file and database elements.  
 
 *What can we do with IsiETl?*  
 
@@ -46,7 +48,8 @@ You must therefore start by building a job file in Yaml. To do this, you can use
 - Control integration via batch mode into your database, which speeds up integration times.  
 - Have control, automatically and securely create the dump table schema in your database.  
 - Execute pre- and post-integration actions.  
-- Filtering action, which allows you to not integrate data if it does not match a set of filter criteria. - Mapping action, allowing you to mix and concatenate your input data to the output.  
+- Filtering action, which allows you to not integrate data if it does not match a set of filter criteria.  
+- Mapping action, allowing you to mix and concatenate your input data to the output.  
 - Transformation action, allowing you to transform your values ​​before integration.  
 - Post-processing action, allowing you to run queries on the table after integration is complete (raw SQL is supported and allows DML actions (INSERT, UPDATE, DELETE).  
 
@@ -60,7 +63,7 @@ You must therefore start by building a job file in Yaml. To do this, you can use
 
 Ideally, to create a job, you should use a template file dedicated to this activity and with the variable names correctly predefined.  
 
-You can obtain this template file by running IsiETL with the "-jt" option or the long "--jobtemplate" option. This dumps a YAML-formatted template file named "integrator_template.yml" into your program's local folder.  
+You can obtain this template file by running IsiETL with the `-jt` option or the long `--jobtemplate` option. This dumps a YAML-formatted template file named "integrator_template.yml" into your program's local folder.  
 
 _Below is what the template file contains_  
 
@@ -210,7 +213,7 @@ The execution options are read in the following order:
 3. default parameters of the program, the job file located in the executable folder, which must be named by default integration.yml and has a value of displayparameter.
 
 **CLI usage :**  
-type option --help or -h to get help from CLI.   
+type option `--help` or `-h` to get help from CLI.   
 
 ```shell
 Usage: isiEtl
