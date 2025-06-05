@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.isihop.fr.isietl.entities.Job;
+import org.mozilla.universalchardet.UniversalDetector;
 
 /**
  *
@@ -316,6 +317,38 @@ public class FSTools
         }
         
         return lines;
+    }
+
+    /**************************************
+     * DETECT if file is in UTF-8 encoding!
+     * @param jobIntegrator 
+     **************************************/
+    public void check_UTF8(Job jobIntegrator) {
+        for (String fichier:list_files_in_path_with_ext(jobIntegrator.getConnectorInbound().get("filespath").getValue(),"csv"))
+        {
+            String encoding;
+            try {
+                encoding = UniversalDetector.detectCharset(new File(fichier));
+                if (encoding != null) {
+                    System.out.println("Detected encoding = " + encoding);
+                } else 
+                {
+                    System.out.println("No encoding detected.");
+                    encoding="UNKNOWN";
+                }
+                if (encoding.compareToIgnoreCase("UTF-8")!=0)
+                {
+                //stop pipeline processing
+                System.out.println("The process stopped with some encoding error in files, "+fichier+" is not in UTF-8 charsets!");
+                logger.log(Level.INFO, "The process stopped with some encoding error in files, {0} is not in UTF-8 charsets!", fichier);
+                System.exit(8);                
+                }
+                
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, ex.getMessage());
+                System.exit(7);
+            }
+        }
     }
     
 }

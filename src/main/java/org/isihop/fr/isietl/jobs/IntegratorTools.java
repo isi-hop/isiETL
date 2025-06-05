@@ -25,6 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
@@ -105,7 +107,8 @@ public class IntegratorTools
                     logger.log(Level.INFO,"Check inbound file...");
                     
                     FSTools fst=new FSTools(logger);
-                    fst.check_files_format(jobIntegrator);
+                    fst.check_UTF8(jobIntegrator); //check if is in UFT-8 encoding
+                    fst.check_files_format(jobIntegrator); //check that the format complies with the CSV standard
                 }
             }
             
@@ -547,10 +550,15 @@ public class IntegratorTools
                 fst.open_file(fichier);
                 int maxLines=fst.get_Nb_Lines_In_This_File(fichier); //count nb of lines in this file...
                 
+                //manage header, and skip number of lines needed
                 fst.skip_header(safeParseInt(getInConnectorInBoundMap(jobIntegrator, "jumpheader"),0));
                 while(fst.get_read_file_status())
                 {
-                    String[] col=fst.read_line().split(";");
+                    //force UTF-8
+                    //String strUtf8=new String(new String(fst.read_line().getBytes(Charset.forName("Windows-1252")), Charset.forName("Windows-1252")).getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+                    
+                    String[] col=fst.read_line().split(";",-1); //parser CSV line with ; separator character.
+                    //String[] col=strUtf8.split(";",-1); //parser CSV line with ; separator character.
                     
                     //TODO: transform processing...
                     
