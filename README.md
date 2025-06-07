@@ -1,7 +1,7 @@
 # isiETL
 
-**_A free, open source, lightweight extract, transform, and load (ETL) tool that offers a low memory and CPU footprint while remaining fast._**
-  
+**_A free, open source, lightweight extract, transform, and load (ETL) tool that offers a low memory and CPU footprint while remaining fast.  
+ 🔧️ It's perfect and very useful for small extraction and integration jobs requiring a solid base that's quick to set up via a simple script describing the ‘job’._**
 
 **License**  
 GPLV3
@@ -133,7 +133,7 @@ connectorInbound:
 #----------------------------------------
                             
 #------------OUTBOUND CONNECTOR----------
-# description of the outgoing connector to the postgresql database
+# description of the outgoing connector to the database
 connectorOutbound:
   connectortype:
     value: "database"
@@ -157,7 +157,7 @@ connectorOutbound:
   ignoreDuplicates:
     value: "false"
                             
-# Description of the fields in the outgoing postgresql table.
+# Description of the fields in the outgoing table.
 fieldsOut:
   id:
     defaultValue: ""
@@ -200,6 +200,18 @@ And now you can adjust your settings.
 👉️Let's go there to list these different blocks of variables.👈️  
 
 **_Header variables_**  
+
+``` YAML
+# Sample header
+
+jobName: "MyFirst integrator process"
+jobDescription: "Get data from a CSV file to a DB postgresql"
+jobDateTime: "2025-05-20 12:00:00"
+jobBatchSize: "200"
+forceIntermediateCommit: "true"
+```  
+
+
 `jobName: "just an explicit name to describe the job"`  
 The joBName variable expects a string that allows you to give a name to the job. This variable is not used in the job, but is mandatory.  
 
@@ -218,6 +230,8 @@ The forceIntermediateCommit variable is coupled with the jobBatchSize variable, 
 **_Description of the incoming file connector_**  
 
 ``` YAML 
+#example of an incoming file connector  
+
 connectorInbound:
   
 #must be "file" or "database" 
@@ -281,6 +295,9 @@ This value is used to check the consistency of the file, as well as to assign fi
 **_Description of the incoming relational DataBase connector_**  
 
 ``` YAML 
+
+#Example of an incoming database connector
+
 connectorInbound:
 
 #only for inBound database type
@@ -298,8 +315,29 @@ connectorInbound:
 
   dbpassword:
     value: "mypassword"
-``` 
+```  
 
+
+As with the description of an incoming connector of type ‘file’, the incoming connector of type ‘database’ must begin with the `connectorInbound` class variable.  
+Next, a set of variables will be made available to describe the connector.  
+
+`connectortype` 
+Here, this variable, already known in 'file' mode, must take the value 'database'.  
+
+`dbdriver` 
+This mandatory variable must take the name of your compatible JDBC driver for your incoming database (to date, only PostgresQl is supported, work in progress...👷️).  
+
+`dburl` 
+This mandatory variable takes the string in the form of a JDBC compliant url according to your driver and database to indicate the protocol, the dns or ip of your server, the port used and the name of your source database.  
+
+`dblogin` 
+This mandatory variable takes your source database login as parameter.  
+
+`dbpassword`   
+This mandatory variable takes the password of your source database access account.  
+At present, this password is in clear text, which is obviously not very secure\*.  
+
+_\* It will soon be encrypted using a SHA256 hascode (work in progress...👷️)._  
 
 
 ✍️ Under Construction    
