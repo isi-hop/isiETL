@@ -199,7 +199,7 @@ And now you can adjust your settings.
 
 👉️Let's go there to list these different blocks of variables.👈️  
 
-**_Les variables d'entêtes_**  
+**_Header variables_**  
 `jobName: "just an explicit name to describe the job"`  
 The joBName variable expects a string that allows you to give a name to the job. This variable is not used in the job, but is mandatory.  
 
@@ -214,6 +214,92 @@ The jobBatchSize variable allows you to adjust the number of insert/update rows 
 
 `forceIntermediateCommit: "true"`  
 The forceIntermediateCommit variable is coupled with the jobBatchSize variable, which can be set to true or false. If the value is true, a commit is performed every "jobBatchSize" number of lines. If you specify false for this variable, only a commit at the end of the integration is performed, which will allow you to exploit the integrated data.  
+
+**_Description of the incoming file connector_**  
+
+``` YAML 
+connectorInbound:
+  
+#must be "file" or "database" 
+  connectortype:
+    value: "file"
+
+#file type description.
+  filespath:
+    value : "/home/herve/isietl/template"
+
+  checkfiles:
+    value: "true"
+
+  backupdestinationpath:
+    value: "/home/herve/isietl/template"
+
+  exttype:
+    value: "csv"
+
+  jumpheader:
+    value: "1"
+
+#common to all types of Incoming connector
+  nbfields:
+    value: "4"
+```  
+
+This group of variables is used to describe the incoming connector. Two types of incoming connectors have been implemented to date, a file type (CSV format only to date) and a database format (Postgresql, Oracle, SqlServer, MySql, MariaDB).    
+
+This group of parameters starts with the main `connectorInbound` class, which is then broken down into sub-classes of variables describing either an incoming file format or a database format.  
+
+Each sub-variable must take the name of the sub-variable, followed by the keyword `value`, each value is a character string which will be translated into the correct type by IsiETL.  
+
+`connectortype`  
+This mandatory sub-variable is used to define the type of incoming connector described and used to 'extract' the data, and can take either `file` or `database` as its value.  
+
+`filespath`  
+This variable is mandatory, and is used to specify the absolute path of the CSV files to be processed. This path must respect the path syntax expected by your OS, and also Java (/) as a folder separator.  
+Warning: do not use the separator at the end of the folder, and do not enter a file name here, as IsiETL will determine which file(s) it should process in this folder (CSV compliant).
+
+`checkfiles`  
+This mandatory variable can be set to “true” or ‘false’, with true requiring all data lines in the file to be checked for format and consistency (check on extension and number of fields according to the “;” separator). Checking file size and numbers can take from a few seconds to a few minutes, but is a good solution for avoiding the insertion of incorrectly positioned data in the CSV.  
+Setting the value false on this parameter allows you to bypass this check and take the risk of direct insertion, for use when you're sure of the quality of your incoming files.
+
+`backupdestinationpath`  
+This mandatory variable is used to indicate the path for post-processing backup of files. IsiETL's processing allows each file to be saved to a destination folder after processing, so as not to lose track of them.  
+This path must respect the path syntax expected by your OS, and also Java (/) as a folder separator.  
+Warning: do not use the separator at the end of the folder, and do not enter a file name here.  
+
+`exttype`  
+Cette variable obligatoire, permet d'indiquer le format du fichier entrant, a ce jour seul la valeur "csv" est possible, cette variable est réservé à un usable ultérieur qui permettra de prendre en charge d'autres types de formats comme XML ou JSON par exemple.  
+
+`jumpheader`  
+This mandatory variable must indicate an integer >=0.  
+It is used to indicate the number of lines that make up the csv header, and the skipping distance to be used to skip this header so as not to find it integrated into the destination. This also makes it possible to skip the comment lines that can be found in the header and avoid the inconvenience of a non-existent error when checking the file's consistency.  
+
+`nbfields`  
+This mandatory variable takes an integer >0 and must represent the number of fields in the csv file you are going to integrate.  
+This value is used to check the consistency of the file, as well as to assign fields to destination fields.  
+
+**_Description of the incoming relational DataBase connector_**  
+
+``` YAML 
+connectorInbound:
+
+#only for inBound database type
+  connectortype:
+    value: "database"
+
+  dbdriver:
+    value: "org.postgresql.Driver"
+
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/mydb"
+
+  dblogin:
+    value: "myaccount"
+
+  dbpassword:
+    value: "mypassword"
+``` 
+
 
 
 ✍️ Under Construction    
