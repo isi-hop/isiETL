@@ -68,7 +68,7 @@ You can obtain this template file by running IsiETL with the `-jt` option or the
 
 _Below is what the template file contains_  
 
-``` yaml   
+``` YAML    
 # Copyright (C) 2025 tondeur-h
 #
 # This program is free software: you can redistribute it and/or modify
@@ -400,8 +400,69 @@ This variable can be set to true or false. If set to true in this case, potentia
 Sometimes this is the desired behavior, sometimes we prefer to keep the uniqueness of data tuples.
 In this case, it is preferable to set this parameter to false in order to check for duplicates and only allow IsiETL to integrate data that is not present in the target database.  
 
+**_Principles for describing target table fields_**  
+
+``` YAML  
+#Fields Description of the outgoing table.
+fieldsOut:
+  id:
+    defaultValue: ""
+    size: "20"
+    type: "int4"
+  column1:
+    defaultValue: "col1"
+    size: "80"
+    type: "varchar"
+  column2:
+    defaultValue: "col2"
+    size: "50"
+    type: "varchar"
+  column3:
+    defaultValue: "col3"
+    size: "10"
+    type: "varchar"
+```  
+
+Principles for describing target table fieldsTo describe the destination fields of the target table for your data integration (as a reminder: this target table is described in the `connectorInbound:targetTable:value` variable, see above), you must first define a field class via the `fieldsOut` variable, under which you can describe all the fields required to automatically build your destination table.
+
+<u>The description of a field is as follows</u> :
+- Field name
+- Field size (only useful in certain situations)
+- Field type
+
+The field name must be a literal valid for the destination RDBMS (see your RDBMS prerequisites).  
+The field size is useful when declaring field types that take this type of information into account (varchar, for example).  
+The field type must respect the syntax es field types supported by your RDBMS.
+
+<u>Please note</u>: The number of fields is the limit of what your RDBMS can support, so consult the documentation for more information.  
 
 ✍️ Under Construction    
+
+``` YAML 
+#-----------FMT PROCESSING------------
+# DSL script that allows you to execute
+# per-processing actions such as
+# Filtering, Mapping, and Transformation
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+```  
+
+
+```  YAML 
+#-----------POSTPROCESSING------------
+# SQL script that points to a valid SQL file
+# Allows these queries to be executed post-processed
+# If the destination is a database
+SQLPostProcessing: ""
+#-------------------------------------
+
+```  
+
+
+
+
 
 **How to run?**  
 
@@ -434,4 +495,32 @@ usage: isiEtl
  -h,--help                          Help on isiEtl
  -jt,--jobstemplate                 create a new job file YML template.
 ```  
+
+<u>Example of executions</u> : 
+
+**Simple launch**  
+`isietl.sh`  
+If the isietl.properties file does not exist: Run IsiEtl with the default options of  
+``` properties 
+displayparameters=false  
+fileintegratorpath=$ISIETL_HOME/integrator.yml  
+``` 
+
+If isietl.properties exist: Run IsiETL job with the properties options defined in this file.  
+
+**Get help launching IsiETL**  
+`isietl.sh -h  or isietl.sh --help`  
+
+**Generate a template for a new job.**  
+`isietl.sh -jt or isietl.sh --jobtemplate`  
+
+**Execution with command-line options**  
+`isietl.sh -dp -fip /$HOME/jobpath/myjob.yml`  
+Run `/$HOME/jobpath/myjob.yml` and display parameters on CLI.  
+
+`isietl.sh -fip /$HOME/jobpath/myjob.yml`   
+Run `/$HOME/jobpath/myjob.yml` and don't display parameters on CLI.   
+
+`isietl.sh -dp`  
+Run `/$ISIETL_HOME/integrator.yml` and display parameters on CLI.  
 
