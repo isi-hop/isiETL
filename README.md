@@ -149,7 +149,6 @@ connectorOutbound:
   targetTable:
     value: "tabletest"
                             
-  #common value for outBound connectors
   #must be false or true
   ignoreErrors:
     value: "false"
@@ -338,6 +337,68 @@ This mandatory variable takes the password of your source database access accoun
 At present, this password is in clear text, which is obviously not very secure\*.  
 
 _\* It will soon be encrypted using a SHA256 hascode (work in progress...👷️)._  
+
+
+**_Description of the outgoing relational DataBase connector_**  
+
+``` YAML 
+#description of the outgoing connector to the database
+connectorOutbound:
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/mydb"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+                            
+  targetTable:
+    value: "tabletest"
+                            
+  #must be false or true
+  ignoreErrors:
+    value: "false"
+
+  #ignore duplicates (true/false)
+  ignoreDuplicates:
+    value: "false"
+```  
+
+As with the description of an incoming connector of type ‘database’, the outgoing connector of type ‘database’ must begin with the `connectorInbound` class variable.  
+Next, a set of variables will be made available to describe the connector.  
+
+`connectortype` 
+Here, this variable, already known in incoming 'database' mode, and must take the value 'database'.  
+
+`dbdriver` 
+This mandatory variable must take the name of your compatible JDBC driver for your outgoing database (to date, only PostgresQl is supported, work in progress...👷️).  
+
+`dburl` 
+This mandatory variable takes the string in the form of a JDBC compliant url according to your driver and database to indicate the protocol, the dns or ip of your server, the port used and the name of your destination database.  
+
+`dblogin` 
+This mandatory variable takes your source database login as parameter.  
+
+`dbpassword`   
+This mandatory variable takes the password of your destination database access account.  
+At present, this password is in clear text, which is obviously not very secure\*.  
+
+_\* It will soon be encrypted using a SHA256 hascode (work in progress...👷️)._  
+
+`targetTable` 
+This variable must take a table name which will be the destination table for your data, this table name must be a short name if possible, depending on the type of database being received, you must respect the case and admissible characters, some DB models do not support accents or uppercase characters (check with your database documentation).  
+
+`ignoreErrors` 
+This variable can be set to true or false. If the value passed in parameter is true, IsiETL ignores all potential integration errors and continues the job to completion.  
+This can be dangerous and cause data to be lost during integration, so it's best to set false here and stop integration at the first error, allowing you to correct the source and reintegrate, and above all guarantee the completeness of the data integration.  
+
+`ignoreDuplicates` 
+This variable can be set to true or false. If set to true in this case, potentially duplicate lines in the source will be integrated as they are, without any duplication control in the destination.
+Sometimes this is the desired behavior, sometimes we prefer to keep the uniqueness of data tuples.
+In this case, it is preferable to set this parameter to false in order to check for duplicates and only allow IsiETL to integrate data that is not present in the target database.  
 
 
 ✍️ Under Construction    
