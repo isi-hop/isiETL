@@ -58,8 +58,6 @@ You must therefore start by building a job file in Yaml. To do this, you can use
 
 ![](./img_readme/isiETL-Schema_Global.png)  
 
-✍️ Under Construction    
-
 ### Create a job file  
 
 Ideally, to create a job, you should use a template file dedicated to this activity and with the variable names correctly predefined.  
@@ -436,35 +434,49 @@ The field type must respect the syntax es field types supported by your RDBMS.
 
 <u>Please note</u>: The number of fields is the limit of what your RDBMS can support, so consult the documentation for more information.  
 
-✍️ Under Construction    
+**_Principles for FMT Processing in IsiETL_**  
 
 ``` YAML 
 #-----------FMT PROCESSING------------
 # DSL script that allows you to execute
 # per-processing actions such as
 # Filtering, Mapping, and Transformation
-filteringScript: ""
-mappingScript: ""
-transformerScript: ""
-#-------------------------------------
+filteringScript: "myfilterscript.scr"
+mapScript: "mymapscript.scr"
+transformerScript: "mytransformscript.scr"
 ```  
 
+This part of your job setup allows you to perform intermediate processing before data integration.
+
+**FMT** stands for **“Filter - Map - Transform ”**, and these three independent steps enable you to respectively  
+
+- Filter integrated data according to criteria based on the values of one or more fields.  
+- Map data between source and destination according to your needs, allowing for operations such as concatenation.  
+- Transform data before integration: here you can modify a value, perform calculations on a value, capitalize, lowercase, trim, truncate, etc...  
+
+These FMT operations operate independently and must be written in a javascript-type DSL language. (See FMT-DSL chapter)  
+
+Note that a script file is required for an operation to be taken into account, so a script must be defined for each of these operations if necessary.  
+If no script is defined for one of these operations, then the step is passed without action.  
+note: the extension is not important for this script, it's just there to help you find your way around your files.  
+
+
+**_Principles for POST Processing in IsiETL_**  
 
 ```  YAML 
-#-----------POSTPROCESSING------------
+#-----------POST-PROCESSING------------
 # SQL script that points to a valid SQL file
 # Allows these queries to be executed post-processed
 # If the destination is a database
-SQLPostProcessing: ""
-#-------------------------------------
-
+SQLPostProcessing: "mypostprocessingscript.scr"
 ```  
 
+Le script de post processing est un script en pur SQL dédié à votre base de données de destination, vous pouvez ici aligner un certains nombre de requêtes SQL qui seront exécuté à la toute fin du processus d'intégration et de manière séquentielle.  
+Les requête INSERT, UPDATE, CREATE, DELETE sont supporté a ce niveau ici.  
+<u>Pour plus de détails voir les tutoriels.</u>   
 
+### How to run?  
 
-
-
-**How to run?**  
 
 - To be able to start a job, it is necessary that you have built it in the form of a YAML file, as mentioned above. You can either specify the full or relative path of this Job file to be executed on the command line when launching the application.  
 - isiETL also offers an option to display the parameters on the execution console of your YAML 'Job' file read.   
@@ -524,3 +536,6 @@ Run `/$HOME/jobpath/myjob.yml` and don't display parameters on CLI.
 `isietl.sh -dp`  
 Run `/$ISIETL_HOME/integrator.yml` and display parameters on CLI.  
 
+### About the dedicated language : DSL-Script  
+
+✍️ Under Construction    
