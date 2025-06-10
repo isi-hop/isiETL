@@ -48,7 +48,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 public class IntegratorTools 
 {
-    //variables globales
+    //globals variables
     private String fileIntegratorPath;
     private boolean displayParameters;
     private long startIntegrationTime;
@@ -59,15 +59,15 @@ public class IntegratorTools
 
        
     /************************************
-     * lecture et controle du
-     * fichier integrator.yml
+     * reading and checking the
+     * integrator.yml file
      * @param fileymlpath
      * @param dp
      * @param logs
      ************************************/
     public void read_job_file(String fileymlpath, boolean dp,Logger logs) 
     {
-        //réassocier les paramètre en loca
+        //reassociate local parameters
         fileIntegratorPath=fileymlpath;
         displayParameters=dp;
         logger=logs;
@@ -86,21 +86,21 @@ public class IntegratorTools
             
             if (displayParameters) {display_integrator(jobIntegrator);}
             
-            //detecter le type de connecteur IN       
+            //detect IN connector type    
             check_connector_inbound(jobIntegrator);
             
-            //detecter le type de connecteur OUT       
+            //detect OUT connector type    
             check_connector_outbound(jobIntegrator);
             
             
-            //ok passe les contrôles, on va traiter le job
-            //si le job source est un fichier
-            //faut il le checker ?
+            //ok pass the checks, we'll process the job
+            //if the source job is a file
+            //should we check it?
             if (checkInBoundValue(jobIntegrator,"connectortype","file"))
             {
                 if (safeParseBool(getInConnectorInBoundMap(jobIntegrator, "checkfiles"),false)==true)
                 {
-                    //verifier les fichiers sources
+                    //verify source files
                     System.out.println("Check inbound file...");
                     logger.log(Level.INFO,"Check inbound file...");
                     
@@ -110,8 +110,8 @@ public class IntegratorTools
                 }
             }
             
-            //traiter l'integration...
-            //---------------le job se fait ici-------------------
+            //Processing integration...
+            //--------------The job is done here------------------
             process_integration_file_to_db(jobIntegrator);
             System.out.println("End of jobs...");
             logger.log(Level.INFO,"End of jobs...");
@@ -121,7 +121,7 @@ public class IntegratorTools
             System.out.println("Parsing Error!, Job file not found!");
             System.out.println(ex.getMessage());
             logger.log(Level.SEVERE,"Parsing Error!, Job file not found!", ex.getMessage());
-            System.exit(1); //sortie erreur 1 fichier yaml incorrect..
+            System.exit(1); //output error 1 incorrect yaml file...
         } finally {
             try {
                 inputStream.close();
@@ -134,14 +134,14 @@ public class IntegratorTools
 
     
     /*****************************
-     * Calculer un code de hashage 
-     * en SHA256
+     * Compute a hash code
+     * in SHA256
      * @return 
      *****************************/
     private String hash_code_calculate(String chaine) 
     {
         StringBuilder hash=new StringBuilder();
-        //input concaténé
+        //input concatenated
         String input=chaine;
     try {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -159,7 +159,7 @@ public class IntegratorTools
 
     
     /***************************************
-     * Exploitation du fichier inegrator.yml
+     * Use of the inegrator.yml file
      * @param integratorGlob
      ***************************************/
     
@@ -223,17 +223,17 @@ public class IntegratorTools
     
        
     /*******************************************
-     * Verifier présence des variables
-     * obligatoire selon le type de connecteur.
+     * Check presence of variables
+     * mandatory depending on connector type.
      * @param detect_connector 
      *******************************************/
     private void check_connector_inbound(Job integrator) 
     {
-        //si non défini, arrêt
+        //if not defined => stop
         String connector=getInConnectorInBoundMap(integrator,"connectortype");
         
         if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector In, is not defined?");System.exit(2);}
-        //typage du connecteur
+        //type of connector
         switch (connector.toUpperCase()) 
         {
             case "FILE" -> check_file_connector(integrator);
@@ -248,7 +248,7 @@ public class IntegratorTools
     
     
     /*********************************************
-     * Rechercher une entree dans la Map Inbound
+     * Search for an entry in the Inbound Map
      * @param connectorInbound
      * @param entrySearch
      * @return 
@@ -262,8 +262,8 @@ public class IntegratorTools
 
     
     /*******************************************
-     * Verifier que la valeur de la clé corresponds
-     * a une valeur donnée en paramètre
+     * Verify that the value of the corresponding key
+     * to a value given in parameter
      * @param integrator
      * @param key
      * @param value
@@ -276,8 +276,8 @@ public class IntegratorTools
 
 
    /*******************************************
-     * Verifier que la valeur de la clé corresponds
-     * a une valeur donnée
+     * Verify that the value of the corresponding key
+     * to a given value
      * @param integrator
      * @param key
      * @param value
@@ -290,7 +290,7 @@ public class IntegratorTools
     
 
     /*********************************************
-     * Rechercher une entree dans la Map Outbound
+     * Search for an entry in the Outbound Map
      * @param connectorOutbound
      * @param entrySearch
      * @return 
@@ -304,38 +304,38 @@ public class IntegratorTools
 
     
     /************************************
-     * Verifier la presence des valeurs
-     * nécessaires pour un connecteur 
-     * entrant de type file.
+     * Verify the presence of the values
+     * required for a connector
+     * connector.
      ************************************/
     private void check_file_connector(Job integrator) 
     {
         System.out.println("InBound connector, is a file type...");
         logger.log(Level.INFO,"InBound connector, is a file type...");
         /*
-        doit contenir les 4 paramètres suivants...
-        correctement enregistré et avec une valeur corrrecte...
-        filespath: "/home/tondeur-h/dev/isiETL/test"
-        checkfiles: "true"
-        destination: "/home/tondeur-h/dev/isiETL/test"
-        exttype: "csv"
+            must contain the following 4 parameters...
+            correctly saved and with a correct value...
+            filespath: "/home/tondeur-h/dev/isiETL/test"
+            checkfiles: "true"
+            destination: "/home/tondeur-h/dev/isiETL/test"
+            exttype: "csv"
         */
-        //lire le filespath.
+         //read filespath.
         String filespath=getInConnectorInBoundMap(integrator,"filespath");
         if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", filespath);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
         
-        //lire le chemin de destination
+        //read destination path
         String destination=getInConnectorInBoundMap(integrator,"backupdestinationpath");
         if (test_a_path(destination)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", destination);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
         
-        //lire et tester un boolean
+        //read and test a boolean
         String checkfiles=getInConnectorInBoundMap(integrator,"checkfiles");
         if (test_boolean(checkfiles)==false) {logger.log(Level.SEVERE, "The variable ''checkfiles'' is not defined!");System.exit(4);} 
         
-        //lire l'extension.
+        //read extension.
         String exttype=getInConnectorInBoundMap(integrator,"exttype");
         ArrayList<String> lstexttype =new ArrayList<>();
-        lstexttype.add("csv"); //liste des extension prise en charge actuellement.
+        lstexttype.add("csv"); //list of currently supported extensions.
         if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "the extension {0} is not supported!", exttype);System.exit(4);} //extension no prise en charge
         
         System.out.println("Test file connector OK");
@@ -351,10 +351,10 @@ public class IntegratorTools
      *********************************/
     private void check_database_connector_inbound(Job integrator) 
     {
-        // verifier que la database se connecte...
-        //recuperer les éléments de connections.
+        // check that the database is connected...
+        //recover connection elements.
         
-        //tester la connection...
+        //test connection...
         DBTools dbt=new DBTools(logger);
         String dbdriver=getInConnectorInBoundMap(integrator, "dbdriver");
         String dburl=getInConnectorInBoundMap(integrator, "dburl");
@@ -382,10 +382,10 @@ public class IntegratorTools
      *********************************/
     private void check_database_connector_outbound(Job integrator) 
     {
-        // verifier que la database se connecte...
-        //recuperer les éléments de connections.
+        // check that the database is connected...
+        //recover connection elements.
         
-        //tester la connection...
+        //test connection...
         DBTools dbt=new DBTools(logger);
         String dbdriver=getInConnectorOutBoundMap(integrator, "dbdriver");
         String dburl=getInConnectorOutBoundMap(integrator, "dburl");
@@ -408,7 +408,7 @@ public class IntegratorTools
 
     
     /**********************************
-     * Tester la validité d'un chemin
+     * Test the validity of a path
      * @param filespath
      * @return 
      *********************************/
@@ -416,14 +416,14 @@ public class IntegratorTools
     {
         File f=new File(filespath);
         if (f.exists() && f.canRead()) {return true;}
-        //valeur par defaut
+        //Default
         return false;
     }
 
     
     /***********************************
-     * Tester la valeur d'une chaine
-     * dans une liste
+     * Test the value of a string
+     * in a list
      * @param exttype
      * @return 
      ***********************************/
@@ -433,35 +433,35 @@ public class IntegratorTools
         {
             if (chaine.compareToIgnoreCase(exttype)==0) {return true;}
         }
-        //par defaut
+        //default
         return false;
     }
     
     
     /**********************************
-     * Tester validité du boolean
+     * Test boolean validity
      * @param checkfiles
      * @return 
      **********************************/
     private boolean test_boolean(String checkfiles) 
     {
-        //par defaut c'est ok.
+        //default is ok.
         return ((checkfiles.toUpperCase().compareToIgnoreCase("TRUE")==0) || (checkfiles.toUpperCase().compareToIgnoreCase("FALSE")==0));
     }
     
     
     /*******************************************
-     * Verifier présence des variables
-     * obligatoire selon le type de connecteur.
+     * Check presence of variables
+     * mandatory depending on connector type.
      * @param detect_connector 
      *******************************************/
     private void check_connector_outbound(Job integrator) 
     {
-        //si non défini, arrêt
+        //if not defined => stop
         String connector=getInConnectorOutBoundMap(integrator,"connectortype");
         
         if (connector.isBlank() || connector.isEmpty() || connector==null) {logger.log(Level.SEVERE, "Connector Out is not define !");System.exit(2);}
-        //typage du connecteur
+        //type of connector
         switch (connector.toUpperCase()) 
         {
             case "FILE" -> check_file_connector(integrator);
@@ -476,13 +476,13 @@ public class IntegratorTools
 
     
     /**********************************************
-     * TRaiter l'intégration des données
+     * Process data integration
      * @param jobIntegrator 
      **********************************************/
     private void process_integration_file_to_db(Job jobIntegrator) 
     {
         try {
-            //se connecter à la database_outbound
+            //connect to database_outbound
             System.out.println("Connection DataBase OutBound.");
             logger.log(Level.INFO,"Connection DataBase OutBound.");
             
@@ -495,7 +495,7 @@ public class IntegratorTools
             System.out.println("Connection DataBase OutBound : PASS");
             logger.log(Level.INFO,"Connection DataBase OutBound : PASS");
             
-            //tester présence de la table sinon la construire
+            //test presence of table otherwise build it
             String sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
             
             try{
@@ -509,11 +509,10 @@ public class IntegratorTools
             } catch (SQLException ex) 
             {
                 //ex.printStackTrace();
-                //creer la table car manquante...
+                //create table as missing....
                 System.out.println("Creation of the table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 logger.log(Level.INFO, "Creation of the table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
-                //creer_create_Table(jobIntegrator);
                 sql=create_destination_table(jobIntegrator);
                 
                 dbt.getStmt().executeUpdate(sql);
@@ -521,16 +520,16 @@ public class IntegratorTools
                 logger.log(Level.INFO,"Table Create : PASS");
             }
                         
-            //construire le template de la requête UPSERT
+            //construct UPSERT request template
             System.out.println("Preparing the UPSERT template");
             logger.log(Level.INFO,"Preparing the UPSERT template");
             
             String sqlTemplate=create_template_UPSERT(jobIntegrator);
             
-            //debut du calcul de traitement
+            //start of processing calculation
             startIntegrationTime = System.nanoTime();
             
-            //traiter les fichiers en entrée
+            //process input files
             dbt.getConn().setAutoCommit(false);
             int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
             
@@ -572,7 +571,7 @@ public class IntegratorTools
                     
                     nbLignes++; //nombre lignes traitées
                     
-                    //forcer l'écriture et décharge le tampon du Batch
+                    //forces writing and unloads the Batch buffer
                     if (nbLignes % batchSize == 0) 
                     {
                         dbt.getStmt().executeBatch();
@@ -583,37 +582,37 @@ public class IntegratorTools
                 }
                 fst.close_file();
                 
-                //finaliser les dernier enregistrement et faire un commit.
-                dbt.getStmt().executeBatch(); //dernnier exce sur le batch
-                dbt.getConn().commit(); //dernier commit pour les données du batch
+                // finalize the last registrations and commit.
+                dbt.getStmt().executeBatch(); //first batch execution
+                dbt.getConn().commit(); //last commit for batch data
                 
-                //marquer la fin de l'integration
+                //mark end of integration
                 endIntegrationTime = System.nanoTime();
 
-                //un peut de log pour l'utilisateur
+                //a user log
                 System.out.println(nbLignes+" line(s) processed in " + integration_duration());
                 System.out.println("End of integration job from : "+fichier);
                 logger.log(Level.INFO, "{0} line(s) processed in " + integration_duration(),nbLignes);
                 logger.log(Level.INFO, "End of integration job from : {0}", fichier);
                 
-                //deplacement du fichier en backup
+                //deplacement of backup file
                 if (safeParseBool(getInConnectorInBoundMap(jobIntegrator, "suppressfile"),false))
                 {
-                    //supprimer le fichier
+                    //suppress file
                     System.out.println("Suppress file : " +fichier);
                     logger.log(Level.INFO, "Suppress file : {0}", fichier);
                     fst.delete_file(fichier);
                 }
                 else
                 {
-                    //deplacer le fichier vers le dossier backup...
+                    //move file to backup folder...
                     System.out.println("Backup file : " +fichier);
                     logger.log(Level.INFO, "Backup file : {0}", fichier);
                     String fichierDst=getInConnectorInBoundMap(jobIntegrator, "backupdestinationpath")+"/"+new File(fichier).getName();
                     fst.move_file_from_to(fichier,fichierDst) ;
                 }
                 
-                //postTraitement SQL sur la bhase de données
+                //postSQL processing on database
                 if (dbt.SQLPostProcessing(jobIntegrator.getSQLPostProcessing()))
                 {
                     System.out.println("End of Post Processing SQL with no Errors");
@@ -624,7 +623,7 @@ public class IntegratorTools
                 }
             }
                         
-            //se deconnecter de la database outobound
+            //disconnect from the outobound database
             dbt.close_db();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -633,17 +632,17 @@ public class IntegratorTools
     }
     
     
-    /*****************************
-     * Convertir en chaine une durée
+    /**********************************
+     * Convert a duration into a string
      * @return 
-     *****************************/
+     **********************************/
     private String integration_duration()
     {
-        // Calcul de la durée en nanosecondes
+        // Duration calculation in nanoseconds
         long durationNano = endIntegrationTime - startIntegrationTime;
         long durationMillis = durationNano / 1_000_000;
 
-        // Conversion en minutes, secondes et millisecondes
+        // Conversion to minutes, seconds and milliseconds
         long minutes = durationMillis / (60 * 1000);
         long seconds = (durationMillis / 1000) % 60;
         long millis = durationMillis % 1000;
@@ -656,7 +655,7 @@ public class IntegratorTools
     
     
     /************************************
-     *  Safe Parse Integer
+     * Safe Parse Integer
      * @param str
      * @return 
      ************************************/
@@ -671,7 +670,7 @@ public class IntegratorTools
 
 
     /************************************
-     *  Safe Parse Boolean
+     * Safe Parse Boolean
      * @param str
      * @return 
      ************************************/
@@ -683,8 +682,8 @@ public class IntegratorTools
     
     
     /************************
-     * Concatene un tableau
-     * de chaine
+     * Concatenates an array
+     * of strings
      * @param col
      * @return 
      ************************/
@@ -697,9 +696,9 @@ public class IntegratorTools
 
     
     /*****************************************
-     * Creer la table automatique a partir des
-     * donnees de descriptions qui se trouvent
-     * dans la description "fieldsOut"
+     * Create the automatic table from
+     * description data found in the
+     * in the “fieldsOut” description
      * @param jobIntegrator
      * @return 
      ****************************************/
@@ -711,7 +710,7 @@ public class IntegratorTools
         sqlCreateTable="CREATE TABLE " + NomTable+" (";
         for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
         {
-            //si varchar présent et taille >0 => varchar(x)
+            //if varchar present and size >0 => varchar(x)
             if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
             {
                 sqlCreateTable=sqlCreateTable+entry.getKey().toLowerCase()+" "+entry.getValue().getType().toLowerCase()+"("+entry.getValue().getSize()+"),";
@@ -721,10 +720,10 @@ public class IntegratorTools
                 sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType().toLowerCase()+",";
             } 
         }
-        //ajouter le hascode
+        //add hascode
         sqlCreateTable=sqlCreateTable+"hashcode varchar,";
         
-        //ajouter la contraite
+        //add constraint
         sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
 
         
@@ -733,7 +732,7 @@ public class IntegratorTools
 
     
     /********************************
-     * Creer le template de l'UPSERT
+     * Create UPSERT template
      * @param jobIntegrator
      * @return 
      ********************************/
@@ -756,19 +755,19 @@ public class IntegratorTools
         for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
         {template=template+entry.getKey().toLowerCase()+"='%"+entry.getKey().toLowerCase()+"%',";}
         
-        return template.substring(0, template.length()-1); //retirer la dernière virgule
+        return template.substring(0, template.length()-1); //remove last comma
     }
 
     
     /******************************
-     * Implementer la requete
+     * Implements request
      * @param sqlTemplate
      * @return 
      ******************************/
     private String replace_template_UPSERT_Value(String sqlTemplate,String hashCode,String[] col, Job jobIntegrator) 
     {
         String sqlReplace=sqlTemplate;
-        //chercher le nom de la valeur
+        //search for value name
         String champ;
         int num=0;
         for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
@@ -778,7 +777,7 @@ public class IntegratorTools
             num++;
         }
         
-        //remplacer le hashcode
+        //replace hashcode
         sqlReplace=sqlReplace.replaceAll("%hashcode%", hashCode);
         
         
