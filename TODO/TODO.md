@@ -10,7 +10,7 @@
 
 **Construire un tutoriel**  
 > Dans le dossier tutorial  
-> construire unexemple simple et disdactique 
+> construire un exemple simple et didactique 
 > documenter en MD  
 
 **Contruire une documentation README.MD**
@@ -20,12 +20,12 @@
 **Format d'entrée a ajouter**  
 
 ><u>File</u>: XML, HTML, json, Excel  
-><u>Databases</u>: (mysql,mariadb,h2sql,javaDderby,sqlserver,oracle, Access)
+><u>Databases</u>: (mysql,mariadb,h2sql,javaDerby,sqlserver,oracle)
 <hr>
 
 **Transformer les données d’entrées et adapter au format destination**  
 
->Date, boolean, entier, chaines, flottant (selon db de destination)  
+>Date, boolean, entier, chaînes, flottant (selon db de destination)  
 >script de modification (si v1 alors v2)  
 >Remplacement par valeur une par defaut si champ vide (option)  
 <hr>
@@ -34,15 +34,8 @@
 <hr>
 
 **Option pour ignorer les lignes défectueuses d'un fichier**  
->en oposition avec l'option checkfile. (connectorOutbound.ignoreErrors.value=(true/false))  
-<hr>
 
-**Traitement des fichiers entrant en mode Batch**  
->plusieurs lignes lues, traitement en mémoire  
->baisser le nombre d'accés disque.  
->Traitement de l'integration database en mode Batch  
->- *jobBatchMode=(true/false)*  
->- *jobBatchSize(integer)*  
+>en opposition avec l'option checkfile. (connectorOutbound.ignoreErrors.value=(true/false))  
 <hr>
 
 **ajouter d'autres base de données de destinations.**  
@@ -50,12 +43,18 @@
 <hr>
 
 **Option qui autorise les doublons (pas de contrôles via hashcode)**  
+
 >(connectorOutbound.ignoreDuplicates.value=(true/false))  
 <hr>
 
 **Post Traitement via requête dédié (option, uniquement si définie)**  
+
 >Doit pointer vers un fichiers de scripts SQL qui sera éxécuté en fin d'intégration  
 >-*(SQLPostProcessing=filePath)*  
 >Post traitement via script Java DSL potentiellement  
 >-*(DSLPostProcessing=filePath)*  
 <hr>
+
+**Encryptage des mots de passe dans le fichier job yaml**  
+
+> obliger l'utilisation de mot de passe encrypté dans le fichier de job, pour eviter de stocker les mots de passe en clair.

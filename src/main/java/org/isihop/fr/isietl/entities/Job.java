@@ -36,7 +36,6 @@ public class Job
     public String forceIntermediateCommit;
     
     public Map<String,Features> connectorInbound;
-    //public Map<String,Fields> fieldsIn; 
     
     public Map<String,Features> connectorOutbound;
     public Map<String,Fields> fieldsOut;

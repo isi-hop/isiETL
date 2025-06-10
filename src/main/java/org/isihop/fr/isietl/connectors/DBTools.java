@@ -43,7 +43,7 @@ public class DBTools
 
     
     /**************************
-     * Constructeur
+     * Constructor
      * @param logs 
      **************************/
     public DBTools(Logger logs) 
@@ -53,7 +53,7 @@ public class DBTools
 
     
     /****************************
-     * Getter pour Connection DB
+     * Getter for DB connection
      * @return 
      ****************************/
     public Connection getConn() 
@@ -62,7 +62,7 @@ public class DBTools
     }
 
     /****************************
-     * Getter pour Statement
+     * Getter for Statement
      * @return 
      ****************************/
     public Statement getStmt() 
@@ -72,8 +72,7 @@ public class DBTools
     
     
     /***********************************
-     * Connecter la DB
-     * Si non possible pas de traitement
+     * connect RDBMS
      * @param dbdriver
      * @param dburl
      * @param dblogin
@@ -98,7 +97,7 @@ public class DBTools
 
     
     /*********************************
-     * Fermer la database si possible.
+     * Close RDBMS
      *********************************/
     public void close_db() 
     {
@@ -112,7 +111,7 @@ public class DBTools
     
     
     /***************************
-     * Convertir date
+     *Convert date format
      * JJ/MM/AA => AAAA-MM-JJ
      * @param string
      * @return 
@@ -125,7 +124,6 @@ public class DBTools
     /***********************************
      * Post Processing SQL
      * @param SQLPostProcessing
-     * @param inConnectorOutBoundMap
      * @return 
      ***********************************/
     public boolean SQLPostProcessing(String SQLPostProcessing) 
@@ -133,7 +131,7 @@ public class DBTools
         String sql="";    
         boolean finalise=false;
         try {
-            //Construction de la requête...
+            //Construct query...
             System.out.println("Begin of SQL Post Processing");
             logger.log(Level.INFO, "Begin of SQL Post Processing");
             stmt=conn.createStatement();
@@ -148,7 +146,7 @@ public class DBTools
             }
             System.out.println("End of SQL Post Processing");
             logger.log(Level.INFO, "End of SQL Post Processing");
-            finalise=true; //tout est ok
+            finalise=true; //Everything is OK
         } catch (SQLException ex) 
         {
              System.out.println("( KO : "+sql);

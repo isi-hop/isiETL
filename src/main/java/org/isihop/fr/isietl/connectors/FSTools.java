@@ -37,7 +37,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 public class FSTools 
 {
     
-    //ouverture et lecture fichier
+    //Commons variables
     private FileReader fr;
     private BufferedReader br;
     private final List<String> listFichiers=new ArrayList<>();
@@ -47,7 +47,7 @@ public class FSTools
     public final Logger logger;
     
     /**********************
-     * Constructeur
+     * Constructor
      * @param logs 
      **********************/
     public FSTools(Logger logs)
@@ -57,7 +57,7 @@ public class FSTools
 
     
     /**************************
-     * Fermer le fichier source
+     * CVlose source file
      **************************/
     public void close_file() 
     {
@@ -70,7 +70,7 @@ public class FSTools
     }
 
     /***********************
-     * Statut de la lecture
+     * Read status
      * @return 
      ***********************/
     public boolean get_read_file_status() 
@@ -88,7 +88,7 @@ public class FSTools
     
     
     /**********************
-     * Lire une ligne du CSV
+     * read a CSV line
      * @return 
      **********************/
     public String read_line() 
@@ -107,7 +107,7 @@ public class FSTools
 
     
     /**********************
-     * Lire une ligne du CSV
+     * skip  some lines
      * @param nbLignes 
      **********************/
     public void skip_header(int nbLignes) 
@@ -126,8 +126,7 @@ public class FSTools
     }
     
     /*********************
-     * Ouvrir fichier csv
-     * prépa lecture
+     * open acsv file
      * @param csvPath
      * @return 
      **********************/
@@ -150,8 +149,8 @@ public class FSTools
 
     
     /******************************
-     * Lister tous les fichiers CSV
-     * du dossier local fichiers
+     * List all CSV files
+     * files in local folder
      * @param csvPath
      * @param extension
      * @return 
@@ -171,7 +170,7 @@ public class FSTools
     
     
    /*****************************
-     * Supprimer le fichier traité.
+     * Delete the processed file.
      * @param cheminFichier 
      *****************************/
     public void delete_file(String cheminFichier) 
@@ -183,7 +182,7 @@ public class FSTools
     
      
     /*****************************
-     * déplacer le fichier tra ité 
+     * move the processed file 
      * @param cheminFichierSrc
      * @param cheminFichierDest
      *****************************/
@@ -199,16 +198,16 @@ public class FSTools
 
     
     /**********************************
-     * Controle le format des fichiers
-     * selon l'extension fournie et
-     * dans le dossier fournie.
+     * Controls file format
+     * according to the extension provided and
+     * in the folder provided.
      * @param jobIntegrator 
      **********************************/
     public void check_files_format(Job jobIntegrator) 
     {
-        //lire extension
+        //read extension
         String extension=jobIntegrator.getConnectorInbound().get("exttype").getValue();
-        //selon extension
+        //switch extension
         switch (extension.toUpperCase()) {
             case "CSV" -> 
             {
@@ -231,18 +230,18 @@ public class FSTools
     {
         boolean hasError=false; //has error in file Flag
         
-        //nombre de colonne attendues dans les fichiers CSV
+        //expected number of columns in CSV files
         int nbAttenduCol=safeParseInt(jobIntegrator.getConnectorInbound().get("nbfields").getValue(),1);
         
-        //lister tous les fichiers
-        //pour chaque fichier, tester le format qui correspond à l'extension.        
+        //list all files
+        //for each file, test the format corresponding to the extension.        
         for (String fichier:list_files_in_path_with_ext(jobIntegrator.getConnectorInbound().get("filespath").getValue(),"csv"))
         {
             //check
-            //doit avoir autant de colonne que défini séparé par des ; uniquement     
+            //must have as many columns as defined separated by ; only     
             open_file(fichier);
 
-            //check chaque ligne...
+            //check each line...
             while (get_read_file_status())
             {
                 int nbcol=read_line().split(";").length;
@@ -287,13 +286,14 @@ public class FSTools
     {
         if (str == null) {return defaultValue;}
         try {
-            //doit etre positif ou = à zero
+            //must be positive or = zero
             if (Integer.parseInt(str,10)>=0) {return Integer.parseInt(str,10);} else {return defaultValue;}
         } catch (NumberFormatException e) {return defaultValue;}
     }
 
     /***********************************
      * Count the Nb of lines in current file
+     * @param csvPath
      * @return 
      ***********************************/    
     public int get_Nb_Lines_In_This_File(String csvPath) 

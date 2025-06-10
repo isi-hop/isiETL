@@ -105,39 +105,39 @@ public class isietl
      *********************************/
     private void worker(String[] args)
     {
-        //lire les paramètres de la CLI en priorité
-        //sinon lire les properties du système isietl si present dans le dossier du jar
-        //sinon affecte des valeurs par defaut path du fichier job =>dossier du prog+integrator.xml, display=false
+        //read CLI parameters first
+        //if not read system properties isietl if present in jar folder
+        //if not assign default values job file path =>program folder+integrator.xml, display=false
         read_properties(args);//get args list for testing CLI parameters
         
-        //lire le fichier d'integration.
+        //read the integration file.
         new IntegratorTools().read_job_file(fileIntegratorPath,displayParameters,logger);
     }
     
     
     /*******************************************
-     * Lire les properties du fichier
-     * properties local, si les args ne
-     * sont pas définis, si args et 
-     * properties non définis alors valeurs
-     * par defaut.
+     * Read file properties
+     * local properties, if args are not
+     * are not defined, if args and
+     * properties not defined then default
+     * by default.
      * @param args
      ******************************************/
     public void read_properties(String[] args)
     {
-        //si nombre d'arguments supértieur à Zero
-        //tester si contient le path du job 
+        //if number of arguments greater than Zero
+        //test if contains job path 
         if (!parse_cli_args(args))
         {
-            //recuperer le chemin local et le nom de l'application
-            //le fichier properties doit comporter le même
-            //nom que l'application.
+            //get local path and application name
+            //the properties file must have the same
+            //name as the application.
             FileInputStream is=null;
             try {
                 is = new FileInputStream(currentPath+"/"+programName+".properties");
                 Properties p=new Properties();
                 try {
-                    //charger le fichier properties
+                    //load properties file
                     p.load(is);
                     //lecture des variables à définir...
                     fileIntegratorPath=p.getProperty("fileintegratorpath", currentPath+"/integrator.yml"); //par defaut le chemin de l'appli
@@ -145,17 +145,17 @@ public class isietl
                 } catch (IOException ex) 
                 {
                     logger.log(Level.SEVERE, ex.getMessage());
-                    //si erreur de lecture on arde les valeurs par défaut.
+                    //If there is a read error, the default values are retained.
                 }
             } catch (FileNotFoundException ex) 
             {
                 logger.log(Level.SEVERE, ex.getMessage());
-                fileIntegratorPath=currentPath+"/integrator.yml"; //définition par defaut
+                fileIntegratorPath=currentPath+"/integrator.yml"; //default definition
             } finally 
             {
                 try {if (is!=null){is.close();}} catch (IOException ex) {logger.log(Level.SEVERE, ex.getMessage());}
             }
-                //un peut de journalisation
+                //A LOGGING TOOL
                 logger.log(Level.INFO, "CLI Parameter, fileintegratorpath={0}", fileIntegratorPath);
                 logger.log(Level.INFO, "CLI Parameter, displayparameters={0}", displayParameters);
         }
@@ -163,8 +163,8 @@ public class isietl
     
     
     /***************************************
-     * Analyser la CLI pour utilisation des
-     * Args en priorité
+     * Analyze CLI for use of
+     * Args in priority
      * @param args
      * @return 
      **************************************/
@@ -174,7 +174,7 @@ public class isietl
         if(args.length==0) {return CLIOK;}
         else
         {
-            //creer les arguments court et long
+            //create short and long arguments.
             Option jobstemplate = Option.builder()
                                         .longOpt("jobstemplate")
                                         .option("jt")
@@ -199,13 +199,13 @@ public class isietl
                     .build();
             Options options = new Options();
 
-            //ajout des options 
+            //add CLI options
             options.addOption(jobstemplate);
             options.addOption(displayparameters);
             options.addOption(fip);
             options.addOption(help);
             
-            //creation du parser CLI
+            //create CLI parser
             CommandLineParser parser = new DefaultParser();
             CommandLine line ;
             try 
@@ -219,7 +219,7 @@ public class isietl
                 return CLIOK;
             }
             
-            //analyse des arguments
+            //arguments analysis
             if (line.hasOption(jobstemplate)) 
             {
                 print_template();
@@ -229,7 +229,7 @@ public class isietl
             {
                 new HelpFormatter().printHelp("isiEtl", options);
                 System.exit(0);
-            } //afficher aide et quitter
+            } //print "aids" and "quit"
             if (line.hasOption(fip)) 
             {
                 fileIntegratorPath = line.getOptionValue("fileintegratorpath");
@@ -244,7 +244,7 @@ public class isietl
     
     
     /*********************************
-     * Version de l'application
+     * Application version
      *********************************/
     private void print_version() 
     {
