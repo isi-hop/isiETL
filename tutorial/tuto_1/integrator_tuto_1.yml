@@ -1,0 +1,84 @@
+#
+# Copyright (C) 2025 tondeur-h
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#-------------HEADER---------------
+jobName: "MyFirst integrator process"
+jobDescription: "Get data from a CSV file : push a DB postgresql"
+jobDateTime: "2025-06-11 07:45"
+jobBatchSize: "20"
+forceIntermediateCommit: "true"
+#----------------------------------------
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  connectortype: 
+    value: "file"
+  filespath: 
+    value : "$HOME/dev/isiETL/tutorial/tuto_1"
+  checkfiles: 
+    value: "true"
+  backupdestinationpath:
+    value: "$HOME/dev/isiETL/tutorial/backup"
+  exttype:
+    value: "csv"    
+  nbfields:
+    value: "4"
+#----------------------------------------
+#------------OUTBOUND CONNECTOR----------
+connectorOutbound: 
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/tuto1"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  targetTable:
+    value: "tabletest"    
+  ignoreErrors: 
+    value: "false"
+  ignoreDuplicates:
+    value: "false"
+
+fieldsOut:
+   colname1:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+  colname2:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+  colname3:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+  colname4:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+#-------------------------------------
+#-----------FMT PROCESSING------------
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+
+#-----------POSTPROCESSING------------
+SQLPostProcessing: ""
+#-------------------------------------
