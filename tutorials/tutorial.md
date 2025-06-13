@@ -40,7 +40,7 @@ $> `mv integrator_template.yml integrator_tuto_1.yml`
 > - In what follows, we'll assume that you've installed IsiETL in the `$HOME\isietl` folder. In the files that follow, you'll replace the $HOME path with the absolute path of your personal installation.  
 > - We'll also assume that we've launched a postgresql database on the workstation, ideally under docker, see the following link on how to launch a postgresql database under docker .  
 > - We'll also assume that when we start postgresql, we'll have created a database named `tuto1`  
-> - Finally, to set up your database login and password, you'll need to adapt the following information to your configuration.
+> - Finally, to set up your database login and password, you'll need to adapt the following information to your configuration.  
 
 [How to use the docker Postgresql official image](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/)  
 
@@ -51,7 +51,7 @@ Edit the `integrator_tuto_1.yml` file with your favorite text file editor, like 
 jobName: "tuto_1 integrator process"
 jobDescription: "Get data from a CSV file : push a DB postgresql"
 jobDateTime: "2025-06-11 07:45"
-jobBatchSize: "20"
+jobBatchSize: "6"
 forceIntermediateCommit: "true"
 #----------------------------------------
 #------------INBOUND CONNECTOR-----------
@@ -119,15 +119,51 @@ SQLPostProcessing: ""
 
 **Let's unravel the file above!**  
 
-🚧️Under construction🚧️  
-
 **_First block of information, the header_**  
 
+``` YAML
+#-------------HEADER---------------
+jobName: "tuto_1 integrator process"
+jobDescription: "Get data from a CSV file : push a DB postgresql"
+jobDateTime: "2025-06-11 07:45"
+jobBatchSize: "6"
+forceIntermediateCommit: "true"
+#----------------------------------------
+```  
 
-**Incoming connector in CSV format_**  
+The variables, `jobName, jobDescription, jobDateTime` have no impact on the operation of your job and are variables that will force you to comment on your job.  
+
+On these variables you assign the information you feel is relevant to describe the job.
+
+The `jobBatchSize` variable is imperative and will enable you to adjust the number of lines per processing group written to the database.  
+
+This value must be adjusted according to the potential size of the source file. Sometimes the number of source lines is fixed, sometimes it's quite variable; ideally, this value should be for a fixed number of lines <= the maximum number of lines.  
+
+For large files, you need to choose the number of lines according to your commit requirements, bearing in mind that the more commits there are during processing, the longer the process will take, so 
+you need to find the right compromise.  
+
+Be careful, this value must be within the range [1..65535].  
+
+Finding the right value is often a matter of trial and error.  
+
+In our case, we'll set it to 6, which will cause 2 commits on this job, which isn't much.  
+
+If you want 1 commit per integration, in this case you need to set this value to 1.  
+
+Here, it's often a matter of trial and error to find the right value.  
+In our case, we're going to set it to 6, which will result in 2 commits on this job, which isn't much.  
+If you want 1 commit by integration, then you need to set this value to 1.  
+
+The `forceIntermediateCommit` variable takes the value true or false. A true value will force intermediate commits.  
+
+A false value means no intermediate commits, in other words, a single commit is made in this case at the end of the integration of all lines in batch mode. It's like setting the jobBatchSize value to the number of lines in the source file.  
+
+🚧️Under construction🚧️  
+
+**_Incoming connector in CSV format_**  
 
 
-**Outgoing connector in BDD postgresql format_**  
+**_Outgoing connector in BDD postgresql format_**  
 
 
 **_Destination fields description_**  
