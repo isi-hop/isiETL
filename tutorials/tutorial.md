@@ -158,10 +158,32 @@ The `forceIntermediateCommit` variable takes the value true or false. A true val
 
 A false value means no intermediate commits, in other words, a single commit is made in this case at the end of the integration of all lines in batch mode. It's like setting the jobBatchSize value to the number of lines in the source file.  
 
-🚧️Under construction🚧️  
 
 **_Incoming connector in CSV format_**  
 
+The description block for the incoming connector in our case is quite simple, as we'll be describing a CSV file format.  
+
+Below is the description of this block, noting that the £HOME variable is to be replaced by your complete installation path.  
+
+``` YAML
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  connectortype: 
+    value: "file"
+  filespath: 
+    value : "$HOME/isiETL/tutorial/tuto_1"
+  checkfiles: 
+    value: "true"
+  backupdestinationpath:
+    value: "$HOME/isiETL/tutorial/backup"
+  exttype:
+    value: "csv"    
+  nbfields:
+    value: "4"
+#----------------------------------------
+```  
+
+🚧️Under construction🚧️  
 
 **_Outgoing connector in BDD postgresql format_**  
 
