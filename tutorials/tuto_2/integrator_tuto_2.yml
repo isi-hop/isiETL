@@ -35,6 +35,8 @@ connectorInbound:
     value: "csv"    
   nbfields:
     value: "7"
+  jumpheader:
+    value: "1"
 #----------------------------------------
 #------------OUTBOUND CONNECTOR----------
 connectorOutbound: 

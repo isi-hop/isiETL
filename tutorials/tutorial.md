@@ -9,6 +9,8 @@ This csv file is fairly basic, containing dummy data in 4 columns and 12 rows wi
 _Extract from file_  
 `tuto_1_no_head_4_col.csv`  
 
+> The header line below doesn't exist in the source file, but is here to help you understand the flow of this first tutorial.  
+
 |C1|C2|C3|C4|
 |-----|-----|-----|-----|
 |col11|col12|col13|col14|
@@ -68,6 +70,8 @@ connectorInbound:
     value: "csv"    
   nbfields:
     value: "4"
+  jumpheader:
+    value: "0"
 #----------------------------------------
 #------------OUTBOUND CONNECTOR----------
 connectorOutbound: 
@@ -180,23 +184,91 @@ connectorInbound:
     value: "csv"    
   nbfields:
     value: "4"
+  jumpheader:
+    value: "0"
 #----------------------------------------
 ```  
 
-🚧️Under construction🚧️  
+An inbound connector of any kind always starts with the `connectorInbound` class.  
+Next come the connector's description variables, in this case a CSS file.  
+
+What do you need to consume files?  
+- A folder where to find them `filespath`, note that a file is supplied, so it's possible to sequentially consume several files of the same nature (same number of columns, same type of data, in the same order).  
+- A destination folder `backupdestinationpath` which will be used to store the files after processing (a backup).  
+- An indication of the file type, `exttype` (still csv for now).  
+- A `checkfiles` flag, to force the file format to be changed or not.  
+- A variable that expects an integer giving the number of columns in the source files, `nbfields`.  
+- A number of `jumpheader` jump lines at the beginning of the file, so as not to take the header into account. Here the value is 0, because there no header line in the source file.   
+
+Note that by default, the separator is set to “;”.  
+
 
 **_Outgoing connector in BDD postgresql format_**  
 
+``` YAML 
+#------------OUTBOUND CONNECTOR----------
+connectorOutbound: 
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/tuto1"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  targetTable:
+    value: "tabletest"    
+  ignoreErrors: 
+    value: "false"
+  ignoreDuplicates:
+    value: "false"
+```  
+
+
+🚧️Under construction🚧️  
 
 **_Destination fields description_**  
+
+``` YAML  
+fieldsOut:
+   colname1:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+  colname2:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+  colname3:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+  colname4:
+    defaultValue: ""
+    size: "6"
+    type: "varchar"
+```  
 
 
 **FMT processing_**  
 
+``` YAML
+#-----------FMT PROCESSING------------
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+```  
+
 
 **_POST SQL processing_**
 
-
-
+``` YAML
+#-----------POSTPROCESSING------------
+SQLPostProcessing: ""
+#-------------------------------------
+```  
 
 
