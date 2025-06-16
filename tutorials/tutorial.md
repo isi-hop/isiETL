@@ -202,6 +202,7 @@ What do you need to consume files?
 
 Note that by default, the separator is set to “;”.  
 
+🚧️Under construction🚧️  
 
 **_Outgoing connector in BDD postgresql format_**  
 
@@ -226,8 +227,6 @@ connectorOutbound:
     value: "false"
 ```  
 
-
-🚧️Under construction🚧️  
 
 **_Destination fields description_**  
 
@@ -262,6 +261,13 @@ transformerScript: ""
 #-------------------------------------
 ```  
 
+The FTM part, for “Filter-Map-Transform”, allows you to define scripts to be executed on each processed data line before integration.  
+- **Filter**: Returns a Boolean value (true/false) to indicate whether the data line is to be integrated or not.  
+- **Map**: Allows mapping between input and output data. Very useful for concatenations, field reductions, etc...  
+- **Transform**: This script allows you to perform operations on data, such as upcase, downcase, calculations, etc...  
+
+These scripts are only executed if defined on these variables; they are independent and can be defined as you wish.  
+If a filter is not to be defined, leave the variable empty as in the example above, or here in our tutorial we don't apply any scripts.  
 
 **_POST SQL processing_**
 
@@ -271,4 +277,6 @@ SQLPostProcessing: ""
 #-------------------------------------
 ```  
 
-
+the `SQLPostProcessing` variable supports a script in SQL format compatible with the outgoing database.  
+If defined, this script is executed at the end of the processing of all the lines in the source file(s).  
+Not defined in our tutorial, so we leave this variable empty.  
