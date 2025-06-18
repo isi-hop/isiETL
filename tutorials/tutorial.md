@@ -202,7 +202,6 @@ What do you need to consume files?
 
 Note that by default, the separator is set to “;”.  
 
-🚧️Under construction🚧️  
 
 **_Outgoing connector in BDD postgresql format_**  
 
@@ -227,8 +226,26 @@ connectorOutbound:
     value: "false"
 ```  
 
+The description of the outgoing connector allows us to describe the database connector that will receive our data.  
+
+As with all connectors, we begin by describing the class of the connector type via the `connectortype` class variable.  
+Currently, only the `database` type is supported.  
+
+The `dbdriver`, `dburl`,`dblogin`,`dbpassword` variables are used to describe the database connection.  
+Nothing very complex here, just refer to the official documentation for your database driver.  
+Example for PostgresQL: [Jdbc Pgsql Drivers uses](https://jdbc.postgresql.org/documentation/use/)  
+
+LThe database is specified on the URL of your connection. Make sure that this database exists and has been created, otherwise your process will stop with a database error.  
+
+The table name is described in the `targetTable` variable, which may or may not exist. IsiETL is responsible for using or creating this table if necessary.  
+
+The `ignoreErrors` variable takes the value true or false, and can be used either to stop the job on an integration error if the value is false, or to continue the job to completion if the value is false.  
+
+The `ignoreDuplicates` variable, with a value of true or false, allows the integration of identical lines (creation of duplicates) if the value is set to true. If the value is set to false, in this case it does not allow the creation of duplicates, in which case a mechanism is put in place to control potential duplicates.  
 
 **_Destination fields description_**  
+
+Now that we've described the database connection and the table name, let's describe the necessary fields.  
 
 ``` YAML  
 fieldsOut:
@@ -250,8 +267,11 @@ fieldsOut:
     type: "varchar"
 ```  
 
+Here we need to define the necessary fields, by default 4 source fields, so 4 destination fields, of string type in our case, we'll use the literal name of the field types provided by your database.  
 
-**FMT processing_**  
+🚧️Unser Construction🚧️  
+
+**_FMT processing_**  
 
 ``` YAML
 #-----------FMT PROCESSING------------
