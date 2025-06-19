@@ -269,7 +269,12 @@ fieldsOut:
 
 Here we need to define the necessary fields, by default 4 source fields, so 4 destination fields, of string type in our case, we'll use the literal name of the field types provided by your database.  
 
-🚧️Unser Construction🚧️  
+How to describe the destination fields is quite simple:  
+
+- First, define a class of variables called `fieldsOut`.  
+- For each field, define a name that must be unique for the destination table. Example `colname1,colname2,colname3,colname4`.  
+- For each column name, define a field type: varchar, text, int4, int8, timestamp, etc...  
+- For some fields, the field size must also be defined, as for example for the varchar type, so it's necessary to define a size systematically. In the case where size doesn't matter, any value will do.  
 
 **_FMT processing_**  
 
@@ -300,3 +305,15 @@ SQLPostProcessing: ""
 the `SQLPostProcessing` variable supports a script in SQL format compatible with the outgoing database.  
 If defined, this script is executed at the end of the processing of all the lines in the source file(s).  
 Not defined in our tutorial, so we leave this variable empty.  
+
+**_How to run this first example?_**  
+
+on the CLI, run the command   
+$> `isietl.sh -fip ./integrator_tuto_1.yml -dp`  
+
+
+---  
+**Second example** 
+
+🚧️Under Construction🚧️  
+
