@@ -1,0 +1,1 @@
+delete from orgv3 where division=14887;

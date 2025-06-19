@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #-------------HEADER---------------
-jobName: "MyFirst integrator process"
-jobDescription: "Get data from a CSV file : push a DB postgresql"
-jobDateTime: "2025-06-11 07:45"
-jobBatchSize: "10"
+jobName: "Organization integration process"
+jobDescription: "Update Organization"
+jobDateTime: "2025-06-20 07:45"
+jobBatchSize: "20"
 forceIntermediateCommit: "true"
 #----------------------------------------
 #------------INBOUND CONNECTOR-----------
@@ -34,7 +34,7 @@ connectorInbound:
   exttype:
     value: "csv"    
   nbfields:
-    value: "7"
+    value: "6"
   jumpheader:
     value: "1"
 #----------------------------------------
@@ -61,17 +61,13 @@ connectorOutbound:
 fieldsOut:
    organizationidentifier:
     defaultValue: ""
-    size: "120"
+    size: "20"
     type: "varchar"
   orgtype:
     defaultValue: ""
-    size: "120"
+    size: "12"
     type: "varchar"
   location:
-    defaultValue: ""
-    size: "120"
-    type: "varchar"
-  locationidentifier:
     defaultValue: ""
     size: "120"
     type: "varchar"
@@ -81,11 +77,11 @@ fieldsOut:
     type: "varchar"
   division:
     defaultValue: ""
-    size: "120"
-    type: "varchar"
+    size: "1"
+    type: "int4"
   sourcelink:
     defaultValue: ""
-    size: "120"
+    size: "255"
     type: "varchar"
 #-------------------------------------
 #-----------FMT PROCESSING------------
@@ -95,5 +91,5 @@ transformerScript: ""
 #-------------------------------------
 
 #-----------POSTPROCESSING------------
-SQLPostProcessing: ""
+SQLPostProcessing: "$HOME/isiETL/tutorial/tuto_2/delete_14887.scr"
 #-------------------------------------
