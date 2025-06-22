@@ -308,8 +308,24 @@ Not defined in our tutorial, so we leave this variable empty.
 
 **_How to run this first example?_**  
 
+First run you postgresqal favorite instance, create a database named `tuto1`.  
+![database](./imgs/create_database.png)  
+
+cas you can see, the table is waiting to be created.  
+![create database](./imgs/database.png)  
+
 on the CLI, run the command   
 $> `isietl.sh -fip ./integrator_tuto_1.yml -dp`  
+
+![isietl in action](./imgs/isietl_run.png)  
+
+As you can see, the `tabletest` is automatically created with all the described fields in the yaml file.  
+
+![tabletest](./imgs/tabletest.png)  
+
+And you can read all the data in this tables, with an extra fields name hashcode.  
+
+![data tabletest](./imgs/data_tabletest.png)  
 
 
 ---  
