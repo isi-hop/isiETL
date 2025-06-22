@@ -336,11 +336,11 @@ public class FSTools
                     System.out.println("No encoding detected.");
                     encoding="UNKNOWN";
                 }
-                if (encoding.compareToIgnoreCase("UTF-8")!=0)
+                if (encoding.compareToIgnoreCase("UTF-8")!=0 && encoding.compareToIgnoreCase("US-ASCII")!=0)
                 {
                 //stop pipeline processing
-                System.out.println("The process stopped with some encoding error in files, "+fichier+" is not in UTF-8 charsets!");
-                logger.log(Level.INFO, "The process stopped with some encoding error in files, {0} is not in UTF-8 charsets!", fichier);
+                System.out.println("The process stopped with some encoding error in files, "+fichier+" is not in UTF-8 charsets compatible!");
+                logger.log(Level.INFO, "The process stopped with some encoding error in files, {0} is not in UTF-8 charsets compatible!", fichier);
                 System.exit(8);                
                 }
                 

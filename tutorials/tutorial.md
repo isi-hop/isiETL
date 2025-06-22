@@ -61,11 +61,11 @@ connectorInbound:
   connectortype: 
     value: "file"
   filespath: 
-    value : "$HOME/isiETL/tutorial/tuto_1"
+    value : "$HOME/dev/isiETL/tutorials/tuto_1"
   checkfiles: 
     value: "true"
   backupdestinationpath:
-    value: "$HOME/isiETL/tutorial/backup"
+    value: "$HOME/dev/isiETL/tutorials/backup"
   exttype:
     value: "csv"    
   nbfields:
@@ -175,11 +175,11 @@ connectorInbound:
   connectortype: 
     value: "file"
   filespath: 
-    value : "$HOME/isiETL/tutorial/tuto_1"
+    value : "$HOME/dev/isiETL/tutorials/tuto_1"
   checkfiles: 
     value: "true"
   backupdestinationpath:
-    value: "$HOME/isiETL/tutorial/backup"
+    value: "$HOME/isiETL/dev/tutorials/backup"
   exttype:
     value: "csv"    
   nbfields:

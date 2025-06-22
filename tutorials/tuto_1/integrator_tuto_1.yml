@@ -26,11 +26,11 @@ connectorInbound:
   connectortype: 
     value: "file"
   filespath: 
-    value : "$HOME/isiETL/tutorial/tuto_1"
+    value : "/home/tondeur-h/dev/isiETL/tutorials/tuto_1"
   checkfiles: 
     value: "true"
   backupdestinationpath:
-    value: "$HOME/isiETL/tutorial/backup"
+    value: "/home/tondeur-h/dev/isiETL/tutorials/backup"
   exttype:
     value: "csv"    
   nbfields:
@@ -58,7 +58,7 @@ connectorOutbound:
     value: "false"
 
 fieldsOut:
-   colname1:
+  colname1:
     defaultValue: ""
     size: "6"
     type: "varchar"
