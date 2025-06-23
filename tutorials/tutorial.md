@@ -327,6 +327,15 @@ And you can read all the data in this tables, with an extra fields name hashcode
 
 ![data tabletest](./imgs/data_tabletest.png)  
 
+=> _And about ?_  
+- _Try to replay this file again, what append ?_  
+Nothing, the problem have just try to insert data, but all exists and isiEtl have done nothing than check each lines.  
+- _What happen if i delete data in my destination database ?_  
+You can replay you backup csv file again and get back all your loses data.  
+- _Try to delete lines into the source CSV file, and replay again !_
+Data in destination database be keep and nothing more happen.  
+- _Try to add a new correct line in the source CSV file, and play it again?_
+The new will be added to your destination file too, and only this new line!.  
 
 ---  
 **Second example** 
