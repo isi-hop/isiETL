@@ -340,5 +340,149 @@ The new will be added to your destination file too, and only this new line!.
 ---  
 **Second example** 
 
+In this second example, we're going to integrate a file containing data on organizations.
+
+<u>The format of the source CSV file is as follows</u> : 
+
+|field number|field name|field type|field size|example|
+|------------|----------|----------|----------|-------|
+|1|organizationIdentifier|varchar|20|LightTree|
+|2|orgType|varchar|12|OPERATIONS|
+|3|location|varchar|120|LT-1|
+|4|name|varchar|120|LightTree|
+|5|division|int4|4|14887|
+|6|sourceLink|varchar|255|http://lighttree.com|  
+
+Notre fichier source se trouvera dans le dossier `$HOME/dev/isiETL/tutorials/tuto_2`, il contient 63 lignes à intégrer et 1 ligne d'entête et contient 6 champs.  
+
+Notre destination sera une base de données postGresQL qui se nommera `organization` et une table qui se nommera `orgv3`.  
+
+Un petit post-traitement sera exécuté au travers du script `$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr` qui contient l'unique requête de suppression `delete from orgv3 where division=14887;`.  
+
+ces éléments vont nous permettre de construire le fichier job suivants :  
+
+Our source file will be located in the `$HOME/dev/isiETL/tutorials/tuto_2` folder, it contains 63 lines to integrate and 1 header line and contains 6 fields.  
+
+Our destination will be a postGresQL database called `organization` and a table called `orgv3`.  
+
+A little post-processing will be carried out via the script `$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr`, which contains the unique deletion query `delete from orgv3 where division=14887;`.  
+
+these elements will enable us to build the following job file :
+
+``` YAML
+#
+# Copyright (C) 2025 tondeur-h
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#-------------HEADER---------------
+jobName: "Organization integration process"
+jobDescription: "Update Organization"
+jobDateTime: "2025-06-20 07:45"
+jobBatchSize: "20"
+forceIntermediateCommit: "true"
+#----------------------------------------
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  connectortype: 
+    value: "file"
+  filespath: 
+    value : "$HOME/dev/isiETL/tutorials/tuto_2"
+  checkfiles: 
+    value: "true"
+  backupdestinationpath:
+    value: "$HOME/dev/isiETL/tutorials/backup"
+  exttype:
+    value: "csv"    
+  nbfields:
+    value: "6"
+  jumpheader:
+    value: "1"
+#----------------------------------------
+#------------OUTBOUND CONNECTOR----------
+connectorOutbound: 
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/organization"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  targetTable:
+    value: "orgv3"    
+  ignoreErrors: 
+    value: "false"
+  ignoreDuplicates:
+    value: "false"
+#define ;
+#organizationIdentifier;orgType;location;locationIdentifier;name;division;sourceLink
+fieldsOut:
+   organizationidentifier:
+    defaultValue: ""
+    size: "20"
+    type: "varchar"
+  orgtype:
+    defaultValue: ""
+    size: "12"
+    type: "varchar"
+  location:
+    defaultValue: ""
+    size: "120"
+    type: "varchar"
+  name:
+    defaultValue: ""
+    size: "120"
+    type: "varchar"
+  division:
+    defaultValue: ""
+    size: "1"
+    type: "int4"
+  sourcelink:
+    defaultValue: ""
+    size: "255"
+    type: "varchar"
+#-------------------------------------
+#-----------FMT PROCESSING------------
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+
+#-----------POSTPROCESSING------------
+SQLPostProcessing: "$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr"
+#-------------------------------------
+```  
+
+Named this script as `integrator_tuto_2.yml`  
+
+***_let's play the job now !_***   
+
+on the CLI, run the command   
+$> `isietl.sh -fip ./integrator_tuto_2.yml -dp`  
+
+
+
+
+
+
+
+
+
+
+
 🚧️Under Construction🚧️  
 

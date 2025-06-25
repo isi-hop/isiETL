@@ -26,11 +26,11 @@ connectorInbound:
   connectortype: 
     value: "file"
   filespath: 
-    value : "$HOME/isiETL/tutorial/tuto_2"
+    value : "$HOME/dev/isiETL/tutorials/tuto_2"
   checkfiles: 
     value: "true"
   backupdestinationpath:
-    value: "$HOME/isiETL/tutorial/backup"
+    value: "$HOME/dev/isiETL/tutorials/backup"
   exttype:
     value: "csv"    
   nbfields:
@@ -91,5 +91,5 @@ transformerScript: ""
 #-------------------------------------
 
 #-----------POSTPROCESSING------------
-SQLPostProcessing: "$HOME/isiETL/tutorial/tuto_2/delete_14887.scr"
+SQLPostProcessing: "$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr"
 #-------------------------------------
