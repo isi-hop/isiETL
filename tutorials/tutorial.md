@@ -353,13 +353,6 @@ In this second example, we're going to integrate a file containing data on organ
 |5|division|int4|4|14887|
 |6|sourceLink|varchar|255|http://lighttree.com|  
 
-Notre fichier source se trouvera dans le dossier `$HOME/dev/isiETL/tutorials/tuto_2`, il contient 63 lignes à intégrer et 1 ligne d'entête et contient 6 champs.  
-
-Notre destination sera une base de données postGresQL qui se nommera `organization` et une table qui se nommera `orgv3`.  
-
-Un petit post-traitement sera exécuté au travers du script `$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr` qui contient l'unique requête de suppression `delete from orgv3 where division=14887;`.  
-
-ces éléments vont nous permettre de construire le fichier job suivants :  
 
 Our source file will be located in the `$HOME/dev/isiETL/tutorials/tuto_2` folder, it contains 63 lines to integrate and 1 header line and contains 6 fields.  
 
