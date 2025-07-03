@@ -456,7 +456,7 @@ transformerScript: ""
 #-------------------------------------
 
 #-----------POSTPROCESSING------------
-SQLPostProcessing: "$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr"
+SQLPostProcessing: "$HOME/dev/isiETL/tutorials/tuto_2/delete_14887.scr"
 #-------------------------------------
 ```  
 
@@ -464,18 +464,20 @@ Named this script as `integrator_tuto_2.yml`
 
 ***_let's play the job now !_***   
 
+First, create the `Organization` database.
+
+![database_organization](imgs/database_organization.png)
+
 on the CLI, run the command   
 $> `isietl.sh -fip ./integrator_tuto_2.yml -dp`  
 
+![organization job isietl](imgs/organization_job_isietl.png)
 
+Verify your database schema, now you have a new table named `orgv3` and some data writen in this table.
 
+![table_orgv3](imgs/table_orgv3.png)
 
+Has you can see the post processing script work fine and have deleted de line with the division value 14887.  
 
-
-
-
-
-
-
-🚧️Under Construction🚧️  
+![data organization](imgs/data_organization.png)
 

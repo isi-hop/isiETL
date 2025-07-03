@@ -26,11 +26,11 @@ connectorInbound:
   connectortype: 
     value: "file"
   filespath: 
-    value : "$HOME/dev/isiETL/tutorials/tuto_2"
+    value : "/home/tondeur-h/dev/isiETL/tutorials/tuto_2"
   checkfiles: 
     value: "true"
   backupdestinationpath:
-    value: "$HOME/dev/isiETL/tutorials/backup"
+    value: "/home/tondeur-h/dev/isiETL/tutorials/backup"
   exttype:
     value: "csv"    
   nbfields:
@@ -59,7 +59,7 @@ connectorOutbound:
 
 #organizationIdentifier;orgType;location;locationIdentifier;name;division;sourceLink
 fieldsOut:
-   organizationidentifier:
+  organizationidentifier:
     defaultValue: ""
     size: "20"
     type: "varchar"
@@ -91,5 +91,5 @@ transformerScript: ""
 #-------------------------------------
 
 #-----------POSTPROCESSING------------
-SQLPostProcessing: "$HOME/dev/isiETL/tutorial/tuto_2/delete_14887.scr"
+SQLPostProcessing: "/home/tondeur-h/dev/isiETL/tutorials/tuto_2/delete_14887.scr"
 #-------------------------------------
