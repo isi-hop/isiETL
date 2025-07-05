@@ -93,12 +93,15 @@ public class IntegratorTools
             //detect OUT connector type    
             check_connector_outbound(jobIntegrator);
             
+            //detect the jobtype for the dispatcher.
+            //can be fletodb,dbtofile,dbtodb,filetofile
             String jobtype=jobIntegrator.getJobtype();
             
             //ok pass the checks, we'll process the job
             //filetodb type job
             if (jobtype.compareToIgnoreCase("filetodb")==0)
             {
+                //the option checkfile is activate?
                 if (safeParseBool(getInConnectorInBoundMap(jobIntegrator, "checkfiles"),false)==true)
                 {
                     //verify source files
