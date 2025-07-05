@@ -34,6 +34,7 @@ public class Job
     public String jobBatchMode;
     public String jobBatchSize;
     public String forceIntermediateCommit;
+    public String jobtype;
     
     public Map<String,Features> connectorInbound;
     

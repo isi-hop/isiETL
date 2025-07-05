@@ -84,6 +84,7 @@ public class IntegratorTools
             inputStream = new FileInputStream(new File(fileIntegratorPath));
             jobIntegrator = yaml.load(inputStream);
             
+            //dfisplay values yaml job
             if (displayParameters) {display_integrator(jobIntegrator);}
             
             //detect IN connector type    
@@ -92,11 +93,11 @@ public class IntegratorTools
             //detect OUT connector type    
             check_connector_outbound(jobIntegrator);
             
+            String jobtype=jobIntegrator.getJobtype();
             
             //ok pass the checks, we'll process the job
-            //if the source job is a file
-            //should we check it?
-            if (checkInBoundValue(jobIntegrator,"connectortype","file"))
+            //filetodb type job
+            if (jobtype.compareToIgnoreCase("filetodb")==0)
             {
                 if (safeParseBool(getInConnectorInBoundMap(jobIntegrator, "checkfiles"),false)==true)
                 {
@@ -108,16 +109,39 @@ public class IntegratorTools
                     fst.check_UTF8(jobIntegrator); //check if is in UFT-8 encoding
                     fst.check_files_format(jobIntegrator); //check that the format complies with the CSV standard
                 }
+                //Processing integration...
+                process_integration_file_to_db(jobIntegrator);
             }
             
-            //Processing integration...
+            //dbtofile type job
+            if (jobtype.compareToIgnoreCase("dbtofile")==0)
+            {
+                //Processing integration...
+                process_integration_db_to_file(jobIntegrator);
+            }
+            
+            //dbtodb type job
+            if (jobtype.compareToIgnoreCase("dbtodb")==0)
+            {
+                //Processing integration...
+                process_integration_db_to_db(jobIntegrator);
+            }
+
+            //filetofile type job
+            if (jobtype.compareToIgnoreCase("filetofile")==0)
+            {
+                //Processing integration...
+                process_integration_file_to_file(jobIntegrator);
+            }
+            
+            
             //--------------The job is done here------------------
-            process_integration_file_to_db(jobIntegrator);
             System.out.println("End of jobs...");
             logger.log(Level.INFO,"End of jobs...");
             //----------------------------------------------------
             
         } catch (FileNotFoundException ex) {
+            //deal with yaml errors
             System.out.println("Parsing Error!, Job file not found!");
             System.out.println(ex.getMessage());
             logger.log(Level.SEVERE,"Parsing Error!, Job file not found!", ex.getMessage());
@@ -176,6 +200,7 @@ public class IntegratorTools
         System.out.println("--- Batch Size Mode :");
         System.out.println("BatchSize="+integratorGlob.getJobBatchSize());
         System.out.println("ForceIntermediateCommit="+integratorGlob.getForceIntermediateCommit());
+        System.out.println("jobtype="+integratorGlob.getJobtype());
         
         System.out.println("");
         
@@ -476,7 +501,7 @@ public class IntegratorTools
 
     
     /**********************************************
-     * Process data integration
+     * Process data integration file to Db type
      * @param jobIntegrator 
      **********************************************/
     private void process_integration_file_to_db(Job jobIntegrator) 
@@ -782,6 +807,33 @@ public class IntegratorTools
         
         
         return sqlReplace;
+    }
+
+   /**********************************************
+    * Process data integration db to file type
+    * @param jobIntegrator 
+    **********************************************/
+    private void process_integration_db_to_file(Job jobIntegrator) 
+    {
+        //TODO
+    }
+
+   /**********************************************
+    * Process data integration db to db type
+    * @param jobIntegrator 
+    **********************************************/
+    private void process_integration_db_to_db(Job jobIntegrator) 
+    {
+        //TODO
+    }
+
+   /**********************************************
+    * Process data integration file to file type
+    * @param jobIntegrator 
+    **********************************************/
+    private void process_integration_file_to_file(Job jobIntegrator) 
+    {
+        //TODO
     }
   
 }
