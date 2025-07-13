@@ -21,13 +21,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.isihop.fr.isietl.entities.Job;
+import org.isihop.fr.isietl.jobs.IntegratorTools;
 import org.mozilla.universalchardet.UniversalDetector;
 
 /**
@@ -349,6 +353,51 @@ public class FSTools
                 System.exit(7);
             }
         }
+    }
+    
+    /***************************************************
+     * Write Destination files with data
+     * @param path
+     * @param name
+     * @param extension
+     * @param header
+     * @param headerStr
+     * @param rst 
+     ***************************************************/
+    public void writeFile(String path, String name, String extension, boolean header,String headerStr, ResultSet rst,String separator)
+    {
+        PrintWriter pw=null;
+        try {
+            String filename=path+"/"+name+"."+extension;
+            //creer le fichier
+            pw = new PrintWriter(filename);
+            if(header==true)
+            {
+                pw.println(headerStr);
+            }
+            //write the data in file.
+            try {
+                 int nbCol=rst.getMetaData().getColumnCount();
+                //write data
+                while (rst.next()==true)
+                {
+                    String line="";
+                 for (int ci=1;ci<=nbCol;ci++)
+                 {
+                     line=line+rst.getString(ci)+separator;
+                 }
+                 line=line.substring(0, line.length()-1);
+                 pw.println(line);
+                }
+            } catch (SQLException ex) {
+                System.getLogger(IntegratorTools.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        } catch (FileNotFoundException ex) {
+            System.getLogger(FSTools.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } finally {
+            pw.close();
+        }
+        
     }
     
 }

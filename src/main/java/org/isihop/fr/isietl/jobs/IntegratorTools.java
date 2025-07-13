@@ -59,6 +59,7 @@ public class IntegratorTools
 
        
     /************************************
+     * MAIN ENTRY POINT 
      * reading and checking the
      * integrator.yml file
      * @param fileymlpath
@@ -98,6 +99,7 @@ public class IntegratorTools
             String jobtype=jobIntegrator.getJobtype();
             
             //ok pass the checks, we'll process the job
+            
             //filetodb type job
             if (jobtype.compareToIgnoreCase("filetodb")==0)
             {
@@ -160,6 +162,9 @@ public class IntegratorTools
     }
 
     
+/*===========================================================
+                    ACCESSORIES FUNCTIONS
+  ===========================================================*/  
     /*****************************
      * Compute a hash code
      * in SHA256
@@ -220,14 +225,17 @@ public class IntegratorTools
             System.out.println(entry.getKey()+"="+entry.getValue().value);
         }
         System.out.println("");
-
-        System.out.println("---------------FIELDS OUT--------------");
-        for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsOut().entrySet()) 
-        {   System.out.println(entry.getKey());
-            System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
-            System.out.println("\tType="+entry.getValue().getType());
-            System.out.println("\tSize="+entry.getValue().getSize());
-            System.out.println("");
+        
+        if (integratorGlob.getJobtype().compareToIgnoreCase("filetodb")==0) //print fields only for file inbound
+        {
+            System.out.println("---------------FIELDS OUT--------------");
+            for (Map.Entry<String, Fields> entry : integratorGlob.getFieldsOut().entrySet()) 
+            {   System.out.println(entry.getKey());
+                System.out.println("\tDefaultValue="+entry.getValue().getDefaultValue());
+                System.out.println("\tType="+entry.getValue().getType());
+                System.out.println("\tSize="+entry.getValue().getSize());
+                System.out.println("");
+            }
         }
 
         System.out.println("-------------FMT PROCESSING------------");
@@ -264,7 +272,7 @@ public class IntegratorTools
         //type of connector
         switch (connector.toUpperCase()) 
         {
-            case "FILE" -> check_file_connector(integrator);
+            case "FILE" -> check_file_connector_inbound(integrator);
             case "DATABASE" -> check_database_connector_inbound(integrator);
             default -> {
                 logger.log(Level.SEVERE,"Incoming connector type is unknown !");
@@ -336,7 +344,7 @@ public class IntegratorTools
      * required for a connector
      * connector.
      ************************************/
-    private void check_file_connector(Job integrator) 
+    private void check_file_connector_inbound(Job integrator) 
     {
         System.out.println("InBound connector, is a file type...");
         logger.log(Level.INFO,"InBound connector, is a file type...");
@@ -350,7 +358,7 @@ public class IntegratorTools
         */
          //read filespath.
         String filespath=getInConnectorInBoundMap(integrator,"filespath");
-        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does''nt existe or is not readable!", filespath);System.out.println("The path "+filespath+" does''nt existe or is not readable!");System.exit(4);} //chemin inexistant...
+        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does''nt exist or is not readable!", filespath);System.out.println("The path "+filespath+" does''nt exist or is not readable!");System.exit(4);} //chemin inexistant...
         
         //read destination path
         String destination=getInConnectorInBoundMap(integrator,"backupdestinationpath");
@@ -372,6 +380,33 @@ public class IntegratorTools
         logger.log(Level.INFO,"Test variables OK");
     }
 
+
+    /************************************
+     * Verify the presence of the values
+     * required for a connector
+     * connector.
+     ************************************/
+    private void check_file_connector_outbound(Job integrator) 
+    {
+        System.out.println("OutBound connector, is a file type...");
+        logger.log(Level.INFO,"OutBound connector, is a file type...");
+
+        //read filespath.
+        String filespath=getInConnectorOutBoundMap(integrator,"filespath");
+        if (test_a_path(filespath)==false) {logger.log(Level.SEVERE, "The path {0} does''nt exist or is not readable!", filespath);System.out.println("The path "+filespath+" does''nt exist or is not readable!");System.exit(4);} //chemin inexistant...
+                
+        //read extension.
+        String exttype=getInConnectorOutBoundMap(integrator,"exttype");
+        ArrayList<String> lstexttype =new ArrayList<>();
+        lstexttype.add("csv"); //list of currently supported extensions.
+        if (test_string(exttype,lstexttype)==false) {logger.log(Level.SEVERE, "the extension {0} is not supported!", exttype);System.exit(4);} //extension no prise en charge
+        
+        System.out.println("Test file connector OK");
+        System.out.println("Test variables OK");
+        logger.log(Level.INFO,"Test file connector OK");
+        logger.log(Level.INFO,"Test variables OK");
+    }    
+    
     
     /*********************************
      * Check Database Connexion...
@@ -492,7 +527,7 @@ public class IntegratorTools
         //type of connector
         switch (connector.toUpperCase()) 
         {
-            case "FILE" -> check_file_connector(integrator);
+            case "FILE" -> check_file_connector_outbound(integrator);
             case "DATABASE" -> check_database_connector_outbound(integrator);
             default -> {
                 logger.log(Level.SEVERE,"Outgoing connector type is unknown ?");
@@ -501,7 +536,164 @@ public class IntegratorTools
             }
         }
     }
+    
+    
+    /**********************************
+     * Convert a duration into a string
+     * @return 
+     **********************************/
+    private String integration_duration()
+    {
+        // Duration calculation in nanoseconds
+        long durationNano = endIntegrationTime - startIntegrationTime;
+        long durationMillis = durationNano / 1_000_000;
 
+        // Conversion to minutes, seconds and milliseconds
+        long minutes = durationMillis / (60 * 1000);
+        long seconds = (durationMillis / 1000) % 60;
+        long millis = durationMillis % 1000;
+
+        return "Execution duration : " +
+                           minutes + " minute(s), " +
+                           seconds + " second(s), " +
+                           millis + " millisecond(s)";
+    }
+    
+    
+    /************************************
+     * Safe Parse Integer
+     * @param str
+     * @return 
+     ************************************/
+    private int safeParseInt(String str,int defaultValue) 
+    {
+        if (str == null) {return defaultValue;}
+        try {
+            //doit etre positif ou = à zero
+            if (Integer.parseInt(str,10)>=0) {return Integer.parseInt(str,10);} else {return defaultValue;}
+        } catch (NumberFormatException e) {return defaultValue;}
+    }
+
+
+    /************************************
+     * Safe Parse Boolean
+     * @param str
+     * @return 
+     ************************************/
+    private boolean safeParseBool(String str,boolean defaultValue) 
+    {
+        if (str == null) {return defaultValue;}
+        try {return Boolean.parseBoolean(str);} catch (NumberFormatException e) {return defaultValue;}
+    }
+    
+    
+    /************************
+     * Concatenates an array
+     * of strings
+     * @param col
+     * @return 
+     ************************/
+    private String concatenate_col(String[] col) 
+    {
+        String resultat="";
+       for (String c:col) {resultat=resultat+c;}
+       return resultat;
+    }
+
+    
+    /*****************************************
+     * Create the automatic table from
+     * description data found in the
+     * in the “fieldsOut” description
+     * @param jobIntegrator
+     * @return 
+     ****************************************/
+    private String create_destination_table(Job jobIntegrator) 
+    {
+        String sqlCreateTable;
+        
+        String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
+        sqlCreateTable="CREATE TABLE " + NomTable+" (";
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {
+            //if varchar present and size >0 => varchar(x)
+            if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
+            {
+                sqlCreateTable=sqlCreateTable+entry.getKey().toLowerCase()+" "+entry.getValue().getType().toLowerCase()+"("+entry.getValue().getSize()+"),";
+            }
+            else
+            {
+                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType().toLowerCase()+",";
+            } 
+        }
+        //add hascode
+        sqlCreateTable=sqlCreateTable+"hashcode varchar,";
+        
+        //add constraint
+        sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
+
+        
+        return sqlCreateTable;
+    }
+
+    
+    /********************************
+     * Create UPSERT template
+     * @param jobIntegrator
+     * @return 
+     ********************************/
+    private String create_template_UPSERT(Job jobIntegrator) {
+        String template;
+        
+        template="INSERT INTO "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" (";
+        
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+            {template=template+entry.getKey().toLowerCase()+",";}
+        
+        template=template+"hashcode) VALUES(";
+        
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {template=template+"'%"+entry.getKey().toLowerCase()+"%',";}
+        template=template+"'%hashcode%'";
+        
+        template=template+") ON CONFLICT(hashcode) DO UPDATE SET ";
+        
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {template=template+entry.getKey().toLowerCase()+"='%"+entry.getKey().toLowerCase()+"%',";}
+        
+        return template.substring(0, template.length()-1); //remove last comma
+    }
+
+    
+    /******************************
+     * Implements request
+     * @param sqlTemplate
+     * @return 
+     ******************************/
+    private String replace_template_UPSERT_Value(String sqlTemplate,String hashCode,String[] col, Job jobIntegrator) 
+    {
+        String sqlReplace=sqlTemplate;
+        //search for value name
+        String champ;
+        int num=0;
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {
+            champ="%"+entry.getKey().toLowerCase()+"%";
+            sqlReplace=sqlReplace.replaceAll(champ, col[num].replaceAll("'", "''"));
+            num++;
+        }
+        
+        //replace hashcode
+        sqlReplace=sqlReplace.replaceAll("%hashcode%", hashCode);
+        
+        
+        return sqlReplace;
+    }
+    
+    
+/*===========================================================
+                ACTION FUCTIONS FOR THE FOUR POSSIBILITIES
+  ===========================================================*/  
     
     /**********************************************
      * Process data integration file to Db type
@@ -659,158 +851,6 @@ public class IntegratorTools
         }
     }
     
-    
-    /**********************************
-     * Convert a duration into a string
-     * @return 
-     **********************************/
-    private String integration_duration()
-    {
-        // Duration calculation in nanoseconds
-        long durationNano = endIntegrationTime - startIntegrationTime;
-        long durationMillis = durationNano / 1_000_000;
-
-        // Conversion to minutes, seconds and milliseconds
-        long minutes = durationMillis / (60 * 1000);
-        long seconds = (durationMillis / 1000) % 60;
-        long millis = durationMillis % 1000;
-
-        return "Execution duration : " +
-                           minutes + " minute(s), " +
-                           seconds + " second(s), " +
-                           millis + " millisecond(s)";
-    }
-    
-    
-    /************************************
-     * Safe Parse Integer
-     * @param str
-     * @return 
-     ************************************/
-    private int safeParseInt(String str,int defaultValue) 
-    {
-        if (str == null) {return defaultValue;}
-        try {
-            //doit etre positif ou = à zero
-            if (Integer.parseInt(str,10)>=0) {return Integer.parseInt(str,10);} else {return defaultValue;}
-        } catch (NumberFormatException e) {return defaultValue;}
-    }
-
-
-    /************************************
-     * Safe Parse Boolean
-     * @param str
-     * @return 
-     ************************************/
-    private boolean safeParseBool(String str,boolean defaultValue) 
-    {
-        if (str == null) {return defaultValue;}
-        try {return Boolean.parseBoolean(str);} catch (NumberFormatException e) {return defaultValue;}
-    }
-    
-    
-    /************************
-     * Concatenates an array
-     * of strings
-     * @param col
-     * @return 
-     ************************/
-    private String concatenate_col(String[] col) 
-    {
-        String resultat="";
-       for (String c:col) {resultat=resultat+c;}
-       return resultat;
-    }
-
-    
-    /*****************************************
-     * Create the automatic table from
-     * description data found in the
-     * in the “fieldsOut” description
-     * @param jobIntegrator
-     * @return 
-     ****************************************/
-    private String create_destination_table(Job jobIntegrator) 
-    {
-        String sqlCreateTable;
-        
-        String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
-        sqlCreateTable="CREATE TABLE " + NomTable+" (";
-        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
-        {
-            //if varchar present and size >0 => varchar(x)
-            if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
-            {
-                sqlCreateTable=sqlCreateTable+entry.getKey().toLowerCase()+" "+entry.getValue().getType().toLowerCase()+"("+entry.getValue().getSize()+"),";
-            }
-            else
-            {
-                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType().toLowerCase()+",";
-            } 
-        }
-        //add hascode
-        sqlCreateTable=sqlCreateTable+"hashcode varchar,";
-        
-        //add constraint
-        sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
-
-        
-        return sqlCreateTable;
-    }
-
-    
-    /********************************
-     * Create UPSERT template
-     * @param jobIntegrator
-     * @return 
-     ********************************/
-    private String create_template_UPSERT(Job jobIntegrator) {
-        String template;
-        
-        template="INSERT INTO "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" (";
-        
-        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
-            {template=template+entry.getKey().toLowerCase()+",";}
-        
-        template=template+"hashcode) VALUES(";
-        
-        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
-        {template=template+"'%"+entry.getKey().toLowerCase()+"%',";}
-        template=template+"'%hashcode%'";
-        
-        template=template+") ON CONFLICT(hashcode) DO UPDATE SET ";
-        
-        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
-        {template=template+entry.getKey().toLowerCase()+"='%"+entry.getKey().toLowerCase()+"%',";}
-        
-        return template.substring(0, template.length()-1); //remove last comma
-    }
-
-    
-    /******************************
-     * Implements request
-     * @param sqlTemplate
-     * @return 
-     ******************************/
-    private String replace_template_UPSERT_Value(String sqlTemplate,String hashCode,String[] col, Job jobIntegrator) 
-    {
-        String sqlReplace=sqlTemplate;
-        //search for value name
-        String champ;
-        int num=0;
-        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
-        {
-            champ="%"+entry.getKey().toLowerCase()+"%";
-            sqlReplace=sqlReplace.replaceAll(champ, col[num].replaceAll("'", "''"));
-            num++;
-        }
-        
-        //replace hashcode
-        sqlReplace=sqlReplace.replaceAll("%hashcode%", hashCode);
-        
-        
-        return sqlReplace;
-    }
 
    /**********************************************
     * Process data integration db to file type
@@ -818,7 +858,43 @@ public class IntegratorTools
     **********************************************/
     private void process_integration_db_to_file(Job jobIntegrator) 
     {
-        //TODO
+        ResultSet rst;
+        List<String>metaDataLst;
+        //read DB fetch from sql 
+        DBTools dbt=new DBTools(logger);
+            dbt.connect_db
+        (
+                getInConnectorInBoundMap(jobIntegrator, "dbdriver"),
+                getInConnectorInBoundMap(jobIntegrator, "dburl"),
+                getInConnectorInBoundMap(jobIntegrator, "dblogin"),
+                getInConnectorInBoundMap(jobIntegrator, "dbpassword")
+        );
+        System.out.println("Connection DataBase OutBound : PASS");
+        logger.log(Level.INFO,"Connection DataBase OutBound : PASS");
+        
+        //get the sql query.
+        String sqlInbound=getInConnectorInBoundMap(jobIntegrator, "query");
+        rst=dbt.SQLFetch(sqlInbound);
+        
+        String header="";
+        //use the defined separator
+        String separator=getInConnectorOutBoundMap(jobIntegrator, "separatorfield");
+        
+        if (safeParseBool(getInConnectorOutBoundMap(jobIntegrator, "writeheader"),false))
+        {
+            //get metadata column names
+            metaDataLst=dbt.getMetadataLst();
+           
+            //set the header
+            for (int c=0;c<metaDataLst.size();c++)
+            {
+                header=header+metaDataLst.get(c)+separator;
+            }
+            header=header.substring(0, header.length()-1);
+        }
+       
+        //write file
+        new FSTools(logger).writeFile(getInConnectorOutBoundMap(jobIntegrator, "filespath"), getInConnectorOutBoundMap(jobIntegrator, "filename"),getInConnectorOutBoundMap(jobIntegrator, "exttype"),safeParseBool(getInConnectorOutBoundMap(jobIntegrator, "writeheader"),false),header, rst,separator);
     }
 
    /**********************************************
@@ -828,6 +904,11 @@ public class IntegratorTools
     private void process_integration_db_to_db(Job jobIntegrator) 
     {
         //TODO
+        //read DB fetch from sql 
+        //get metadata column names
+        //write as UTF-8 only.
+        //set the header and create destination table
+        //write the data in DB.
     }
 
    /**********************************************
@@ -837,6 +918,11 @@ public class IntegratorTools
     private void process_integration_file_to_file(Job jobIntegrator) 
     {
         //TODO
+        //read source file format CSV
+        //write as UTF-8 only.
+        //set the CSV separator.
+        //set the header and create destination file
+        //write the data in destination file.   
     }
   
 }

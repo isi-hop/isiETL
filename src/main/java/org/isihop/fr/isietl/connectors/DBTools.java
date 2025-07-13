@@ -22,8 +22,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +46,8 @@ public class DBTools
     //database
     private Connection conn;
     private Statement stmt;
+    private ResultSet rst;
+    private List<String> metadataLst;
 
     
     /**************************
@@ -161,4 +169,40 @@ public class DBTools
         }
         return finalise;
     }
+    
+    /**********************************
+     * Make fetch data from DB
+     * @param query 
+     * @return  
+     **********************************/
+    public ResultSet SQLFetch(String query)
+    {
+        try {
+            stmt=conn.createStatement();
+            rst=stmt.executeQuery(query);        
+            ResultSetMetaData metaData = rst.getMetaData();
+            metadataLst=new ArrayList<>();
+            for (int cols=1;cols<=metaData.getColumnCount();cols++)
+            {
+                metadataLst.add(metaData.getColumnName(cols));
+            }
+            System.out.println("Metadata extracted!");
+            logger.log(Level.INFO, "Metadata extracted!");
+                        
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+        //get metadata from fetch
+        return rst;
+    }
+    
+    /************************************
+     * return metaData from Fetch
+     * @return 
+     ***********************************/
+    public List<String> getMetadataLst()
+    {
+        return metadataLst;
+    }
+    
 }
