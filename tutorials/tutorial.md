@@ -55,6 +55,8 @@ jobDescription: "Get data from a CSV file : push a DB postgresql"
 jobDateTime: "2025-06-11 07:45"
 jobBatchSize: "6"
 forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "filetodb"
 #----------------------------------------
 #------------INBOUND CONNECTOR-----------
 connectorInbound:
@@ -132,12 +134,16 @@ jobDescription: "Get data from a CSV file : push a DB postgresql"
 jobDateTime: "2025-06-11 07:45"
 jobBatchSize: "6"
 forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "filetodb"
 #----------------------------------------
 ```  
 
 The variables, `jobName, jobDescription, jobDateTime` have no impact on the operation of your job and are variables that will force you to comment on your job.  
 
 On these variables you assign the information you feel is relevant to describe the job.
+
+The `jobtype` variable is imperative and will enable you to design your job, value can be [dbtofile, dbtodb,filetodb,filetofile].  
 
 The `jobBatchSize` variable is imperative and will enable you to adjust the number of lines per processing group written to the database.  
 
@@ -385,6 +391,8 @@ jobDescription: "Update Organization"
 jobDateTime: "2025-06-20 07:45"
 jobBatchSize: "20"
 forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "filetodb"
 #----------------------------------------
 #------------INBOUND CONNECTOR-----------
 connectorInbound:
@@ -479,5 +487,146 @@ Verify your database schema, now you have a new table named `orgv3` and some dat
 
 Has you can see the post processing script work fine and have deleted de line with the division value 14887.  
 
-![data organization](imgs/data_organization.png)
+![data organization](imgs/data_organization.png)  
+
+
+---  
+
+**Third example** 
+
+In this tutorial, we'll explore how to extract data from a postgresQL database and write it to a CSV file with a “;” field separator.  
+As an example, we'll use the “organization” database and the “orgv3” table created earlier to extract data to a CSV file.  
+
+<u>_Here our job</u>..._  
+
+``` YAML
+#-------------HEADER---------------
+jobName: "ACTIVITE DB TO FILE"
+jobDescription: "Get data from a DataBase to a file"
+jobDateTime: "2025-07-14 20:02:00"
+jobtype: "dbtofile"
+#----------------------------------
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  #must be ""file"" or ""database""
+  connectortype: 
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/organization"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  query:
+    value: "select * from orgv3"
+#----------------------------------------
+#------------OUTBOUND CONNECTOR----------
+connectorOutbound: 
+  connectortype:
+    value: "file"
+  filespath: 
+    value : "/home/tondeur-h/dev/isiETL/tutorials/tuto_3"
+  filename:
+    value: "mytestfile"
+  exttype:
+    value: "csv"    
+  separatorfield:
+    value: ";"
+  writeheader:
+    value: "true"
+#-------------------------------------
+#-----------FMT PROCESSING------------
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+#-----------POSTPROCESSING------------
+SQLPostProcessing: ""
+#-------------------------------------
+```  
+Description du job :  
+
+Header is very simple  
+``` YAML
+#-------------HEADER---------------
+jobName: "ACTIVITE DB TO FILE"
+jobDescription: "Get data from a DataBase to a file"
+jobDateTime: "2025-07-14 20:02:00"
+jobtype: "dbtofile"
+#----------------------------------
+```   
+Just describe the jonName, a small description the Date/Time it was created.  
+And the jobtype variable that set the design dbtofile job type.  
+
+Now the InBound Connector  
+
+``` YAML
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  connectortype: 
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/organization"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  query:
+    value: "select * from orgv3"
+#----------------------------------------
+```  
+
+The `connectortype`  clearly explain tha it is a database connector.  
+Whe giving the four variables neaded to describe the connexion.  
+[dbdriver, dburl,dblogin,dbpassword]  
+
+And the query to apply on this database, the query can be as complex as you want, as long as you respect the schema(s) of the database you're using.  
+
+The OutBound Connector now  
+
+``` YAML
+#------------OUTBOUND CONNECTOR----------
+connectorOutbound: 
+  connectortype:
+    value: "file"
+  filespath: 
+    value : "//home/tondeur-h/dev/isiETL/tutorials/tuto_3"
+  filename:
+    value: "mytestfile"
+  exttype:
+    value: "csv"    
+  separatorfield:
+    value: ";"
+  writeheader:
+    value: "true"
+#-------------------------------------
+```    
+
+Very simple too.  
+
+`connectortype` explain that you will produce a file.  
+`filespath` give the full path were to write the file.  
+`filename` and `exttype` give the name and extension for the output file.  
+`separatorfield` give the separator to use, you can use 1 character here, like ";", ",", "#", "|", "@", etc...  
+writeheader, can take  "true" or "false", if the variable take "true", the header is written in the file in the first line, instead no header are written.  
+
+***_let's play the job now !_***   
+
+First, open the `Organization` database and take a look a the orgv3 table.  
+
+![table_orgv3](imgs/table_orgv3.png)
+
+on the CLI, run the command   
+$> `isietl.sh -fip ./integrator_tuto_3.yml -dp`  
+
+![db_to_file job isietl](imgs/db_to_file_job_isietl.png)
+
+Verify your directory, now you have a new file named `mytestfile.csv`.  
+
+![mytestfile_csv_example](imgs/mytestfile_csv.png)  
+
 

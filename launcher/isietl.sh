@@ -8,4 +8,4 @@ clear
 #maximum 2 parameters in the same times
 # are allowed [-dp & -fip]
 
-java -jar isiETL-0.1-jar-with-dependencies.jar $1 $2
+java -jar isiETL-0.2-jar-with-dependencies.jar $1 $2

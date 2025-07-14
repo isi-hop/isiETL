@@ -20,6 +20,8 @@ jobDescription: "Get data from a CSV file : push a DB postgresql"
 jobDateTime: "2025-06-11 07:45"
 jobBatchSize: "20"
 forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "filetodb"
 #----------------------------------------
 #------------INBOUND CONNECTOR-----------
 connectorInbound:

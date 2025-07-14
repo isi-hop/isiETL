@@ -8,4 +8,4 @@ REM allowed alone [-dp defaut false, -fip, -h, -jt defalut false]
 REM maximum 2 parameters in the same times
 REM are allowed [-dp & -fip]
 
-java -jar isiETL-0.1-jar-with-dependencies.jar %1 %2
+java -jar isiETL-0.2-jar-with-dependencies.jar %1 %2

@@ -92,7 +92,8 @@ jobDateTime: "2025-05-20 12:00:00"
 #size defaut to 1 if not defined, must be GT 0, if not value is 1
 jobBatchSize: "200"
 forceIntermediateCommit: "true"
-                            
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "dbtofile"           
 #----------------------------------
 # Description of the incoming connector
 # Type: CSV file or PostgreSQL database for now
@@ -206,6 +207,8 @@ jobDescription: "Get data from a CSV file to a DB postgresql"
 jobDateTime: "2025-05-20 12:00:00"
 jobBatchSize: "200"
 forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "dbtofile"
 ```  
 
 
@@ -223,6 +226,10 @@ The jobBatchSize variable allows you to adjust the number of insert/update rows 
 
 `forceIntermediateCommit: "true"`  
 The forceIntermediateCommit variable is coupled with the jobBatchSize variable, which can be set to true or false. If the value is true, a commit is performed every "jobBatchSize" number of lines. If you specify false for this variable, only a commit at the end of the integration is performed, which will allow you to exploit the integrated data.  
+
+`jobtype:"dbtofile"`  
+This variable is important, as it explains the design of your job. It can take the values [dbtofile, dbtodb,filetodb,filetofile] and indicates the direction of your job and the activities to be implemented for incoming and outgoing connectors.  
+
 
 **_Description of the incoming file connector_**  
 

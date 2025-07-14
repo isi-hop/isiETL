@@ -20,6 +20,8 @@ jobDescription: "Update Organization"
 jobDateTime: "2025-06-20 07:45"
 jobBatchSize: "20"
 forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "filetodb"
 #----------------------------------------
 #------------INBOUND CONNECTOR-----------
 connectorInbound:
