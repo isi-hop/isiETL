@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
@@ -363,41 +364,44 @@ public class FSTools
      * @param header
      * @param headerStr
      * @param rst 
+     * @param separator 
      ***************************************************/
     public void writeFile(String path, String name, String extension, boolean header,String headerStr, ResultSet rst,String separator)
     {
         PrintWriter pw=null;
-        try {
+        try 
+        {
             String filename=path+"/"+name+"."+extension;
             //creer le fichier
-            pw = new PrintWriter(filename);
-            if(header==true)
-            {
-                pw.println(headerStr);
-            }
+            pw = new PrintWriter(filename,  StandardCharsets.UTF_8);
+            if(header==true) {pw.println(headerStr);} //writeHeader ?
             //write the data in file.
-            try {
+            try 
+            {
                  int nbCol=rst.getMetaData().getColumnCount();
                 //write data
+                String line;
                 while (rst.next()==true)
                 {
-                    String line="";
-                 for (int ci=1;ci<=nbCol;ci++)
-                 {
-                     line=line+rst.getString(ci)+separator;
-                 }
-                 line=line.substring(0, line.length()-1);
-                 pw.println(line);
+                    line="";
+                    for (int ci=1;ci<=nbCol;ci++) {line=line+rst.getString(ci)+separator;}
+                    line=line.substring(0, line.length()-separator.length()); //truncate last separator
+                    pw.println(line);
                 }
-            } catch (SQLException ex) {
-                System.getLogger(IntegratorTools.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (SQLException ex) 
+            {
+                logger.log(Level.SEVERE, ex.getMessage());
             }
-        } catch (FileNotFoundException ex) {
-            System.getLogger(FSTools.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        } finally {
+        } catch (FileNotFoundException ex) 
+        {
+            logger.log(Level.SEVERE, ex.getMessage());
+        } catch (IOException ex) 
+        {
+            logger.log(Level.SEVERE, ex.getMessage());
+        } finally 
+        {
             pw.close();
         }
-        
     }
     
 }

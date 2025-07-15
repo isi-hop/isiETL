@@ -862,7 +862,7 @@ public class IntegratorTools
         List<String>metaDataLst;
         //read DB fetch from sql 
         DBTools dbt=new DBTools(logger);
-            dbt.connect_db
+            dbt.connect_db //connecting
         (
                 getInConnectorInBoundMap(jobIntegrator, "dbdriver"),
                 getInConnectorInBoundMap(jobIntegrator, "dburl"),
@@ -872,11 +872,11 @@ public class IntegratorTools
         System.out.println("Connection DataBase OutBound : PASS");
         logger.log(Level.INFO,"Connection DataBase OutBound : PASS");
         
-        //get the sql query.
+        //get the sql query from yaml.
         String sqlInbound=getInConnectorInBoundMap(jobIntegrator, "query");
         rst=dbt.SQLFetch(sqlInbound);
         
-        String header="";
+        String headerStr="";
         //use the defined separator
         String separator=getInConnectorOutBoundMap(jobIntegrator, "separatorfield");
         
@@ -888,13 +888,15 @@ public class IntegratorTools
             //set the header
             for (int c=0;c<metaDataLst.size();c++)
             {
-                header=header+metaDataLst.get(c)+separator;
+                headerStr=headerStr+metaDataLst.get(c)+separator; //make header line.
             }
-            header=header.substring(0, header.length()-1);
+            headerStr=headerStr.substring(0, headerStr.length()-separator.length()); //substract last separator
         }
        
-        //write file
-        new FSTools(logger).writeFile(getInConnectorOutBoundMap(jobIntegrator, "filespath"), getInConnectorOutBoundMap(jobIntegrator, "filename"),getInConnectorOutBoundMap(jobIntegrator, "exttype"),safeParseBool(getInConnectorOutBoundMap(jobIntegrator, "writeheader"),false),header, rst,separator);
+        //write data in file after header if needed
+        new FSTools(logger).writeFile(getInConnectorOutBoundMap(jobIntegrator, "filespath"), getInConnectorOutBoundMap(jobIntegrator, "filename"),getInConnectorOutBoundMap(jobIntegrator, "exttype"),safeParseBool(getInConnectorOutBoundMap(jobIntegrator, "writeheader"),false),headerStr, rst,separator);
+        System.out.println("File "+getInConnectorOutBoundMap(jobIntegrator, "filename")+" is written.");
+        logger.log(Level.INFO, "File {0} is written.", getInConnectorOutBoundMap(jobIntegrator, "filename"));
     }
 
    /**********************************************

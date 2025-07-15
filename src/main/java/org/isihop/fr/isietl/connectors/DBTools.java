@@ -179,7 +179,10 @@ public class DBTools
     {
         try {
             stmt=conn.createStatement();
-            rst=stmt.executeQuery(query);        
+            rst=stmt.executeQuery(query);
+            System.out.println("Data extracted!");
+            logger.log(Level.INFO, "Data extracted!");
+            //get metadata list
             ResultSetMetaData metaData = rst.getMetaData();
             metadataLst=new ArrayList<>();
             for (int cols=1;cols<=metaData.getColumnCount();cols++)
@@ -192,8 +195,7 @@ public class DBTools
         } catch (SQLException ex) {
             logger.log(Level.SEVERE, ex.getMessage());
         }
-        //get metadata from fetch
-        return rst;
+        return rst; //return resulset
     }
     
     /************************************
