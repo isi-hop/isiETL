@@ -47,7 +47,7 @@ public class DBTools
     private Connection conn;
     private Statement stmt;
     private ResultSet rst;
-    private List<String> metadataLst;
+    private Map<String,String> metadataMap;
 
     
     /**************************
@@ -184,10 +184,10 @@ public class DBTools
             logger.log(Level.INFO, "Data extracted!");
             //get metadata list
             ResultSetMetaData metaData = rst.getMetaData();
-            metadataLst=new ArrayList<>();
+            metadataMap=new HashMap<>();
             for (int cols=1;cols<=metaData.getColumnCount();cols++)
             {
-                metadataLst.add(metaData.getColumnName(cols));
+                metadataMap.put(metaData.getColumnName(cols),metaData.getColumnTypeName(cols));
             }
             System.out.println("Metadata extracted!");
             logger.log(Level.INFO, "Metadata extracted!");
@@ -202,9 +202,9 @@ public class DBTools
      * return metaData from Fetch
      * @return 
      ***********************************/
-    public List<String> getMetadataLst()
+    public Map<String,String> getMetadataMap()
     {
-        return metadataLst;
+        return metadataMap;
     }
     
 }

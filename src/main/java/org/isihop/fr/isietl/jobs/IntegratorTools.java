@@ -636,6 +636,43 @@ public class IntegratorTools
         return sqlCreateTable;
     }
 
+
+    /*****************************************
+     * Create the automatic table from
+     * description data found in the
+     * in the “fieldsOut” description
+     * @param jobIntegrator
+     * @return 
+     ****************************************/
+    private String create_destination_table_by_map(Job jobIntegrator,Map<String,String> metadataMap) 
+    {
+        //TODO
+        String sqlCreateTable;
+        
+        String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
+        sqlCreateTable="CREATE TABLE " + NomTable+" (";
+        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
+        {
+            //if varchar present and size >0 => varchar(x)
+            if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
+            {
+                sqlCreateTable=sqlCreateTable+entry.getKey().toLowerCase()+" "+entry.getValue().getType().toLowerCase()+"("+entry.getValue().getSize()+"),";
+            }
+            else
+            {
+                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType().toLowerCase()+",";
+            } 
+        }
+        //add hascode
+        sqlCreateTable=sqlCreateTable+"hashcode varchar,";
+        
+        //add constraint
+        sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
+
+        
+        return sqlCreateTable;
+    }
+
     
     /********************************
      * Create UPSERT template
@@ -859,7 +896,7 @@ public class IntegratorTools
     private void process_integration_db_to_file(Job jobIntegrator) 
     {
         ResultSet rst;
-        List<String>metaDataLst;
+        Map<String,String>metaDataMap;
         //read DB fetch from sql 
         DBTools dbt=new DBTools(logger);
             dbt.connect_db //connecting
@@ -883,12 +920,12 @@ public class IntegratorTools
         if (safeParseBool(getInConnectorOutBoundMap(jobIntegrator, "writeheader"),false))
         {
             //get metadata column names
-            metaDataLst=dbt.getMetadataLst();
+            metaDataMap=dbt.getMetadataMap();
            
             //set the header
-            for (int c=0;c<metaDataLst.size();c++)
+            for (String key:metaDataMap.keySet())
             {
-                headerStr=headerStr+metaDataLst.get(c)+separator; //make header line.
+                headerStr=headerStr+key+separator; //make header line.
             }
             headerStr=headerStr.substring(0, headerStr.length()-separator.length()); //substract last separator
         }
@@ -906,11 +943,117 @@ public class IntegratorTools
     private void process_integration_db_to_db(Job jobIntegrator) 
     {
         //TODO
+        ResultSet rstIN;
+        Map<String,String>metaDataMap;
+        String sqlTemplate;
+        String sql;
+        
         //read DB fetch from sql 
-        //get metadata column names
-        //write as UTF-8 only.
-        //set the header and create destination table
-        //write the data in DB.
+        DBTools dbtIN=new DBTools(logger);
+            dbtIN.connect_db //connecting
+        (
+                getInConnectorInBoundMap(jobIntegrator, "dbdriver"),
+                getInConnectorInBoundMap(jobIntegrator, "dburl"),
+                getInConnectorInBoundMap(jobIntegrator, "dblogin"),
+                getInConnectorInBoundMap(jobIntegrator, "dbpassword")
+        );
+        System.out.println("Connection DataBase InBound : PASS");
+        logger.log(Level.INFO,"Connection DataBase INBound : PASS");
+        
+        //get the sql query from yaml.
+        String sqlInbound=getInConnectorInBoundMap(jobIntegrator, "query");
+        rstIN=dbtIN.SQLFetch(sqlInbound);
+
+        //connect Out DataBase
+        DBTools dbtOUT=new DBTools(logger);
+        dbtOUT.connect_db //connecting
+        (
+                getInConnectorOutBoundMap(jobIntegrator, "dbdriver"),
+                getInConnectorOutBoundMap(jobIntegrator, "dburl"),
+                getInConnectorOutBoundMap(jobIntegrator, "dblogin"),
+                getInConnectorOutBoundMap(jobIntegrator, "dbpassword")
+        );
+        System.out.println("Connection DataBase OutBound : PASS");
+        logger.log(Level.INFO,"Connection DataBase OutBound : PASS");
+
+        
+        //find destination table if exist...
+        sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
+            
+            //start of processing calculation
+            startIntegrationTime = System.nanoTime();
+        
+            try{
+                System.out.println("Check table OutBound availability");
+                logger.log(Level.INFO,"Check table OutBound availability");
+                
+                ResultSet rs=dbtOUT.getStmt().executeQuery(sql);
+                System.out.println("Table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable")+" available.");
+                logger.log(Level.INFO, "Table {0} available.", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                
+            } catch (SQLException ex) 
+            {
+                //if not create table
+                //create table as missing....
+                System.out.println("Creation of the table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                logger.log(Level.INFO, "Creation of the table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
+                
+                //get metadata column names
+                metaDataMap=dbtIN.getMetadataMap();
+                sql=create_destination_table_by_map(jobIntegrator,metaDataMapX); //TODO
+                
+                sqlTemplate=create_template_UPSERT(jobIntegrator,metaDataMap); //TODO
+                                
+                try 
+                {                
+                    dbtOUT.getStmt().executeUpdate(sql);
+                } catch (SQLException ex1) {
+                    logger.log(Level.SEVERE,"Table CreatING : ERROR # ",ex1.getMessage());
+                }
+                    System.out.println("Table Create : PASS");
+                    logger.log(Level.INFO,"Table Create : PASS");
+            }
+                
+            //write the data in DB Out from DbIn.
+            //for each fetch => write destination in table/
+            int nbLignes=0;
+            int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
+            
+           try
+           {
+           while (rstIN.next()==true)  //TODO
+                {
+                    
+                String hashCode=hash_code_calculate(concatenate_col(col));
+                    
+                sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator);
+                    
+                dbtOUT.getStmt().addBatch(sql);
+                             
+                nbLignes++;
+     
+                if (nbLignes % batchSize == 0) 
+                    {
+                        dbtOUT.getStmt().executeBatch();
+                        if (safeParseBool(jobIntegrator.getForceIntermediateCommit(), true)) {dbtOUT.getConn().commit();System.out.println("Batch Commited...");} //intermediate commit...;
+                        dbtOUT.getStmt().clearBatch();
+                        System.out.println(nbLignes+" Lines processed...");
+                    }                    
+                }
+           
+            //mark end of integration
+            endIntegrationTime = System.nanoTime();
+
+            //finalize the last registrations and commit.
+            dbtOUT.getStmt().executeBatch(); //first batch execution
+            dbtOUT.getConn().commit(); //last commit for batch data
+                
+            //a user log
+            System.out.println(nbLignes+" line(s) processed in " + integration_duration());
+            logger.log(Level.INFO, "{0} line(s) processed in " + integration_duration(),nbLignes);
+           
+           } catch(SQLException e) {}
+            //TODO
     }
 
    /**********************************************
