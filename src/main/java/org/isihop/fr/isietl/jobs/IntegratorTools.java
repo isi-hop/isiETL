@@ -945,7 +945,7 @@ public class IntegratorTools
         //TODO
         ResultSet rstIN;
         Map<String,String>metaDataMap;
-        String sqlTemplate;
+        String sqlTemplate="";
         String sql;
         
         //read DB fetch from sql 
@@ -980,10 +980,14 @@ public class IntegratorTools
         //find destination table if exist...
         sql="select count(*) from "+getInConnectorOutBoundMap(jobIntegrator, "targetTable");
             
-            //start of processing calculation
-            startIntegrationTime = System.nanoTime();
-        
-            try{
+                //start of processing calculation
+                startIntegrationTime = System.nanoTime();
+                
+                //get metadata column names
+                metaDataMap=dbtIN.getMetadataMap();
+            
+            try
+            {
                 System.out.println("Check table OutBound availability");
                 logger.log(Level.INFO,"Check table OutBound availability");
                 
@@ -998,15 +1002,11 @@ public class IntegratorTools
                 System.out.println("Creation of the table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 logger.log(Level.INFO, "Creation of the table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
-                //get metadata column names
-                metaDataMap=dbtIN.getMetadataMap();
                 sql=create_destination_table_by_map(jobIntegrator,metaDataMapX); //TODO
-                
-                sqlTemplate=create_template_UPSERT(jobIntegrator,metaDataMap); //TODO
                                 
                 try 
                 {                
-                    dbtOUT.getStmt().executeUpdate(sql);
+                    dbtOUT.getStmt().executeUpdate(sql); //create Table please
                 } catch (SQLException ex1) {
                     logger.log(Level.SEVERE,"Table CreatING : ERROR # ",ex1.getMessage());
                 }
@@ -1018,15 +1018,17 @@ public class IntegratorTools
             //for each fetch => write destination in table/
             int nbLignes=0;
             int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
+            String[] col;
+            sqlTemplate=create_template_UPSERT(jobIntegrator,metaDataMapX); //TODO
             
            try
            {
            while (rstIN.next()==true)  //TODO
                 {
-                    
+                col=construct_col_from_rst(rstIN);    
                 String hashCode=hash_code_calculate(concatenate_col(col));
                     
-                sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator);
+                sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator); //TODO
                     
                 dbtOUT.getStmt().addBatch(sql);
                              
@@ -1068,6 +1070,26 @@ public class IntegratorTools
         //set the CSV separator.
         //set the header and create destination file
         //write the data in destination file.   
+    }
+
+    /*******************************************
+     * Construct an Array String from ResultSet.
+     * @param rst
+     * @return 
+     *******************************************/
+    private String[] construct_col_from_rst(ResultSet rst) 
+    {
+        try {
+        String[] retour=new String[rst.getMetaData().getColumnCount()];
+            for (int i=1;i<=rst.getMetaData().getColumnCount();i++)
+            {
+                retour[i-1]=rst.getString(i);
+            }
+            return retour;
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+        return new String[0];//return empty Array String.
     }
   
 }
