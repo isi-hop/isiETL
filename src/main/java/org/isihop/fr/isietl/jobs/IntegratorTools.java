@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.isihop.fr.isietl.connectors.FSTools;
@@ -646,32 +647,32 @@ public class IntegratorTools
      ****************************************/
     private String create_destination_table_by_map(Job jobIntegrator,Map<String,String> metadataMap) 
     {
-        //TODO
-        String sqlCreateTable;
-        
         String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
-        sqlCreateTable="CREATE TABLE " + NomTable+" (";
-        for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
-        {
-            //if varchar present and size >0 => varchar(x)
-            if (entry.getValue().getType().toUpperCase().compareTo("VARCHAR")==0 && Integer.parseInt(entry.getValue().getSize(),10)>0)
-            {
-                sqlCreateTable=sqlCreateTable+entry.getKey().toLowerCase()+" "+entry.getValue().getType().toLowerCase()+"("+entry.getValue().getSize()+"),";
-            }
-            else
-            {
-                sqlCreateTable=sqlCreateTable+entry.getKey()+" "+entry.getValue().getType().toLowerCase()+",";
-            } 
+        
+        if (metadataMap == null || metadataMap.isEmpty()) {
+            throw new IllegalArgumentException("metaDataMapX ne doit pas être vide");
         }
-        //add hascode
-        sqlCreateTable=sqlCreateTable+"hashcode varchar,";
-        
-        //add constraint
-        sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
 
-        
-        return sqlCreateTable;
-    }
+        StringJoiner columns = new StringJoiner(", ");
+        for (Map.Entry<String, String> entry : metadataMap.entrySet()) 
+        {
+            String columnName = entry.getKey().toLowerCase();
+            String columnType = entry.getValue().toLowerCase();
+            // On peut ajouter ici un check ou une conversion sur columnType si besoin
+            columns.add(columnName + " " + columnType);
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("CREATE TABLE ")
+           .append(NomTable)
+           .append(" (")
+           .append(columns.toString())
+           .append(", hashcode varchar, CONSTRAINT ")
+           .append(NomTable)
+           .append("_unique UNIQUE (hashcode)))");
+
+        return sql.toString();
+        }
 
     
     /********************************
@@ -1002,11 +1003,11 @@ public class IntegratorTools
                 System.out.println("Creation of the table "+getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 logger.log(Level.INFO, "Creation of the table {0}", getInConnectorOutBoundMap(jobIntegrator, "targetTable"));
                 
-                sql=create_destination_table_by_map(jobIntegrator,metaDataMapX); //TODO
+                String sqlCreate=create_destination_table_by_map(jobIntegrator,metaDataMap);
                                 
                 try 
                 {                
-                    dbtOUT.getStmt().executeUpdate(sql); //create Table please
+                    dbtOUT.getStmt().executeUpdate(sqlCreate); //create Table please
                 } catch (SQLException ex1) {
                     logger.log(Level.SEVERE,"Table CreatING : ERROR # ",ex1.getMessage());
                 }
@@ -1019,7 +1020,7 @@ public class IntegratorTools
             int nbLignes=0;
             int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
             String[] col;
-            sqlTemplate=create_template_UPSERT(jobIntegrator,metaDataMapX); //TODO
+            sqlTemplate=create_template_UPSERT_from_Map(jobIntegrator,metaDataMaX); //TODO
             
            try
            {
@@ -1090,6 +1091,50 @@ public class IntegratorTools
             logger.log(Level.SEVERE, ex.getMessage());
         }
         return new String[0];//return empty Array String.
+    }
+
+    private String create_template_UPSERT_from_Map(Job jobIntegrator, Map<String, String> metaDataMap) 
+    {
+        //TODO
+        // 1. Récupération du nom de la table
+        String tableName = getInConnectorOutBoundMap(jobIntegrator, "targetTable");
+        
+        // 2. Validation des métadonnées
+        if (metaDataMap == null || metaDataMap.isEmpty()) {
+            throw new IllegalArgumentException("La map de métadonnées ne peut pas être vide");
+        }
+        if (!metaDataMap.containsKey("hashcode")) {
+            throw new IllegalArgumentException("La clé 'hashcode' doit exister dans metaDataMap");
+        }
+
+        // 3. Construction de la liste des colonnes et des placeholders
+        StringJoiner columns    = new StringJoiner(", ");
+        StringJoiner values     = new StringJoiner(", ");
+        StringJoiner updateSets = new StringJoiner(", ");
+
+        for (String col : metaDataMap.keySet()) {
+            columns.add(col);
+            // named placeholder, ex. :colName
+            values.add(":" + col);
+
+            // On exclut "hashcode" du SET pour ne pas réécrire la clé unique
+            if (!"hashcode".equals(col)) {
+                updateSets.add(col + " = EXCLUDED." + col);
+            }
+        }
+
+        // 4. Assemblage final de la requête
+        String sql = new StringBuilder()
+            .append("INSERT INTO ")
+            .append(tableName)
+            .append(" (").append(columns).append(")\n")
+            .append("VALUES (").append(values).append(")\n")
+            .append("ON CONFLICT (hashcode) DO UPDATE SET ")
+            .append(updateSets)
+            .append(";")
+            .toString();
+
+        return sql;
     }
   
 }
