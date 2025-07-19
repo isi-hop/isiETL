@@ -650,7 +650,7 @@ public class IntegratorTools
         String NomTable=getInConnectorOutBoundMap(jobIntegrator, "targetTable");
         
         if (metadataMap == null || metadataMap.isEmpty()) {
-            throw new IllegalArgumentException("metaDataMapX ne doit pas être vide");
+            throw new IllegalArgumentException("metaDataMap ne doit pas être vide");
         }
 
         StringJoiner columns = new StringJoiner(", ");
@@ -669,7 +669,7 @@ public class IntegratorTools
            .append(columns.toString())
            .append(", hashcode varchar, CONSTRAINT ")
            .append(NomTable)
-           .append("_unique UNIQUE (hashcode)))");
+           .append("_unique UNIQUE (hashcode))");
 
         return sql.toString();
         }
@@ -943,7 +943,6 @@ public class IntegratorTools
     **********************************************/
     private void process_integration_db_to_db(Job jobIntegrator) 
     {
-        //TODO
         ResultSet rstIN;
         Map<String,String>metaDataMap;
         String sqlTemplate="";
@@ -1020,11 +1019,11 @@ public class IntegratorTools
             int nbLignes=0;
             int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
             String[] col;
-            sqlTemplate=create_template_UPSERT_from_Map(jobIntegrator,metaDataMaX); //TODO
+        sqlTemplate=create_template_UPSERT_from_Map(jobIntegrator,metaDataMap);
             
            try
            {
-           while (rstIN.next()==true)  //TODO
+           while (rstIN.next()==true)
                 {
                 col=construct_col_from_rst(rstIN);    
                 String hashCode=hash_code_calculate(concatenate_col(col));
@@ -1093,9 +1092,15 @@ public class IntegratorTools
         return new String[0];//return empty Array String.
     }
 
+    
+    /**********************************************
+     * 
+     * @param jobIntegrator
+     * @param metaDataMap
+     * @return 
+     **********************************************/
     private String create_template_UPSERT_from_Map(Job jobIntegrator, Map<String, String> metaDataMap) 
     {
-        //TODO
         // 1. Récupération du nom de la table
         String tableName = getInConnectorOutBoundMap(jobIntegrator, "targetTable");
         
@@ -1103,23 +1108,21 @@ public class IntegratorTools
         if (metaDataMap == null || metaDataMap.isEmpty()) {
             throw new IllegalArgumentException("La map de métadonnées ne peut pas être vide");
         }
-        if (!metaDataMap.containsKey("hashcode")) {
-            throw new IllegalArgumentException("La clé 'hashcode' doit exister dans metaDataMap");
-        }
 
         // 3. Construction de la liste des colonnes et des placeholders
         StringJoiner columns    = new StringJoiner(", ");
         StringJoiner values     = new StringJoiner(", ");
         StringJoiner updateSets = new StringJoiner(", ");
 
-        for (String col : metaDataMap.keySet()) {
+        for (String col : metaDataMap.keySet()) 
+        {
             columns.add(col);
             // named placeholder, ex. :colName
-            values.add(":" + col);
+            values.add("'%" + col + "%'");
 
             // On exclut "hashcode" du SET pour ne pas réécrire la clé unique
             if (!"hashcode".equals(col)) {
-                updateSets.add(col + " = EXCLUDED." + col);
+                updateSets.add(col + " = '%" + col+"%'");
             }
         }
 
@@ -1127,9 +1130,9 @@ public class IntegratorTools
         String sql = new StringBuilder()
             .append("INSERT INTO ")
             .append(tableName)
-            .append(" (").append(columns).append(")\n")
-            .append("VALUES (").append(values).append(")\n")
-            .append("ON CONFLICT (hashcode) DO UPDATE SET ")
+            .append(" (").append(columns).append(",hascode)\n")
+            .append("VALUES (").append(values).append(",'%hascode%'").append(")\n")
+            .append("ON CONFLICT (hashcode) \n DO UPDATE SET ")
             .append(updateSets)
             .append(";")
             .toString();
