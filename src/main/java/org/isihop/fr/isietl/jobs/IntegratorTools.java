@@ -1033,7 +1033,8 @@ public class IntegratorTools
                 try 
                 {                
                     dbtOUT.getStmt().executeUpdate(sqlCreate); //create Table please
-                } catch (SQLException ex1) {
+                } catch (SQLException ex1) 
+                {
                     logger.log(Level.SEVERE,"Table CreatING : ERROR # ",ex1.getMessage());
                 }
                     System.out.println("Table Create : PASS");
@@ -1077,13 +1078,11 @@ public class IntegratorTools
             //finalize the last registrations and commit.
             dbtOUT.getStmt().executeBatch(); //first batch execution
             dbtOUT.getConn().commit(); //last commit for batch data
-                
+           } catch(SQLException e) {}
+           
             //a user log
             System.out.println(nbLignes+" line(s) processed in " + integration_duration());
             logger.log(Level.INFO, "{0} line(s) processed in " + integration_duration(),nbLignes);
-           
-           } catch(SQLException e) {}
-            //TODO
     }
 
    /**********************************************
