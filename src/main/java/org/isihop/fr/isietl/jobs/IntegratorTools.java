@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -708,6 +709,31 @@ public class IntegratorTools
      * @param sqlTemplate
      * @return 
      ******************************/
+    private String replace_template_UPSERT_Value_dataMap(String sqlTemplate,String hashCode,Map<String,String> col, Job jobIntegrator) 
+    {
+        String sqlReplace=sqlTemplate;
+        //search for value name
+        String champ;
+        int num=0;
+        for (Map.Entry<String, String> entry : col.entrySet()) 
+        {
+            champ="%"+entry.getKey().toLowerCase()+"%";
+            sqlReplace=sqlReplace.replaceAll(champ, entry.getValue().replaceAll("'", "''"));
+            num++;
+        }
+        
+        //replace hashcode
+        sqlReplace=sqlReplace.replaceAll("%hashcode%", hashCode);
+         
+        return sqlReplace;
+    }
+    
+        
+    /******************************
+     * Implements request
+     * @param sqlTemplate
+     * @return 
+     ******************************/
     private String replace_template_UPSERT_Value(String sqlTemplate,String hashCode,String[] col, Job jobIntegrator) 
     {
         String sqlReplace=sqlTemplate;
@@ -1019,16 +1045,18 @@ public class IntegratorTools
             int nbLignes=0;
             int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
             String[] col;
+            Map<String,String> dataMap;
         sqlTemplate=create_template_UPSERT_from_Map(jobIntegrator,metaDataMap);
             
            try
            {
            while (rstIN.next()==true)
                 {
-                col=construct_col_from_rst(rstIN);    
+                dataMap=construct_dataMap_from_rst(rstIN);
+                col=construct_col_from_dataMap(dataMap);    
                 String hashCode=hash_code_calculate(concatenate_col(col));
                     
-                sql=replace_template_UPSERT_Value(sqlTemplate,hashCode,col,jobIntegrator); //TODO
+                sql=replace_template_UPSERT_Value_dataMap(sqlTemplate,hashCode,dataMap,jobIntegrator); //TODO
                     
                 dbtOUT.getStmt().addBatch(sql);
                              
@@ -1077,19 +1105,16 @@ public class IntegratorTools
      * @param rst
      * @return 
      *******************************************/
-    private String[] construct_col_from_rst(ResultSet rst) 
+    private String[] construct_col_from_dataMap(Map<String,String> rst) 
     {
-        try {
-        String[] retour=new String[rst.getMetaData().getColumnCount()];
-            for (int i=1;i<=rst.getMetaData().getColumnCount();i++)
-            {
-                retour[i-1]=rst.getString(i);
-            }
-            return retour;
-        } catch (SQLException ex) {
-            logger.log(Level.SEVERE, ex.getMessage());
+        String[] retour=new String[rst.size()];
+        int i=0;
+        for (String values:rst.values())
+        {
+            retour[i]=values;
+            i++;
         }
-        return new String[0];//return empty Array String.
+        return retour;//return empty Array String.
     }
 
     
@@ -1130,14 +1155,35 @@ public class IntegratorTools
         String sql = new StringBuilder()
             .append("INSERT INTO ")
             .append(tableName)
-            .append(" (").append(columns).append(",hascode)\n")
-            .append("VALUES (").append(values).append(",'%hascode%'").append(")\n")
+            .append(" (").append(columns).append(",hashcode)\n")
+            .append("VALUES (").append(values).append(",'%hashcode%'").append(")\n")
             .append("ON CONFLICT (hashcode) \n DO UPDATE SET ")
             .append(updateSets)
             .append(";")
             .toString();
 
         return sql;
+    }
+
+    /*********************************
+     * 
+     * @param rst
+     * @return 
+     *********************************/
+    private Map<String, String> construct_dataMap_from_rst(ResultSet rst) 
+    {
+        Map<String,String> retour = new HashMap<>();
+         try 
+         {
+            for (int i=1;i<=rst.getMetaData().getColumnCount();i++)
+            {
+                retour.put(rst.getMetaData().getColumnName(i), rst.getString(i));
+            }
+            return retour;
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+        return retour;//return empty Array String.
     }
   
 }

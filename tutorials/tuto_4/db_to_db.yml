@@ -1,0 +1,81 @@
+#
+# Copyright (C) 2025 tondeur-h
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+ 
+# nom de process d'integration et sa description
+# champs optionnels pour décrire le JOB
+
+#-------------HEADER---------------
+jobName: "ACTIVITE DB TO DB"
+jobDescription: "Get data from a DataBase to a DataBase"
+jobDateTime: "2025-07-14 20:02:00"
+jobBatchSize: "20"
+forceIntermediateCommit: "true"
+#dbtofile, dbtodb,filetodb,filetofile
+jobtype: "dbtodb"
+#----------------------------------
+
+# description du connecteur entrant
+# type file csv ou database postgresql pour l'instant'
+# pour la demo, toutes les configurations possible on été placé ici
+#------------INBOUND CONNECTOR-----------
+connectorInbound:
+  #must be ""file"" or ""database""
+  connectortype: 
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/organization"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  query:
+    value: "select * from orgv3"
+#----------------------------------------
+
+#------------OUTBOUND CONNECTOR----------
+connectorOutbound: 
+  connectortype:
+    value: "database"
+  dbdriver:
+    value: "org.postgresql.Driver"
+  dburl:
+    value: "jdbc:postgresql://localhost:5432/organization"
+  dblogin:
+    value: "postgres"
+  dbpassword:
+    value: "admin"
+  targetTable:
+    value: "orgv4"    
+  #-------------------------------------
+
+#-----------FMT PROCESSING------------
+# Script DSL qui permet d'éxécuter en 
+# per processing les actions de 
+# Filtrage, Mapping, Trnsformation
+filteringScript: ""
+mappingScript: ""
+transformerScript: ""
+#-------------------------------------
+
+#-----------POSTPROCESSING------------
+# Script sql qui pointe vers un fichier SQL valide
+# permet d'eéxécuter en post processing ces requêtes
+# si destination est une BDD
+SQLPostProcessing: ""
+#-------------------------------------
