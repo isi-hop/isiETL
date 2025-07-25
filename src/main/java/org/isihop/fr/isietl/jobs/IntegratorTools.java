@@ -1085,6 +1085,7 @@ public class IntegratorTools
             logger.log(Level.INFO, "{0} line(s) processed in " + integration_duration(),nbLignes);
     }
 
+    
    /**********************************************
     * Process data integration file to file type
     * @param jobIntegrator 
