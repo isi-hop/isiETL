@@ -41,6 +41,7 @@ public class Job
     public Map<String,Features> connectorOutbound;
     public Map<String,Fields> fieldsOut;
     
+    public String SQLPreProcessing;
     public String SQLPostProcessing;
     
     public String filteringScript;

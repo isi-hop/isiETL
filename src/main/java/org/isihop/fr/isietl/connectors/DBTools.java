@@ -170,6 +170,49 @@ public class DBTools
         return finalise;
     }
     
+    
+        /***********************************
+     * Post Processing SQL
+     * @param SQLPreProcessing
+     * @return 
+     ***********************************/
+    public boolean SQLPreProcessing(String SQLPreProcessing) 
+    {
+        String sql="";    
+        boolean finalise=false;
+        try {
+            //Construct query...
+            System.out.println("Begin of SQL Pre Processing");
+            logger.log(Level.INFO, "Begin of SQL Pre Processing");
+            stmt=conn.createStatement();
+            BufferedReader brsql=new BufferedReader(new FileReader(SQLPreProcessing));
+            while (brsql.ready())
+            {
+                sql=brsql.readLine();
+                System.out.println("Running : "+sql);
+                logger.log(Level.INFO, "Running : {0}", sql);
+                stmt.executeUpdate(sql);
+                conn.commit(); //force commit
+            }
+            System.out.println("End of SQL Pre Processing");
+            logger.log(Level.INFO, "End of SQL Pre Processing");
+            finalise=true; //Everything is OK
+        } catch (SQLException ex) 
+        {
+             System.out.println("( KO : "+sql);
+             logger.log(Level.SEVERE, "( KO : {0}", sql);
+             logger.log(Level.SEVERE, "{0} ---- {1}", new Object[]{ex.getMessage(), ex.getSQLState()});
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+        return finalise;
+    }
+    
+    
     /**********************************
      * Make fetch data from DB
      * @param query 

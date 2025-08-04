@@ -813,6 +813,17 @@ public class IntegratorTools
             //start of processing calculation
             startIntegrationTime = System.nanoTime();
             
+            //PreProcessing action here
+            if (dbt.SQLPreProcessing(jobIntegrator.getSQLPreProcessing()))
+                {
+                    System.out.println("End of Pre Processing SQL with no Errors");
+                }
+            else
+                {
+                    System.out.println("End of Pre Processing SQL with some Errors");
+                }
+            
+            
             //process input files
             dbt.getConn().setAutoCommit(false);
             int batchSize=safeParseInt(jobIntegrator.getJobBatchSize(),1);
