@@ -629,7 +629,7 @@ public class IntegratorTools
             } 
         }
         //add hascode
-        sqlCreateTable=sqlCreateTable+"hashcode varchar,";
+        sqlCreateTable=sqlCreateTable+"hashcode varchar,isvalid boolean DEFAULT true,";
         
         //add constraint
         sqlCreateTable=sqlCreateTable+"CONSTRAINT "+NomTable+"_unique UNIQUE (hashcode))";
@@ -668,7 +668,7 @@ public class IntegratorTools
            .append(NomTable)
            .append(" (")
            .append(columns.toString())
-           .append(", hashcode varchar, CONSTRAINT ")
+           .append(", hashcode varchar, isvalid boolean DEFAULT true, CONSTRAINT ")
            .append(NomTable)
            .append("_unique UNIQUE (hashcode))");
 
@@ -699,6 +699,9 @@ public class IntegratorTools
         
         for (Map.Entry<String, Fields> entry : jobIntegrator.getFieldsOut().entrySet()) 
         {template=template+entry.getKey().toLowerCase()+"='%"+entry.getKey().toLowerCase()+"%',";}
+        
+        //mettre a jour le is_valid
+        template=template+"isvalid=true,";
         
         return template.substring(0, template.length()-1); //remove last comma
     }

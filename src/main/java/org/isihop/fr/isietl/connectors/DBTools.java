@@ -192,7 +192,7 @@ public class DBTools
                 System.out.println("Running : "+sql);
                 logger.log(Level.INFO, "Running : {0}", sql);
                 stmt.executeUpdate(sql);
-                conn.commit(); //force commit
+                if (!conn.getAutoCommit()) {conn.commit();} //force commit
             }
             System.out.println("End of SQL Pre Processing");
             logger.log(Level.INFO, "End of SQL Pre Processing");
