@@ -50,7 +50,7 @@ import java.util.logging.SimpleFormatter;
 public class isietl 
 {
     //VERSION
-    private final String VERSION="0.1-202505";
+    private final String VERSION="0.1-202601";
     
     //logs
     private static final  Logger logger = Logger.getLogger(isietl.class.getName());
